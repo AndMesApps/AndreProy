@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/supabase/server';
+import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { getJugador } from '@/lib/jugador';
 import { RegistroJugador, type EquipoRegistro } from '@/components/makigami/registro-jugador';
 
@@ -10,7 +11,11 @@ export default async function UnirsePage({ params }: { params: Promise<{ codigo:
   const { codigo: crudo } = await params;
   const codigo = crudo.toUpperCase();
   const sb = db();
-  const { data: reto } = await sb.from('mk_retos').select('id, codigo, titulo, descripcion, estado, registro_abierto').eq('codigo', codigo).maybeSingle();
+  const { data: reto } = await sb
+    .from('mk_retos')
+    .select('id, codigo, titulo, descripcion, estado, registro_abierto, creado_por')
+    .eq('codigo', codigo)
+    .maybeSingle();
 
   if (!reto) {
     return (
@@ -20,7 +25,8 @@ export default async function UnirsePage({ params }: { params: Promise<{ codigo:
     );
   }
 
-  if (await getJugador(reto.id)) redirect(`/makigami/${reto.id}`);
+  // Quien ya juega en el reto, o lo administra, pasa directo al tablero.
+  if ((await getJugador(reto.id)) || puedeAdministrarReto(await getFacilitador(), reto)) redirect(`/makigami/${reto.id}`);
 
   if (!reto.registro_abierto || reto.estado === 'cerrado') {
     return (

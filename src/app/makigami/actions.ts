@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { randomInt } from 'crypto';
 import { z } from 'zod';
 import { db } from '@/lib/supabase/server';
-import { getFacilitador } from '@/lib/auth';
+import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { borrarCookieJugador, getJugador, guardarCookieJugador, hashToken, nuevoToken } from '@/lib/jugador';
 import { ACCIONES_PROPUESTA, EMOJIS_EQUIPO, ESTADOS_RETO, SEXOS, TIPOS_DESPERDICIO, type EstadoReto } from '@/lib/makigami';
 
@@ -16,12 +16,13 @@ function rutaReto(retoId: string) {
 
 type Resultado = { ok: true } | { ok: false; error: string };
 
-/** El facilitador (correo en ADMIN_EMAILS) administra cualquier reto. */
+/** El Administrador administra cualquier reto; el Líder, solo los que creó. */
 async function requerirFacilitador(retoId: string) {
   const facilitador = await getFacilitador();
   if (!facilitador) return null;
-  const { data: reto } = await db().from('mk_retos').select('id, titulo, estado').eq('id', retoId).maybeSingle();
-  return reto ? { facilitador, reto: reto as { id: string; titulo: string; estado: EstadoReto } } : null;
+  const { data: reto } = await db().from('mk_retos').select('id, titulo, estado, creado_por').eq('id', retoId).maybeSingle();
+  if (!reto || !puedeAdministrarReto(facilitador, reto)) return null;
+  return { facilitador, reto: reto as { id: string; titulo: string; estado: EstadoReto; creado_por: string | null } };
 }
 
 /** El jugador registrado en este navegador para el reto, con el estado del reto. */

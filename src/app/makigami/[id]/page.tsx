@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
 import QRCode from 'qrcode';
 import { db } from '@/lib/supabase/server';
-import { getFacilitador } from '@/lib/auth';
+import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { getJugador } from '@/lib/jugador';
 import { FormularioReto } from '@/components/makigami/formulario-reto';
 import { PanelEquipos, type JugadorPanel } from '@/components/makigami/panel-equipos';
@@ -19,14 +19,15 @@ export default async function RetoMakigamiPage({ params }: { params: Promise<{ i
   const sb = db();
   const { data: reto } = await sb
     .from('mk_retos')
-    .select('id, codigo, titulo, descripcion, inicio_proceso, fin_proceso, estado, fecha_limite, registro_abierto')
+    .select('id, codigo, titulo, descripcion, inicio_proceso, fin_proceso, estado, fecha_limite, registro_abierto, creado_por')
     .eq('id', id)
     .maybeSingle();
   if (!reto) notFound();
 
+  // Un Líder que abre el reto de otro líder entra como cualquier jugador (con el código).
   const [facilitador, jugador] = await Promise.all([getFacilitador(), getJugador(reto.id)]);
-  if (!facilitador && !jugador) redirect(`/makigami/unirse/${reto.codigo}`);
-  const esFacilitador = Boolean(facilitador);
+  const esFacilitador = puedeAdministrarReto(facilitador, reto);
+  if (!esFacilitador && !jugador) redirect(`/makigami/unirse/${reto.codigo}`);
 
   const [{ data: carriles }, { data: pasos }, { data: cazas }, { data: propuestas }, { data: equipos }, { data: jugadores }] = await Promise.all([
     sb.from('mk_carriles').select('id, nombre, orden').eq('reto_id', reto.id).order('orden'),

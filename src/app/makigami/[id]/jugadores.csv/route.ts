@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/supabase/server';
-import { getFacilitador } from '@/lib/auth';
+import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { SEXOS, calcularEstadisticas, calcularPuntos, type EstadisticasCazador, type Sexo } from '@/lib/makigami';
 
 /** Exporta los jugadores del reto (con su equipo y puntos) en CSV para abrir en Excel. */
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  if (!(await getFacilitador())) return new NextResponse('No autorizado', { status: 401 });
+  const facilitador = await getFacilitador();
+  if (!facilitador) return new NextResponse('No autorizado', { status: 401 });
 
   const sb = db();
-  const { data: reto } = await sb.from('mk_retos').select('id, codigo').eq('id', id).maybeSingle();
+  const { data: reto } = await sb.from('mk_retos').select('id, codigo, creado_por').eq('id', id).maybeSingle();
   if (!reto) return new NextResponse('Reto no encontrado', { status: 404 });
+  if (!puedeAdministrarReto(facilitador, reto)) return new NextResponse('No autorizado', { status: 403 });
 
   const [{ data: equipos }, { data: jugadores }, { data: cazas }, { data: propuestas }] = await Promise.all([
     sb.from('mk_equipos').select('id, nombre').eq('reto_id', id),

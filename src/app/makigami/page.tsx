@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getFacilitador } from '@/lib/auth';
+import { nombresCreadores } from '@/lib/usuarios';
 import { getMisRetosComoJugador } from '@/lib/jugador';
 import { db } from '@/lib/supabase/server';
 import { FormularioReto } from '@/components/makigami/formulario-reto';
@@ -27,9 +28,11 @@ export default async function MakigamiPage() {
   const facilitador = await getFacilitador();
   const sb = db();
 
-  // El facilitador ve todos los retos; un jugador, solo en los que se registró desde este navegador.
-  let consulta = sb.from('mk_retos').select('id, codigo, titulo, estado, fecha_limite, created_at').order('created_at', { ascending: false });
-  if (!facilitador) {
+  // El Administrador ve todos los retos; el Líder, los que creó; un jugador, solo en los que se registró desde este navegador.
+  let consulta = sb.from('mk_retos').select('id, codigo, titulo, estado, fecha_limite, created_at, creado_por').order('created_at', { ascending: false });
+  if (facilitador?.rol === 'lider') {
+    consulta = consulta.eq('creado_por', facilitador.id);
+  } else if (!facilitador) {
     const misRetos = (await getMisRetosComoJugador()).map((r) => r.reto_id);
     consulta = consulta.in('id', misRetos.length ? misRetos : ['00000000-0000-0000-0000-000000000000']);
   }
@@ -45,6 +48,10 @@ export default async function MakigamiPage() {
       ])
     : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }];
   const contar = (lista: any[] | null, retoId: string) => (lista ?? []).filter((x) => x.reto_id === retoId).length;
+
+  // Al Administrador se le muestra quién creó cada reto.
+  const esAdmin = facilitador?.rol === 'admin';
+  const creadores = esAdmin ? await nombresCreadores((retos ?? []).map((r: any) => r.creado_por)) : new Map<string, string>();
 
   return (
     <div className="space-y-6">
@@ -72,11 +79,11 @@ export default async function MakigamiPage() {
       </div>
 
       <div className="space-y-3">
-        <h2 className="font-display font-semibold text-secundario">{facilitador ? 'Retos' : 'Mis retos'}</h2>
+        <h2 className="font-display font-semibold text-secundario">{esAdmin ? 'Todos los retos' : facilitador ? 'Mis retos' : 'Retos en los que juego'}</h2>
         {!retos || retos.length === 0 ? (
           <div className="card p-10 text-center">
             <p className="text-3xl">🗺️</p>
-            <p className="mt-2 text-sm font-medium text-marmol-700">{facilitador ? 'Todavía no hay retos' : 'Aún no te has unido a ningún reto'}</p>
+            <p className="mt-2 text-sm font-medium text-marmol-700">{esAdmin ? 'Todavía no hay retos' : facilitador ? 'Todavía no has creado retos' : 'Aún no te has unido a ningún reto'}</p>
             <p className="mt-1 text-xs text-marmol-400">
               {facilitador ? 'Crea el primero con “Nuevo reto” y dibuja un proceso que todos conozcan.' : 'Escribe arriba el código que te dio el facilitador.'}
             </p>
@@ -102,6 +109,7 @@ export default async function MakigamiPage() {
                     {facilitador && <span className="font-mono text-xs font-semibold tracking-widest text-marmol-500">{r.codigo}</span>}
                   </div>
                   <h3 className="mt-2 font-medium text-marmol-900 group-hover:text-secundario">{r.titulo}</h3>
+                  {esAdmin && <p className="text-[11px] text-marmol-400">Creado por {creadores.get(r.creado_por) ?? '—'}</p>}
                   {r.fecha_limite && r.estado === 'caceria' && <p className="text-[11px] text-marmol-400">Cacería hasta el {formatearFecha(r.fecha_limite)}</p>}
                   <div className="mt-3 grid grid-cols-4 gap-2 text-center">
                     {cifras.map(([n, etiqueta, tono]) => (

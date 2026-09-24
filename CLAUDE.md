@@ -12,8 +12,14 @@ empresa ni colaboradores: los jugadores se inscriben solos con un código de 6 c
 - Todo el acceso a datos va por el servidor con `db()` (service_role) en `src/lib/supabase/server.ts`.
   Las tablas `mk_*` tienen RLS activo **sin políticas**: el navegador nunca las consulta directo.
   Por eso cada server action valida primero quién llama (`getFacilitador()` o `getJugador(retoId)`).
-- Facilitador = usuario de Supabase Auth cuyo correo está en `ADMIN_EMAILS`. Se crea a mano en
-  Supabase → Authentication → Users (no hay registro público de facilitadores).
+- Tres roles. "Facilitador" (`getFacilitador()` en `src/lib/auth.ts`) = Administrador o Líder:
+  - **admin**: todo; gestiona cuentas en `/usuarios`. Son admin los correos de `ADMIN_EMAILS` (fijos, no se
+    editan en la app) y las filas `mk_usuarios` con rol `admin`.
+  - **lider**: fila activa en `mk_usuarios` con rol `lider`; crea retos y administra solo los suyos
+    (`mk_retos.creado_por`). Todo permiso sobre un reto pasa por `puedeAdministrarReto()`.
+  - **jugador**: sin cuenta (cookie por reto, abajo).
+  Las cuentas las crea el admin en `/usuarios` (`auth.admin.createUser`, sin registro público). Desactivar
+  una cuenta la marca `activo=false` y además la bloquea (ban) en Supabase Auth.
 - Jugador = token aleatorio en una cookie httpOnly por reto (`mk_<retoId sin guiones>`); en la base
   solo se guarda su hash (`mk_jugadores.token_hash`). Ver `src/lib/jugador.ts`.
 - Los puntos no se guardan: se calculan en vivo (`calcularPuntos` en `src/lib/makigami.ts`).

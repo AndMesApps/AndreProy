@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { Inter, Sora } from 'next/font/google';
-import { getFacilitador } from '@/lib/auth';
+import { getFacilitador, ROLES } from '@/lib/auth';
 import './globals.css';
 
 const sora = Sora({ subsets: ['latin'], variable: '--font-display' });
@@ -26,13 +26,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </Link>
             <nav className="flex items-center gap-4 text-sm text-marmol-600">
               <Link href="/makigami" className="hover:text-marca-600">
-                🎯 Cacería Makigami
+                🎯<span className="hidden sm:inline"> Cacería Makigami</span>
               </Link>
+              {facilitador?.rol === 'admin' && (
+                <Link href="/usuarios" className="hover:text-marca-600">
+                  👥<span className="hidden sm:inline"> Usuarios</span>
+                </Link>
+              )}
             </nav>
             <div className="ml-auto text-sm">
               {facilitador ? (
                 <form action="/salir" method="post" className="flex items-center gap-3">
                   <span className="hidden text-xs text-marmol-400 sm:inline">{facilitador.email}</span>
+                  <span className="rounded-full bg-marca-100 px-2 py-0.5 text-[11px] font-semibold text-marca-700">{ROLES[facilitador.rol]}</span>
                   <button className="text-marmol-500 hover:text-bajo">Salir</button>
                 </form>
               ) : (
