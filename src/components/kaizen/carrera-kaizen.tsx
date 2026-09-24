@@ -41,7 +41,13 @@ export function CarreraKaizen({
     const t = setInterval(() => {
       if (document.visibilityState === 'visible') router.refresh();
     }, REFRESCO_MS);
-    return () => clearInterval(t);
+    // Al volver a la pantalla (celular desbloqueado, otra pestaña) se pone al día de inmediato.
+    const alVolver = () => document.visibilityState === 'visible' && router.refresh();
+    document.addEventListener('visibilitychange', alVolver);
+    return () => {
+      clearInterval(t);
+      document.removeEventListener('visibilitychange', alVolver);
+    };
   }, [sesion.estado, router]);
 
   const marcadores = useMemo(
@@ -376,7 +382,10 @@ function HistoriaEquipos({ sesion, equipos, marcadores }: { sesion: SesionVista;
           return (
             <details key={e.id} className="rounded-xl border border-marmol-200 p-3" open={sesion.estado === 'cerrado' && equipos.length <= 2}>
               <summary className="cursor-pointer text-sm font-semibold text-marmol-800">
-                {e.emoji} {e.nombre} <span className="font-normal text-marmol-400">· {rondas.length} rondas con mejora</span>
+                {e.emoji} {e.nombre}{' '}
+                <span className="font-normal text-marmol-400">
+                  · {rondas.filter((r) => r.tarjeta).length} {rondas.filter((r) => r.tarjeta).length === 1 ? 'tarjeta Kaizen' : 'tarjetas Kaizen'}
+                </span>
               </summary>
               <ol className="mt-2 space-y-2">
                 {rondas.map((r) => (

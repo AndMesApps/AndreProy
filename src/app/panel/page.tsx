@@ -7,6 +7,7 @@ import { db } from '@/lib/supabase/server';
 import { ETAPAS_RETO, type EstadoReto } from '@/lib/makigami';
 import { describirMomento } from '@/lib/kaizen';
 import { SEMAFOROS, accionVencida, formatearValor, semaforo, ultimaMedicion, type AccionMinima, type ProcesoMinimo, type Semaforo } from '@/lib/procesos';
+import { MiNombre } from '@/components/panel/mi-nombre';
 import { TarjetaCompartir } from '@/components/panel/tarjeta-compartir';
 import { cn, formatearFecha } from '@/lib/utils';
 import { ArrowRight, FileText } from 'lucide-react';
@@ -122,7 +123,7 @@ export default async function PanelPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-acento">
           Mi panel · {ROLES[facilitador.rol]}
         </p>
-        <h1 className="mt-1 font-display text-2xl font-bold sm:text-3xl">Hola, {facilitador.nombre.split(/[ @]/)[0]}</h1>
+        <MiNombre nombre={facilitador.nombre} sinNombre={facilitador.nombre === facilitador.email} />
         <p className="mt-1 text-sm text-white/85">Juegos para diagnosticar y entrenar, control para sostener. Todo lo de tus clientes en un solo lugar.</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Link href="/makigami" className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-secundario shadow hover:bg-marca-50">

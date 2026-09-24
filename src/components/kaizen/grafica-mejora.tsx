@@ -62,7 +62,7 @@ export function GraficaMejora({
   for (let i = 1; i < finales.length; i++) finales[i]!.yFinal = Math.max(finales[i]!.yFinal, finales[i - 1]!.yFinal + 14);
 
   return (
-    <div>
+    <div className="mx-auto max-w-3xl">
       {/* Leyenda: siempre presente con 2 o más equipos, para no depender solo del color. */}
       {series.length > 1 && (
         <ul className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-marmol-600">

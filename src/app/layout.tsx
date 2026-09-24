@@ -50,7 +50,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <div className="ml-auto text-sm">
               {facilitador ? (
                 <form action="/salir" method="post" className="flex items-center gap-3">
-                  <span className="hidden text-xs text-marmol-400 sm:inline">{facilitador.email}</span>
+                  <span className="hidden text-xs text-marmol-500 sm:inline" title={facilitador.email}>
+                    {facilitador.nombre === facilitador.email ? facilitador.email : facilitador.nombre}
+                  </span>
                   <span className="hidden rounded-full bg-marca-100 px-2 py-0.5 text-[11px] font-semibold text-marca-700 sm:inline">{ROLES[facilitador.rol]}</span>
                   <button className="text-marmol-500 hover:text-bajo">Salir</button>
                 </form>

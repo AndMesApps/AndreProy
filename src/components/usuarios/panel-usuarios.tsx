@@ -2,11 +2,11 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { actualizarUsuario, cambiarClave, crearUsuario } from '@/app/usuarios/actions';
+import { actualizarUsuario, cambiarClave, crearUsuario, retirarUsuario } from '@/app/usuarios/actions';
 import type { UsuarioVista } from '@/lib/usuarios';
 import type { Rol } from '@/lib/auth';
 import { cn, formatearFecha } from '@/lib/utils';
-import { KeyRound, Pencil, Plus, X } from 'lucide-react';
+import { KeyRound, Pencil, Plus, UserMinus, X } from 'lucide-react';
 
 const ETIQUETA_ROL: Record<Rol, string> = { admin: '👑 Administrador', lider: '🧭 Líder' };
 const TONO_ROL: Record<Rol, string> = { admin: 'bg-secundario/10 text-secundario', lider: 'bg-marca-100 text-marca-700' };
@@ -23,6 +23,7 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
   const [mostrarNuevo, setMostrarNuevo] = useState(false);
   const [editando, setEditando] = useState<{ id: string; nombre: string; rol: Rol; activo: boolean } | null>(null);
   const [clave, setClave] = useState<{ id: string; valor: string } | null>(null);
+  const [retirar, setRetirar] = useState<string | null>(null);
 
   const ejecutar = (fn: () => Promise<Respuesta>, despues?: () => void) => {
     setError(null);
@@ -112,22 +113,24 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
                 )}
                 {u.principal && <span className="text-[11px] text-marmol-400">principal</span>}
                 {!u.activo && u.rol && <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-bajo">Desactivado</span>}
-                {!u.principal && (
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => {
-                        setClave(null);
-                        setEditando(enEdicion ? null : { id: u.id, nombre: u.nombre || u.email.split('@')[0]!, rol: u.rol ?? 'lider', activo: u.rol ? u.activo : true });
-                      }}
-                      className="rounded-md p-1.5 text-marmol-400 hover:bg-marmol-100 hover:text-secundario"
-                      aria-label="Editar"
-                      title={u.rol ? 'Editar rol' : 'Dar acceso'}
-                    >
-                      <Pencil size={15} />
-                    </button>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => {
+                      setClave(null);
+                      setRetirar(null);
+                      setEditando(enEdicion ? null : { id: u.id, nombre: u.nombre || '', rol: u.rol ?? 'lider', activo: u.rol ? u.activo : true });
+                    }}
+                    className="rounded-md p-1.5 text-marmol-400 hover:bg-marmol-100 hover:text-secundario"
+                    aria-label="Editar"
+                    title={u.principal ? 'Editar nombre' : u.rol ? 'Editar nombre, rol o estado' : 'Dar acceso'}
+                  >
+                    <Pencil size={15} />
+                  </button>
+                  {!u.principal && (
                     <button
                       onClick={() => {
                         setEditando(null);
+                        setRetirar(null);
                         setClave(enClave ? null : { id: u.id, valor: '' });
                       }}
                       className="rounded-md p-1.5 text-marmol-400 hover:bg-marmol-100 hover:text-secundario"
@@ -136,9 +139,38 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
                     >
                       <KeyRound size={15} />
                     </button>
-                  </div>
-                )}
+                  )}
+                  {!u.principal && u.id !== miId && (
+                    <button
+                      onClick={() => {
+                        setEditando(null);
+                        setClave(null);
+                        setRetirar(retirar === u.id ? null : u.id);
+                      }}
+                      className="rounded-md p-1.5 text-marmol-400 hover:bg-red-50 hover:text-bajo"
+                      aria-label="Retirar cuenta"
+                      title="Retirar cuenta"
+                    >
+                      <UserMinus size={15} />
+                    </button>
+                  )}
+                </div>
               </div>
+
+              {retirar === u.id && (
+                <div className="flex flex-wrap items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-bajo">
+                  <span className="min-w-0 flex-1">
+                    ¿Retirar a <strong>{u.nombre || u.email}</strong>? Se borra su cuenta y ya no podrá entrar. Sus juegos y procesos se conservan. Si solo
+                    quieres pausar su acceso, mejor desactívala con el lápiz.
+                  </span>
+                  <button type="button" disabled={pending} onClick={() => ejecutar(() => retirarUsuario(u.id), () => setRetirar(null))} className="boton bg-bajo hover:bg-red-800">
+                    Sí, retirar
+                  </button>
+                  <button type="button" onClick={() => setRetirar(null)} className="boton-secundario">
+                    Cancelar
+                  </button>
+                </div>
+              )}
 
               {enEdicion && editando && (
                 <form
@@ -149,19 +181,25 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
                   }}
                 >
                   <input className="campo" value={editando.nombre} onChange={(e) => setEditando({ ...editando, nombre: e.target.value })} placeholder="Nombre" required />
-                  <select className="campo" value={editando.rol} onChange={(e) => setEditando({ ...editando, rol: e.target.value as Rol })}>
-                    <option value="lider">Líder</option>
-                    <option value="admin">Administrador</option>
-                  </select>
-                  <label className="flex items-center gap-2 text-sm text-marmol-600">
-                    <input
-                      type="checkbox"
-                      checked={editando.activo}
-                      disabled={u.id === miId}
-                      onChange={(e) => setEditando({ ...editando, activo: e.target.checked })}
-                    />
-                    Activo
-                  </label>
+                  {u.principal ? (
+                    <span className="text-xs text-marmol-500 sm:col-span-2">Administrador principal: solo se cambia el nombre.</span>
+                  ) : (
+                    <>
+                    <select className="campo" value={editando.rol} onChange={(e) => setEditando({ ...editando, rol: e.target.value as Rol })}>
+                      <option value="lider">Líder</option>
+                      <option value="admin">Administrador</option>
+                    </select>
+                    <label className="flex items-center gap-2 text-sm text-marmol-600">
+                      <input
+                        type="checkbox"
+                        checked={editando.activo}
+                        disabled={u.id === miId}
+                        onChange={(e) => setEditando({ ...editando, activo: e.target.checked })}
+                      />
+                      Activo
+                    </label>
+                    </>
+                  )}
                   <button type="submit" disabled={pending} className="boton">
                     Guardar
                   </button>
@@ -201,8 +239,8 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
         })}
       </div>
       <p className="text-xs text-marmol-400">
-        “Principal” son los correos de la variable ADMIN_EMAILS en Vercel: siempre son administradores y no se editan aquí. Al desactivar una cuenta, la persona ya
-        no puede iniciar sesión y sus retos quedan a cargo de los administradores.
+        “Principal” son los correos de la variable ADMIN_EMAILS en Vercel: siempre son administradores; aquí solo se les cambia el nombre. Al desactivar una cuenta, la persona ya
+        no puede iniciar sesión (se puede reactivar); al retirarla, su cuenta se borra. En ambos casos sus juegos y procesos quedan a cargo de los administradores.
       </p>
     </div>
   );

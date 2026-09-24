@@ -77,7 +77,14 @@ export async function actualizarUsuario(id: string, input: z.infer<typeof Cambio
   const { data: cuenta } = await sb.auth.admin.getUserById(id);
   const email = cuenta.user?.email?.toLowerCase();
   if (!email) return { ok: false, error: 'Cuenta no encontrada' };
-  if (correosAdmin().includes(email)) return { ok: false, error: 'Los administradores principales se cambian en la variable ADMIN_EMAILS de Vercel.' };
+  if (correosAdmin().includes(email)) {
+    // Administrador principal: su rol y acceso los fija ADMIN_EMAILS; aquí solo se le cambia el nombre.
+    const { error } = await sb.from('mk_usuarios').upsert({ id, email, nombre: d.nombre, rol: 'admin', activo: true });
+    if (error) return { ok: false, error: error.message };
+    revalidatePath(RUTA);
+    revalidatePath('/', 'layout');
+    return { ok: true };
+  }
   if (id === admin.id && (d.rol !== 'admin' || !d.activo)) return { ok: false, error: 'No puedes quitarte a ti mismo el rol de Administrador.' };
 
   const { error } = await sb.from('mk_usuarios').upsert({ id, email, nombre: d.nombre, rol: d.rol, activo: d.activo });
@@ -85,6 +92,42 @@ export async function actualizarUsuario(id: string, input: z.infer<typeof Cambio
   // Una cuenta desactivada tampoco puede iniciar sesión.
   await sb.auth.admin.updateUserById(id, { ban_duration: d.activo ? 'none' : '876000h' });
   revalidatePath(RUTA);
+  revalidatePath('/', 'layout');
+  return { ok: true };
+}
+
+/**
+ * Retira a una persona: borra su cuenta de Supabase Auth y su rol. Sus retos,
+ * carreras y procesos se conservan y quedan a cargo de los administradores.
+ */
+export async function retirarUsuario(id: string): Promise<Resultado> {
+  const admin = await requerirAdmin();
+  if (!admin) return { ok: false, error: 'No autorizado' };
+  if (id === admin.id) return { ok: false, error: 'No puedes retirar tu propia cuenta.' };
+  const sb = db();
+  const { data: cuenta } = await sb.auth.admin.getUserById(id);
+  const email = cuenta.user?.email?.toLowerCase();
+  if (!email) return { ok: false, error: 'Cuenta no encontrada' };
+  if (correosAdmin().includes(email)) return { ok: false, error: 'Los administradores principales se retiran quitándolos de la variable ADMIN_EMAILS de Vercel.' };
+
+  await sb.from('mk_usuarios').delete().eq('id', id);
+  const { error } = await sb.auth.admin.deleteUser(id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath(RUTA);
+  return { ok: true, aviso: `Se retiró la cuenta ${email}. Sus juegos y procesos quedan a cargo de los administradores.` };
+}
+
+const NombreSchema = z.string().trim().min(2, 'Escribe tu nombre').max(80);
+
+/** Cualquier facilitador puede escribir su propio nombre (el que se ve en el saludo y en el menú). */
+export async function cambiarMiNombre(nombre: string): Promise<Resultado> {
+  const yo = await getFacilitador();
+  if (!yo) return { ok: false, error: 'No autorizado' };
+  const parsed = NombreSchema.safeParse(nombre);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Nombre inválido' };
+  const { error } = await db().from('mk_usuarios').upsert({ id: yo.id, email: yo.email, nombre: parsed.data, rol: yo.rol, activo: true });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath('/', 'layout');
   return { ok: true };
 }
 

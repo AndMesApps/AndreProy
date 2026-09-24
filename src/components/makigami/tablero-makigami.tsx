@@ -57,7 +57,13 @@ export function TableroMakigami({
     const t = setInterval(() => {
       if (document.visibilityState === 'visible') router.refresh();
     }, REFRESCO_MS);
-    return () => clearInterval(t);
+    // Al volver a la pantalla (celular desbloqueado, otra pestaña) se pone al día de inmediato.
+    const alVolver = () => document.visibilityState === 'visible' && router.refresh();
+    document.addEventListener('visibilitychange', alVolver);
+    return () => {
+      clearInterval(t);
+      document.removeEventListener('visibilitychange', alVolver);
+    };
   }, [enVivo, router]);
 
   useEffect(() => {

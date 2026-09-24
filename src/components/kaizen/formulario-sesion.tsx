@@ -14,7 +14,7 @@ export interface DatosFormularioSesion {
   unidad: string;
   criterioCalidad: string;
   totalRondas: number;
-  minutosRonda: number;
+  minutosRonda: string;
 }
 
 const VACIO: DatosFormularioSesion = {
@@ -24,7 +24,7 @@ const VACIO: DatosFormularioSesion = {
   unidad: '',
   criterioCalidad: '',
   totalRondas: 5,
-  minutosRonda: 3,
+  minutosRonda: '3',
 };
 
 /** Crea una carrera nueva, o edita una existente si recibe sesionId + datosIniciales. */
@@ -37,10 +37,12 @@ export function FormularioSesion({ sesionId, datosIniciales }: { sesionId?: stri
   const [error, setError] = useState<string | null>(null);
 
   const set = (campo: keyof DatosFormularioSesion) => (e: { target: { value: string } }) =>
-    setDatos((d) => ({ ...d, [campo]: campo === 'totalRondas' || campo === 'minutosRonda' ? Number(e.target.value) : e.target.value }));
+    setDatos((d) => ({ ...d, [campo]: campo === 'totalRondas' ? Number(e.target.value) : e.target.value }));
 
   function guardar() {
     setError(null);
+    const minutos = Number(datos.minutosRonda.replace(',', '.'));
+    if (!Number.isFinite(minutos) || minutos <= 0) return setError('Escribe los minutos por ronda, por ejemplo 3 o 2.5.');
     const input = {
       titulo: datos.titulo,
       descripcion: datos.descripcion || undefined,
@@ -48,7 +50,7 @@ export function FormularioSesion({ sesionId, datosIniciales }: { sesionId?: stri
       unidad: datos.unidad,
       criterioCalidad: datos.criterioCalidad || undefined,
       totalRondas: Math.round(datos.totalRondas),
-      duracionRondaSeg: Math.round(datos.minutosRonda * 60),
+      duracionRondaSeg: Math.round(minutos * 60),
     };
     startTransition(async () => {
       const res = sesionId ? await actualizarSesion(sesionId, input) : await crearSesion(input);
@@ -94,7 +96,7 @@ export function FormularioSesion({ sesionId, datosIniciales }: { sesionId?: stri
                     producto: s.producto,
                     unidad: s.unidad,
                     criterioCalidad: s.criterio,
-                    minutosRonda: s.duracionSeg / 60,
+                    minutosRonda: String(s.duracionSeg / 60),
                   }))
                 }
                 className={cn(
@@ -137,7 +139,7 @@ export function FormularioSesion({ sesionId, datosIniciales }: { sesionId?: stri
           </select>
         </Campo>
         <Campo etiqueta="Minutos para producir">
-          <input type="number" min={0.5} max={60} step={0.5} value={datos.minutosRonda} onChange={set('minutosRonda')} className="campo" />
+          <input inputMode="decimal" value={datos.minutosRonda} onChange={set('minutosRonda')} placeholder="Ej. 3" className="campo" />
         </Campo>
       </div>
       <p className="text-[11px] text-marmol-400">La ronda 1 es la línea base: trabajan como saben. Desde la ronda 2 cada equipo aplica una mejora por ronda.</p>

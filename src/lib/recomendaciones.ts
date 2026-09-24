@@ -209,12 +209,15 @@ export function recomendacionesKaizen(d: DatosInformeKaizen): Recomendacion[] {
     .sort((a, b) => (b.mejoraPct ?? 0) - (a.mejoraPct ?? 0));
   for (const x of exitosas.slice(0, 5)) {
     const t = d.tarjetas.find((t) => t.equipo_id === x.tarjeta!.equipo_id && t.ronda === x.ronda);
+    const adoptada = x.tarjeta!.decision === 'estandar';
     r.push({
       ref: `kz-idea-${t?.id ?? `${x.tarjeta!.equipo_id}-${x.ronda}`}`,
-      prioridad: (x.mejoraPct ?? 0) >= 20 ? 'alta' : 'media',
-      titulo: `Estandarizar y replicar: ${x.tarjeta!.idea}`,
-      detalle: `Idea de ${nombre(x.tarjeta!.equipo_id)} en la ronda ${x.ronda}: mejoró ${formatearPct(x.mejoraPct)}. ${x.tarjeta!.decision === 'estandar' ? 'El equipo ya la adoptó como estándar.' : 'El equipo no la adoptó como estándar: revisen por qué.'} Documéntenla en una hoja de trabajo estándar y enséñenla a todos.`,
-      herramienta: 'Trabajo estandarizado',
+      prioridad: adoptada && (x.mejoraPct ?? 0) >= 20 ? 'alta' : 'media',
+      titulo: adoptada ? `Estandarizar y replicar: ${x.tarjeta!.idea}` : `Volver a probar: ${x.tarjeta!.idea}`,
+      detalle: adoptada
+        ? `Idea de ${nombre(x.tarjeta!.equipo_id)} en la ronda ${x.ronda}: mejoró ${formatearPct(x.mejoraPct)} y el equipo la adoptó como estándar. Documéntenla en una hoja de trabajo estándar y enséñenla a todos.`
+        : `Idea de ${nombre(x.tarjeta!.equipo_id)} en la ronda ${x.ronda}: mejoró ${formatearPct(x.mejoraPct)}, pero el equipo no la adoptó. Pregunten por qué la descartaron y pruébenla de nuevo midiendo con cuidado.`,
+      herramienta: adoptada ? 'Trabajo estandarizado' : 'Ciclo PDCA',
     });
   }
 

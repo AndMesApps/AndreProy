@@ -175,6 +175,9 @@ export function PlanAccion({ procesoId, acciones }: { procesoId: string; accione
   );
 }
 
+/** Alertas que ya hablan del plan de acción: no tiene sentido volverlas otra acción. */
+const SOBRE_EL_PLAN = ['pc-vencidas', 'pc-responsables'];
+
 /** Opciones de mejora del proceso, con un botón para pasarlas al plan de acción. */
 export function SugerenciasProceso({ procesoId, recomendaciones }: { procesoId: string; recomendaciones: Recomendacion[] }) {
   const router = useRouter();
@@ -195,6 +198,7 @@ export function SugerenciasProceso({ procesoId, recomendaciones }: { procesoId: 
             <p className="mt-0.5 text-sm text-marmol-600">{r.detalle}</p>
             {r.herramienta && <p className="mt-1 text-xs text-marca-700">🧰 {r.herramienta}</p>}
           </div>
+          {!SOBRE_EL_PLAN.includes(r.ref) && (
           <button
             type="button"
             disabled={pending || agregadas.has(r.ref)}
@@ -211,6 +215,7 @@ export function SugerenciasProceso({ procesoId, recomendaciones }: { procesoId: 
           >
             {agregadas.has(r.ref) ? '✓ Agregada' : '+ Al plan'}
           </button>
+          )}
         </li>
       ))}
     </ul>

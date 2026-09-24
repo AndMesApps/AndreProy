@@ -42,7 +42,7 @@ export function GraficaIndicador({ proceso, mediciones }: { proceso: ProcesoMini
   const p = hover != null ? puntos[hover] : null;
 
   return (
-    <div className="relative">
+    <div className="relative mx-auto max-w-3xl">
       <svg viewBox={`0 0 ${ANCHO} ${ALTO}`} className="h-auto w-full" role="img" aria-label={`${proceso.indicador} en el tiempo`}>
         {ticks.map((t, i) => (
           <g key={i}>

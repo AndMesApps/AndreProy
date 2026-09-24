@@ -8,8 +8,11 @@ import { cambiarRegistroAbierto, crearEquipo, eliminarEquipo, eliminarJugador, m
 import { PanelEquipos, type JugadorPanel } from '@/components/juego/panel-equipos';
 import { FormularioSesion } from '@/components/kaizen/formulario-sesion';
 import { CarreraKaizen } from '@/components/kaizen/carrera-kaizen';
+import { EliminarSesion } from '@/components/kaizen/eliminar-sesion';
 import { COLORES_EQUIPO, type EquipoVista, type ResultadoVista, type SesionVista, type TarjetaVista } from '@/components/kaizen/tipos';
 import { ArrowLeft, FileText } from 'lucide-react';
+
+export const metadata = { title: 'Carrera Kaizen' };
 
 export default async function CarreraKaizenPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -96,12 +99,13 @@ export default async function CarreraKaizenPage({ params }: { params: Promise<{ 
                 unidad: s.unidad,
                 criterioCalidad: s.criterio_calidad ?? '',
                 totalRondas: s.total_rondas,
-                minutosRonda: s.duracion_ronda_seg / 60,
+                minutosRonda: String(s.duracion_ronda_seg / 60),
               }}
             />
             <Link href={`/kaizen/${s.id}/informe`} className="inline-flex items-center gap-1 text-xs text-marmol-500 hover:text-marca-600">
               <FileText size={12} /> Informe y opciones de mejora
             </Link>
+            <EliminarSesion sesionId={s.id} />
           </div>
         )}
       </div>
