@@ -1,0 +1,50 @@
+import type { Metadata, Viewport } from 'next';
+import Link from 'next/link';
+import { Inter, Sora } from 'next/font/google';
+import { getFacilitador } from '@/lib/auth';
+import './globals.css';
+
+const sora = Sora({ subsets: ['latin'], variable: '--font-display' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-body' });
+
+export const metadata: Metadata = {
+  title: { default: 'AndMesApps', template: '%s · AndMesApps' },
+  description: 'Juegos y herramientas de formación en mejora continua.',
+};
+
+export const viewport: Viewport = { width: 'device-width', initialScale: 1 };
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const facilitador = await getFacilitador();
+  return (
+    <html lang="es" className={`${sora.variable} ${inter.variable}`}>
+      <body className="min-h-screen">
+        <header className="sticky top-0 z-40 border-b border-marmol-200 bg-white/90 backdrop-blur">
+          <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4">
+            <Link href="/" className="font-display text-lg font-bold text-secundario">
+              AndMes<span className="text-marca-500">Apps</span>
+            </Link>
+            <nav className="flex items-center gap-4 text-sm text-marmol-600">
+              <Link href="/makigami" className="hover:text-marca-600">
+                🎯 Cacería Makigami
+              </Link>
+            </nav>
+            <div className="ml-auto text-sm">
+              {facilitador ? (
+                <form action="/salir" method="post" className="flex items-center gap-3">
+                  <span className="hidden text-xs text-marmol-400 sm:inline">{facilitador.email}</span>
+                  <button className="text-marmol-500 hover:text-bajo">Salir</button>
+                </form>
+              ) : (
+                <Link href="/ingresar" className="text-marmol-500 hover:text-marca-600">
+                  Soy facilitador
+                </Link>
+              )}
+            </div>
+          </div>
+        </header>
+        <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+      </body>
+    </html>
+  );
+}

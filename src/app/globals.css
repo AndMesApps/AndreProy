@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-marmol-50 text-marmol-900 font-body antialiased;
+}
+
+/* Los campos de formulario traen un ancho mínimo propio que en celular
+   empuja la pantalla hacia los lados dentro de filas flex. */
+input,
+select,
+textarea {
+  min-width: 0;
+}
+
+/* En celular, cada celda de una rejilla se ajusta al ancho de la pantalla. */
+.grid > * {
+  min-width: 0;
+}
+
+.card {
+  @apply bg-white border border-marmol-200 rounded-xl shadow-sm;
+}
+
+.campo {
+  @apply w-full rounded-lg border border-marmol-200 bg-white px-3 py-2 text-sm text-marmol-900 focus:border-marca-400 focus:outline-none focus:ring-2 focus:ring-marca-100;
+}
+
+.boton {
+  @apply inline-flex items-center justify-center gap-1.5 rounded-lg bg-marca-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-marca-600 disabled:opacity-40;
+}
+
+.boton-secundario {
+  @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-marmol-200 bg-white px-4 py-2 text-sm font-medium text-marmol-600 transition hover:text-secundario;
+}
