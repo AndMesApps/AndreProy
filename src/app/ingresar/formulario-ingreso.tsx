@@ -20,7 +20,7 @@ export function FormularioIngreso() {
       setCargando(false);
       return setError(res.error);
     }
-    router.push('/makigami');
+    router.push('/panel');
     router.refresh();
   }
 

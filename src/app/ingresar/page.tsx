@@ -5,7 +5,7 @@ import { FormularioIngreso } from './formulario-ingreso';
 export const metadata = { title: 'Ingreso de facilitador' };
 
 export default async function IngresarPage() {
-  if (await getFacilitador()) redirect('/makigami');
+  if (await getFacilitador()) redirect('/panel');
   return (
     <div className="mx-auto max-w-sm pt-8">
       <div className="card p-6">

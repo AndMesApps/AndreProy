@@ -2,8 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { registrarJugador } from '@/app/makigami/actions';
-import { ANTIGUEDADES, RANGOS_EDAD, SEXOS, type Sexo } from '@/lib/makigami';
+import { ANTIGUEDADES, RANGOS_EDAD, SEXOS, type DatosRegistro, type ResultadoRegistro, type Sexo } from '@/lib/juego';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, Crown, Plus } from 'lucide-react';
 
@@ -34,7 +33,23 @@ const VACIO = {
  * Inscripción en dos pasos: 1) elegir (o crear) el equipo, 2) los datos del
  * jugador. El juego se hace por equipos, por eso el equipo va primero.
  */
-export function RegistroJugador({ codigo, equipos }: { codigo: string; equipos: EquipoRegistro[] }) {
+export function RegistroJugador({
+  codigo,
+  equipos,
+  registrar,
+  rutaJuego,
+  textoEntrar = '🎯 Entrar al juego',
+  ejemploEquipo = 'Ej. Los Cazadores de Esperas',
+}: {
+  codigo: string;
+  equipos: EquipoRegistro[];
+  /** Server action del juego que inscribe al jugador. */
+  registrar: (datos: DatosRegistro) => Promise<ResultadoRegistro>;
+  /** Ruta base del juego, ej. "/makigami": al inscribirse va a `${rutaJuego}/<id>`. */
+  rutaJuego: string;
+  textoEntrar?: string;
+  ejemploEquipo?: string;
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +73,7 @@ export function RegistroJugador({ codigo, equipos }: { codigo: string; equipos: 
     setError(null);
     if (!datos.sexo) return setError('Elige una opción de sexo.');
     startTransition(async () => {
-      const res = await registrarJugador({
+      const res = await registrar({
         codigo,
         equipoId: creando ? undefined : (equipoId ?? undefined),
         nuevoEquipo: creando ? nuevoEquipo : undefined,
@@ -76,7 +91,7 @@ export function RegistroJugador({ codigo, equipos }: { codigo: string; equipos: 
         aceptaDatos: datos.aceptaDatos as true,
       });
       if (!res.ok) return setError(res.error);
-      router.push(`/makigami/${res.retoId}`);
+      router.push(`${rutaJuego}/${res.retoId}`);
       router.refresh();
     });
   }
@@ -127,7 +142,7 @@ export function RegistroJugador({ codigo, equipos }: { codigo: string; equipos: 
                 value={nuevoEquipo}
                 onChange={(e) => setNuevoEquipo(e.target.value)}
                 maxLength={40}
-                placeholder="Ej. Los Cazadores de Esperas"
+                placeholder={ejemploEquipo}
                 className="campo mt-1"
               />
             </label>
@@ -268,7 +283,7 @@ export function RegistroJugador({ codigo, equipos }: { codigo: string; equipos: 
       {error && <p className="text-sm text-bajo">{error}</p>}
       <div className="flex justify-end border-t border-marmol-100 pt-4">
         <button type="submit" disabled={pending || !datos.aceptaDatos} className="boton">
-          {pending ? 'Registrando…' : '🎯 Entrar al juego'}
+          {pending ? 'Registrando…' : textoEntrar}
         </button>
       </div>
     </form>

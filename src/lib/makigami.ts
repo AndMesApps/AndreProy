@@ -297,16 +297,5 @@ export function calcularPuntos(s: EstadisticasCazador, propuestasVigentes: numbe
   );
 }
 
-/** Emojis para identificar equipos (se asignan en orden al crearlos). */
-export const EMOJIS_EQUIPO = ['🦊', '🦉', '🐺', '🦅', '🐬', '🦁', '🐝', '🐢', '🦄', '🐙', '🐯', '🐧'] as const;
-
-export const SEXOS = {
-  femenino: 'Femenino',
-  masculino: 'Masculino',
-  otro: 'Otro',
-  prefiero_no_decir: 'Prefiero no decirlo',
-} as const;
-export type Sexo = keyof typeof SEXOS;
-
-export const RANGOS_EDAD = ['18 a 24', '25 a 34', '35 a 44', '45 a 54', '55 o más'] as const;
-export const ANTIGUEDADES = ['Menos de 1 año', '1 a 3 años', '3 a 5 años', '5 a 10 años', 'Más de 10 años'] as const;
+// Datos de equipos y jugadores comunes a todos los juegos (ver juego.ts).
+export { ANTIGUEDADES, EMOJIS_EQUIPO, RANGOS_EDAD, SEXOS, type Sexo } from '@/lib/juego';

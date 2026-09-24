@@ -1,16 +1,16 @@
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
-import QRCode from 'qrcode';
+import { enlaceYQr } from '@/lib/compartir';
 import { db } from '@/lib/supabase/server';
 import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { getJugador } from '@/lib/jugador';
+import { cambiarRegistroAbierto, crearEquipo, eliminarEquipo, eliminarJugador, moverJugador, renombrarEquipo } from '@/app/makigami/actions';
 import { FormularioReto } from '@/components/makigami/formulario-reto';
-import { PanelEquipos, type JugadorPanel } from '@/components/makigami/panel-equipos';
+import { PanelEquipos, type JugadorPanel } from '@/components/juego/panel-equipos';
 import { TableroMakigami } from '@/components/makigami/tablero-makigami';
 import type { CarrilVista, CazaVista, EquipoVista, JugadorVista, PasoVista, PropuestaVista, RetoVista } from '@/components/makigami/tipos';
 import type { EstadoReto } from '@/lib/makigami';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, FileText } from 'lucide-react';
 
 export default async function RetoMakigamiPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -97,15 +97,7 @@ export default async function RetoMakigamiPage({ params }: { params: Promise<{ i
   const miEquipo = jugador ? vistaEquipos.find((e) => e.id === jugador.equipo_id) : undefined;
 
   // Enlace + QR para que los jugadores se unan desde el celular.
-  let enlaceUnirse = '';
-  let qrSvg = '';
-  if (esFacilitador) {
-    const h = await headers();
-    const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'localhost:3000';
-    const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
-    enlaceUnirse = `${proto}://${host}/makigami/unirse/${reto.codigo}`;
-    qrSvg = await QRCode.toString(enlaceUnirse, { type: 'svg', margin: 1, color: { dark: '#312E81', light: '#ffffff' } });
-  }
+  const { enlace: enlaceUnirse, qrSvg } = esFacilitador ? await enlaceYQr(`/makigami/unirse/${reto.codigo}`) : { enlace: '', qrSvg: '' };
 
   return (
     <div className="space-y-5">
@@ -132,7 +124,7 @@ export default async function RetoMakigamiPage({ params }: { params: Promise<{ i
           </p>
         )}
         {esFacilitador && (
-          <div className="mt-2">
+          <div className="mt-2 flex flex-wrap items-center gap-4">
             <FormularioReto
               retoId={reto.id}
               datosIniciales={{
@@ -143,6 +135,9 @@ export default async function RetoMakigamiPage({ params }: { params: Promise<{ i
                 fechaLimite: reto.fecha_limite ?? '',
               }}
             />
+            <Link href={`/makigami/${reto.id}/informe`} className="inline-flex items-center gap-1 text-xs text-marmol-500 hover:text-marca-600">
+              <FileText size={12} /> Informe y opciones de mejora
+            </Link>
           </div>
         )}
       </div>
@@ -156,6 +151,8 @@ export default async function RetoMakigamiPage({ params }: { params: Promise<{ i
           registroAbierto={reto.registro_abierto}
           equipos={vistaEquipos}
           jugadores={listaJugadores.map((j) => ({ ...j, nombre: `${j.nombres} ${j.apellidos}` }))}
+          acciones={{ cambiarRegistroAbierto, crearEquipo, renombrarEquipo, eliminarEquipo, moverJugador, eliminarJugador }}
+          rutaCsv={`/makigami/${reto.id}/jugadores.csv`}
         />
       )}
 

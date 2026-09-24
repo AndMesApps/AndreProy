@@ -4,7 +4,7 @@ import { nombresCreadores } from '@/lib/usuarios';
 import { getMisRetosComoJugador } from '@/lib/jugador';
 import { db } from '@/lib/supabase/server';
 import { FormularioReto } from '@/components/makigami/formulario-reto';
-import { UnirseCodigo } from '@/components/makigami/unirse-codigo';
+import { UnirseCodigo } from '@/components/juego/unirse-codigo';
 import { DESPERDICIOS, ETAPAS_RETO, TIPOS_DESPERDICIO, calcularMetricas, formatearDuracion, type Clasificacion, type EstadoReto } from '@/lib/makigami';
 import { cn, formatearFecha } from '@/lib/utils';
 
@@ -68,7 +68,7 @@ export default async function MakigamiPage() {
           </p>
           <div className="mt-5">
             <p className="mb-1.5 text-xs font-semibold text-white/80">¿Te dieron un código? Escríbelo aquí:</p>
-            <UnirseCodigo />
+            <UnirseCodigo rutaJuego="/makigami" />
           </div>
           {facilitador && (
             <div className="mt-4">

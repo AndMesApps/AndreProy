@@ -4,8 +4,25 @@ Aplicativo independiente (NO es parte de Espiral de Crecimiento ni de FlowAndo):
 Supabase, Vercel y navegador, todos con la cuenta **andreamesiasapps@gmail.com**. Nunca uses aquí las
 cuentas `gh` de Flowando360, DianaSaidIndunnova u otras: el repo se configura solo con la cuenta nueva.
 
-Primer módulo: **Cacería Makigami por equipos** (`/makigami`), derivado del juego de Espiral pero sin
-empresa ni colaboradores: los jugadores se inscriben solos con un código de 6 caracteres.
+Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial). Organización:
+**juegos** para diagnosticar y entrenar + **control de procesos** para sostener, unidos por la "mejora"
+(lo que sale de un juego llega al plan de acción de un proceso).
+
+- `/panel` — "súper menú" del facilitador: juegos abiertos para compartir (código, enlace, WhatsApp, QR),
+  procesos con semáforo y acciones vencidas, informes recientes, administración. Tras ingresar se llega aquí.
+- `/makigami` — **Cacería Makigami** (diagnosticar): mapeo → cacería → rediseño → resultados.
+- `/kaizen` — **Carrera Kaizen** (mejorar, modo taller): rondas cronometradas; ronda 1 = línea base
+  (hacer, verificar); rondas 2..N = PDCA (planear con tarjeta Kaizen: problema, 5 porqués, idea,
+  predicción → hacer → verificar → actuar: estándar o descartada). Lógica y puntos en `src/lib/kaizen.ts`.
+- `/procesos` — **Control de procesos**: proceso con indicador (línea base, meta, sentido bajar/subir),
+  mediciones, plan de acción (`pc_acciones`) y juegos unidos (`proceso_id` en `mk_retos`/`kz_sesiones`).
+- Informes imprimibles (PDF desde el navegador) con opciones de mejora automáticas:
+  `/makigami/[id]/informe`, `/kaizen/[id]/informe`, y la página del proceso. Reglas en
+  `src/lib/recomendaciones.ts` (juegos) y `src/lib/procesos.ts` (procesos). "Enviar al plan" = `enviarAlPlan`.
+- Motor común de juegos: `src/lib/juego.ts` (inscripción, CSV), `src/lib/jugador.ts` (cookie por sesión,
+  `getJugador(id, 'makigami' | 'kaizen')`, `generarCodigo`), `src/components/juego/*` (inscripción,
+  panel de equipos, campo de código) y `src/lib/compartir.ts` (enlace + QR). Un juego nuevo = tablas
+  propias `xx_*` + sus actions, reusando estas piezas.
 
 ## Cuentas y conexiones
 
@@ -53,7 +70,9 @@ empresa ni colaboradores: los jugadores se inscriben solos con un código de 6 c
   una cuenta la marca `activo=false` y además la bloquea (ban) en Supabase Auth.
 - Jugador = token aleatorio en una cookie httpOnly por reto (`mk_<retoId sin guiones>`); en la base
   solo se guarda su hash (`mk_jugadores.token_hash`). Ver `src/lib/jugador.ts`.
-- Los puntos no se guardan: se calculan en vivo (`calcularPuntos` en `src/lib/makigami.ts`).
+- Los puntos no se guardan: se calculan en vivo (`calcularPuntos` en `src/lib/makigami.ts`,
+  `calcularMarcador` en `src/lib/kaizen.ts`).
+- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos). Todas con RLS sin políticas.
 
 ## Base de datos
 - Migraciones en `supabase/migrations/`, siempre idempotentes (`if not exists`, `do $$ ... exception`).
@@ -63,9 +82,13 @@ empresa ni colaboradores: los jugadores se inscriben solos con un código de 6 c
 
 ## Estado (al 2026-09-24)
 - Hecho: app desplegada; 3 roles con pantalla Usuarios; reto demo; detalle del paso con botón de cerrar.
-- Por confirmar con la usuaria al empezar: ¿ya corrió `0002_roles.sql` y `reto_papeleria.sql` en
-  Supabase? ¿`ADMIN_EMAILS` tiene su correo exacto (como aparece en Supabase → Authentication → Users)
-  y se hizo Redeploy? Los roles aún no se han probado con sesión iniciada.
+- Hecho (2026-09-24): Carrera Kaizen, Control de procesos, Mi panel, informes con opciones de mejora.
+- Por confirmar con la usuaria al empezar: ¿ya corrió en Supabase `0002_roles.sql`, `reto_papeleria.sql`,
+  **`0003_kaizen.sql` y `0004_procesos.sql`** (en ese orden)? ¿`ADMIN_EMAILS` tiene su correo exacto
+  (como aparece en Supabase → Authentication → Users) y se hizo Redeploy? Los roles, la Carrera Kaizen y
+  el Control de procesos aún no se han probado con sesión iniciada.
+- Ideas siguientes: modo "proceso real" de Kaizen (rondas = semanas), más juegos (5S digital, SMED,
+  5 porqués), plantilla de configuración por juego.
 
 ## Estilo
 - Interfaz y textos en español (Colombia), lenguaje sencillo. Debe verse bien en celular (390 px).

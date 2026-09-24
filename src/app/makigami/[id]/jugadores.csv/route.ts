@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { aCsv } from '@/lib/juego';
 import { db } from '@/lib/supabase/server';
 import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { SEXOS, calcularEstadisticas, calcularPuntos, type EstadisticasCazador, type Sexo } from '@/lib/makigami';
@@ -54,13 +55,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     ];
   });
 
-  // Excel en español usa ";" como separador; el BOM hace que respete las tildes.
-  const celda = (v: unknown) => {
-    const t = String(v ?? '');
-    const segura = /^[=+\-@]/.test(t) ? `'${t}` : t; // evita que Excel lo interprete como fórmula
-    return /[";\n\r]/.test(segura) ? `"${segura.replace(/"/g, '""')}"` : segura;
-  };
-  const csv = '﻿' + [encabezado, ...filas].map((f) => f.map(celda).join(';')).join('\r\n');
+  const csv = aCsv([encabezado, ...filas]);
 
   return new NextResponse(csv, {
     headers: {

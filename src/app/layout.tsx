@@ -19,18 +19,31 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="es" className={`${sora.variable} ${inter.variable}`}>
       <body className="min-h-screen">
-        <header className="sticky top-0 z-40 border-b border-marmol-200 bg-white/90 backdrop-blur">
-          <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4">
+        <header className="no-imprimir sticky top-0 z-40 border-b border-marmol-200 bg-white/90 backdrop-blur">
+          <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:gap-4">
             <Link href="/" className="font-display text-lg font-bold text-secundario">
               AndMes<span className="text-marca-500">Apps</span>
             </Link>
-            <nav className="flex items-center gap-4 text-sm text-marmol-600">
-              <Link href="/makigami" className="hover:text-marca-600">
-                🎯<span className="hidden sm:inline"> Cacería Makigami</span>
+            <nav className="flex items-center gap-3 text-sm text-marmol-600 sm:gap-4">
+              {facilitador && (
+                <Link href="/panel" className="font-semibold text-secundario hover:text-marca-600">
+                  🧭<span className="hidden sm:inline"> Mi panel</span>
+                </Link>
+              )}
+              <Link href="/makigami" className="hover:text-marca-600" title="Cacería Makigami">
+                🎯<span className="hidden lg:inline"> Makigami</span>
               </Link>
+              <Link href="/kaizen" className="hover:text-marca-600" title="Carrera Kaizen">
+                🔁<span className="hidden lg:inline"> Kaizen</span>
+              </Link>
+              {facilitador && (
+                <Link href="/procesos" className="hover:text-marca-600" title="Control de procesos">
+                  📊<span className="hidden lg:inline"> Procesos</span>
+                </Link>
+              )}
               {facilitador?.rol === 'admin' && (
-                <Link href="/usuarios" className="hover:text-marca-600">
-                  👥<span className="hidden sm:inline"> Usuarios</span>
+                <Link href="/usuarios" className="hover:text-marca-600" title="Usuarios">
+                  👥<span className="hidden lg:inline"> Usuarios</span>
                 </Link>
               )}
             </nav>
@@ -38,7 +51,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               {facilitador ? (
                 <form action="/salir" method="post" className="flex items-center gap-3">
                   <span className="hidden text-xs text-marmol-400 sm:inline">{facilitador.email}</span>
-                  <span className="rounded-full bg-marca-100 px-2 py-0.5 text-[11px] font-semibold text-marca-700">{ROLES[facilitador.rol]}</span>
+                  <span className="hidden rounded-full bg-marca-100 px-2 py-0.5 text-[11px] font-semibold text-marca-700 sm:inline">{ROLES[facilitador.rol]}</span>
                   <button className="text-marmol-500 hover:text-bajo">Salir</button>
                 </form>
               ) : (

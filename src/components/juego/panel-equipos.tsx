@@ -2,11 +2,15 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { cambiarRegistroAbierto, crearEquipo, eliminarEquipo, eliminarJugador, moverJugador, renombrarEquipo } from '@/app/makigami/actions';
-import { SEXOS, type Sexo } from '@/lib/makigami';
+import { SEXOS, type AccionesEquipos, type Sexo } from '@/lib/juego';
 import { cn } from '@/lib/utils';
 import { Check, ChevronDown, Copy, Crown, Download, Pencil, Plus, Trash2, X } from 'lucide-react';
-import type { EquipoVista } from './tipos';
+
+export interface EquipoPanel {
+  id: string;
+  nombre: string;
+  emoji: string;
+}
 
 export interface JugadorPanel {
   id: string;
@@ -30,19 +34,31 @@ export function PanelEquipos({
   registroAbierto,
   equipos,
   jugadores,
+  acciones,
+  rutaCsv,
+  avisoEliminar = 'Eliminar jugador (con sus cazas y propuestas)',
+  abiertoInicial = true,
 }: {
   retoId: string;
   codigo: string;
   enlace: string;
   qrSvg: string;
   registroAbierto: boolean;
-  equipos: EquipoVista[];
+  equipos: EquipoPanel[];
   jugadores: JugadorPanel[];
+  /** Server actions del juego para equipos y jugadores. */
+  acciones: AccionesEquipos;
+  /** Enlace para descargar los jugadores en CSV. */
+  rutaCsv: string;
+  avisoEliminar?: string;
+  /** Si el panel arranca desplegado. */
+  abiertoInicial?: boolean;
 }) {
+  const { cambiarRegistroAbierto, crearEquipo, eliminarEquipo, eliminarJugador, moverJugador, renombrarEquipo } = acciones;
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [abierto, setAbierto] = useState(true);
+  const [abierto, setAbierto] = useState(abiertoInicial);
   const [copiado, setCopiado] = useState(false);
   const [nuevoEquipo, setNuevoEquipo] = useState('');
   const [editando, setEditando] = useState<{ id: string; nombre: string } | null>(null);
@@ -129,7 +145,7 @@ export function PanelEquipos({
                 <Plus size={14} /> Crear equipo
               </button>
               {jugadores.length > 0 && (
-                <a href={`/makigami/${retoId}/jugadores.csv`} className="boton-secundario ml-auto px-3 py-1.5 text-xs">
+                <a href={rutaCsv} className="boton-secundario ml-auto px-3 py-1.5 text-xs">
                   <Download size={13} /> Descargar jugadores (Excel)
                 </a>
               )}
@@ -234,7 +250,7 @@ export function PanelEquipos({
                                       ))}
                                   </select>
                                 )}
-                                <button type="button" onClick={() => setConfirmarBorrar(j.id)} className="text-marmol-300 hover:text-bajo" title="Eliminar jugador (con sus cazas y propuestas)">
+                                <button type="button" onClick={() => setConfirmarBorrar(j.id)} className="text-marmol-300 hover:text-bajo" title={avisoEliminar}>
                                   <Trash2 size={12} />
                                 </button>
                               </>

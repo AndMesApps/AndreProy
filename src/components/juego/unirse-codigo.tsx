@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 /** Campo para escribir el código de 6 caracteres que da el facilitador. */
-export function UnirseCodigo() {
+export function UnirseCodigo({ rutaJuego }: { rutaJuego: string }) {
   const router = useRouter();
   const [codigo, setCodigo] = useState('');
   const limpio = codigo.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 6);
@@ -13,7 +13,7 @@ export function UnirseCodigo() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (limpio.length === 6) router.push(`/makigami/unirse/${limpio}`);
+        if (limpio.length === 6) router.push(`${rutaJuego}/unirse/${limpio}`);
       }}
       className="flex flex-wrap gap-2"
     >

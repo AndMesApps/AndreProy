@@ -1,12 +1,12 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { randomInt } from 'crypto';
 import { z } from 'zod';
 import { db } from '@/lib/supabase/server';
 import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
-import { borrarCookieJugador, getJugador, guardarCookieJugador, hashToken, nuevoToken } from '@/lib/jugador';
-import { ACCIONES_PROPUESTA, EMOJIS_EQUIPO, ESTADOS_RETO, SEXOS, TIPOS_DESPERDICIO, type EstadoReto } from '@/lib/makigami';
+import { borrarCookieJugador, generarCodigo, getJugador, guardarCookieJugador, hashToken, nuevoToken } from '@/lib/jugador';
+import { NombreEquipo, RegistroSchema, filaJugador, type DatosRegistro, type ResultadoRegistro } from '@/lib/juego';
+import { ACCIONES_PROPUESTA, EMOJIS_EQUIPO, ESTADOS_RETO, TIPOS_DESPERDICIO, type EstadoReto } from '@/lib/makigami';
 
 const RUTA = '/makigami';
 
@@ -44,15 +44,6 @@ const RetoSchema = z.object({
   finProceso: z.string().trim().optional(),
   fechaLimite: z.string().trim().optional(),
 });
-
-// Sin caracteres que se confunden al dictarlos o leerlos en un proyector (0/O, 1/I/L).
-const ALFABETO_CODIGO = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-
-function generarCodigo() {
-  let c = '';
-  for (let i = 0; i < 6; i++) c += ALFABETO_CODIGO[randomInt(ALFABETO_CODIGO.length)];
-  return c;
-}
 
 export async function crearReto(input: z.infer<typeof RetoSchema>) {
   const facilitador = await getFacilitador();
@@ -160,8 +151,6 @@ export async function cambiarRegistroAbierto(retoId: string, abierto: boolean): 
 // Equipos y jugadores
 // ----------------------------------------------------------------------------
 
-const NombreEquipo = z.string().trim().min(2, 'El nombre del equipo es muy corto').max(40, 'El nombre del equipo es muy largo');
-
 /** Crea un equipo y le asigna el siguiente emoji libre. Devuelve su id. */
 async function insertarEquipo(retoId: string, nombre: string) {
   const sb = db();
@@ -233,46 +222,11 @@ export async function eliminarJugador(retoId: string, jugadorId: string): Promis
   return { ok: true };
 }
 
-const opcional = z
-  .string()
-  .trim()
-  .max(120)
-  .optional()
-  .transform((v) => v || null);
-
-const RegistroSchema = z
-  .object({
-    codigo: z.string().trim().toUpperCase().length(6, 'El código tiene 6 caracteres'),
-    equipoId: z.string().uuid().optional(),
-    nuevoEquipo: z.string().trim().optional(),
-    nombres: z.string().trim().min(1, 'Escribe tus nombres').max(80),
-    apellidos: z.string().trim().min(1, 'Escribe tus apellidos').max(80),
-    cargo: z.string().trim().min(1, 'Escribe tu cargo').max(100),
-    esLider: z.boolean(),
-    sexo: z.enum(Object.keys(SEXOS) as [string, ...string[]], { errorMap: () => ({ message: 'Elige una opción de sexo' }) }),
-    rangoEdad: opcional,
-    organizacion: opcional,
-    area: opcional,
-    antiguedad: opcional,
-    email: z
-      .string()
-      .trim()
-      .max(120)
-      .optional()
-      .transform((v) => v || null)
-      .refine((v) => !v || z.string().email().safeParse(v).success, 'El correo no es válido'),
-    celular: opcional,
-    aceptaDatos: z.literal(true, { errorMap: () => ({ message: 'Debes autorizar el tratamiento de tus datos para jugar' }) }),
-  })
-  .refine((d) => d.equipoId || d.nuevoEquipo, { message: 'Elige tu equipo o crea uno nuevo' });
-
-export type DatosRegistro = z.input<typeof RegistroSchema>;
-
 /**
  * Inscribe a un jugador en el reto del código (creando su equipo si es
  * nuevo) y deja su identidad en una cookie de este navegador.
  */
-export async function registrarJugador(input: DatosRegistro) {
+export async function registrarJugador(input: DatosRegistro): Promise<ResultadoRegistro> {
   const parsed = RegistroSchema.safeParse(input);
   if (!parsed.success) return { ok: false as const, error: parsed.error.issues[0]?.message ?? 'Datos inválidos' };
   const d = parsed.data;
@@ -309,18 +263,7 @@ export async function registrarJugador(input: DatosRegistro) {
   const { error } = await sb.from('mk_jugadores').insert({
     reto_id: reto.id,
     equipo_id: equipoId,
-    nombres: d.nombres,
-    apellidos: d.apellidos,
-    cargo: d.cargo,
-    es_lider: d.esLider,
-    sexo: d.sexo,
-    rango_edad: d.rangoEdad,
-    organizacion: d.organizacion,
-    area: d.area,
-    antiguedad: d.antiguedad,
-    email: d.email,
-    celular: d.celular,
-    acepta_datos: true,
+    ...filaJugador(d),
     token_hash: hashToken(token),
   });
   if (error) return { ok: false as const, error: error.message };
