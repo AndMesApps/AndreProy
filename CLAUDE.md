@@ -83,10 +83,13 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 ## Estado (al 2026-09-24)
 - Hecho: app desplegada; 3 roles con pantalla Usuarios; reto demo; detalle del paso con botón de cerrar.
 - Hecho (2026-09-24): Carrera Kaizen, Control de procesos, Mi panel, informes con opciones de mejora.
-- Por confirmar con la usuaria al empezar: ¿ya corrió en Supabase `0002_roles.sql`, `reto_papeleria.sql`,
-  **`0003_kaizen.sql` y `0004_procesos.sql`** (en ese orden)? ¿`ADMIN_EMAILS` tiene su correo exacto
-  (como aparece en Supabase → Authentication → Users) y se hizo Redeploy? Los roles, la Carrera Kaizen y
-  el Control de procesos aún no se han probado con sesión iniciada.
+- Migraciones 0001–0004 corridas en Supabase (confirmado 2026-09-24). Probado en producción con sesión de
+  administradora: Carrera Kaizen completa (3 rondas, 2 equipos), informe, envío al plan y proceso.
+  Los datos de prueba se borraron.
+- Usuarios: cada facilitador escribe su nombre en /panel (`cambiarMiNombre`); en /usuarios se crean,
+  editan (nombre, rol, activo) y retiran (`retirarUsuario` borra la cuenta de Auth) cuentas.
+- Probar jugadores sin navegador: POST a la página con cabecera `Next-Action: <id>` (el id sale del HTML
+  o de los chunks JS) y cuerpo JSON con los argumentos; cada jugador con su propio archivo de cookies.
 - Ideas siguientes: modo "proceso real" de Kaizen (rondas = semanas), más juegos (5S digital, SMED,
   5 porqués), plantilla de configuración por juego.
 
