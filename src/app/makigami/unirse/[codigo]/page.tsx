@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { db } from '@/lib/supabase/server';
 import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { getJugador } from '@/lib/jugador';
+import { nombreFacilitador } from '@/lib/usuarios';
 import { registrarJugador } from '@/app/makigami/actions';
 import { RegistroJugador, type EquipoRegistro } from '@/components/juego/registro-jugador';
 
@@ -37,6 +38,7 @@ export default async function UnirsePage({ params }: { params: Promise<{ codigo:
     );
   }
 
+  const facilita = await nombreFacilitador(reto.creado_por);
   const [{ data: equipos }, { data: jugadores }] = await Promise.all([
     sb.from('mk_equipos').select('id, nombre, emoji').eq('reto_id', reto.id).order('created_at'),
     sb.from('mk_jugadores').select('equipo_id, es_lider').eq('reto_id', reto.id),
@@ -52,6 +54,7 @@ export default async function UnirsePage({ params }: { params: Promise<{ codigo:
         <p className="text-xs font-semibold uppercase tracking-widest text-acento">Cacería Makigami · Código {reto.codigo}</p>
         <h1 className="mt-1 font-display text-2xl font-bold">{reto.titulo}</h1>
         {reto.descripcion && <p className="mt-1 text-sm text-white/85">{reto.descripcion}</p>}
+        {facilita && <p className="mt-2 text-xs text-white/80">🧑‍🏫 Facilita: <strong className="text-white">{facilita}</strong></p>}
       </div>
       <RegistroJugador codigo={reto.codigo} equipos={listaEquipos} registrar={registrarJugador} rutaJuego="/makigami" />
     </div>

@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { db } from '@/lib/supabase/server';
 import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { getJugador } from '@/lib/jugador';
+import { nombreFacilitador } from '@/lib/usuarios';
 import { registrarJugador } from '@/app/kaizen/actions';
 import { RegistroJugador, type EquipoRegistro } from '@/components/juego/registro-jugador';
 
@@ -37,6 +38,7 @@ export default async function UnirseKaizenPage({ params }: { params: Promise<{ c
     );
   }
 
+  const facilita = await nombreFacilitador(sesion.creado_por);
   const [{ data: equipos }, { data: jugadores }] = await Promise.all([
     sb.from('kz_equipos').select('id, nombre, emoji').eq('sesion_id', sesion.id).order('created_at'),
     sb.from('kz_jugadores').select('equipo_id, es_lider').eq('sesion_id', sesion.id),
@@ -52,6 +54,7 @@ export default async function UnirseKaizenPage({ params }: { params: Promise<{ c
         <p className="text-xs font-semibold uppercase tracking-widest text-acento">Carrera Kaizen · Código {sesion.codigo}</p>
         <h1 className="mt-1 font-display text-2xl font-bold">{sesion.titulo}</h1>
         <p className="mt-1 text-sm text-white/85">{sesion.descripcion || `Hoy producimos: ${sesion.producto}.`}</p>
+        {facilita && <p className="mt-2 text-xs text-white/80">🧑‍🏫 Facilita: <strong className="text-white">{facilita}</strong></p>}
       </div>
       <RegistroJugador
         codigo={sesion.codigo}

@@ -4,6 +4,7 @@ import { db } from '@/lib/supabase/server';
 import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { getJugador } from '@/lib/jugador';
 import { enlaceYQr } from '@/lib/compartir';
+import { nombreFacilitador } from '@/lib/usuarios';
 import { cambiarRegistroAbierto, crearEquipo, eliminarEquipo, eliminarJugador, moverJugador, renombrarEquipo } from '@/app/kaizen/actions';
 import { PanelEquipos, type JugadorPanel } from '@/components/juego/panel-equipos';
 import { FormularioSesion } from '@/components/kaizen/formulario-sesion';
@@ -26,7 +27,7 @@ export default async function CarreraKaizenPage({ params }: { params: Promise<{ 
     .maybeSingle();
   if (!s) notFound();
 
-  const [facilitador, jugador] = await Promise.all([getFacilitador(), getJugador(s.id, 'kaizen')]);
+  const [facilitador, jugador, facilita] = await Promise.all([getFacilitador(), getJugador(s.id, 'kaizen'), nombreFacilitador(s.creado_por)]);
   const esFacilitador = puedeAdministrarReto(facilitador, s);
   if (!esFacilitador && !jugador) redirect(`/kaizen/unirse/${s.codigo}`);
 
@@ -73,6 +74,7 @@ export default async function CarreraKaizenPage({ params }: { params: Promise<{ 
         <h1 className="mt-1 font-display text-2xl font-semibold text-secundario">{s.titulo}</h1>
         {s.descripcion && <p className="mt-1 max-w-3xl text-sm text-marmol-600">{s.descripcion}</p>}
         <p className="mt-1 text-xs text-marmol-500">
+          {facilita && <>🧑‍🏫 Facilita: <strong className="text-marmol-700">{facilita}</strong> · </>}
           Producen: <strong className="text-marmol-700">{s.producto}</strong>
           {s.criterio_calidad && <> · Unidad buena: {s.criterio_calidad}</>}
         </p>

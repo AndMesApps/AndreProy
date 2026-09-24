@@ -76,3 +76,9 @@ export async function nombresCreadores(ids: (string | null)[]): Promise<Map<stri
   );
   return nombres;
 }
+
+/** Nombre con el que se identifica un facilitador en toda la app (o su correo si aún no lo escribe). */
+export async function nombreFacilitador(id: string | null) {
+  if (!id) return null;
+  return (await nombresCreadores([id])).get(id) ?? null;
+}

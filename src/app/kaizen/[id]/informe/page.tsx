@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { db } from '@/lib/supabase/server';
 import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { procesosDe, refsEnviadas } from '@/lib/procesos-servidor';
+import { nombreFacilitador } from '@/lib/usuarios';
 import { calcularMarcador, describirMomento, errorPrediccion, formatearPct, type MarcadorEquipo } from '@/lib/kaizen';
 import { recomendacionesKaizen } from '@/lib/recomendaciones';
 import { cn } from '@/lib/utils';
@@ -29,13 +30,14 @@ export default async function InformeKaizenPage({ params }: { params: Promise<{ 
   const facilitador = await getFacilitador();
   if (!puedeAdministrarReto(facilitador, s)) redirect(`/kaizen/${s.id}`);
 
-  const [{ data: equipos }, { data: jugadores }, { data: tarjetas }, { data: resultados }, procesos, enviadas] = await Promise.all([
+  const [{ data: equipos }, { data: jugadores }, { data: tarjetas }, { data: resultados }, procesos, enviadas, facilita] = await Promise.all([
     sb.from('kz_equipos').select('id, nombre, emoji').eq('sesion_id', s.id).order('created_at'),
     sb.from('kz_jugadores').select('equipo_id').eq('sesion_id', s.id),
     sb.from('kz_tarjetas').select('id, equipo_id, ronda, problema, porques, idea, prediccion, decision').eq('sesion_id', s.id),
     sb.from('kz_resultados').select('equipo_id, ronda, unidades_buenas, defectos').eq('sesion_id', s.id),
     procesosDe(facilitador!),
     refsEnviadas(s.proceso_id, s.id),
+    nombreFacilitador(s.creado_por),
   ]);
 
   const vistaEquipos: EquipoVista[] = ((equipos ?? []) as { id: string; nombre: string; emoji: string }[]).map((e, i) => ({
@@ -68,6 +70,7 @@ export default async function InformeKaizenPage({ params }: { params: Promise<{ 
         titulo={s.titulo}
         subtitulo={s.descripcion}
         datos={[
+          ['Facilitó', facilita ?? '—'],
           ['Producto', s.producto],
           ['Equipos', String(vistaEquipos.length)],
           ['Participantes', String((jugadores ?? []).length)],

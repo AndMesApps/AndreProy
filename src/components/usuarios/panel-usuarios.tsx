@@ -63,20 +63,31 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
             </button>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <input className="campo" placeholder="Nombre completo" value={nuevo.nombre} onChange={(e) => setNuevo({ ...nuevo, nombre: e.target.value })} required />
-            <input className="campo" type="email" placeholder="Correo" value={nuevo.email} onChange={(e) => setNuevo({ ...nuevo, email: e.target.value })} required />
-            <select className="campo" value={nuevo.rol} onChange={(e) => setNuevo({ ...nuevo, rol: e.target.value as Rol })}>
-              <option value="lider">Líder</option>
-              <option value="admin">Administrador</option>
-            </select>
-            <input
-              className="campo"
-              type="text"
-              autoComplete="new-password"
-              placeholder="Clave inicial (mínimo 8)"
-              value={nuevo.clave}
-              onChange={(e) => setNuevo({ ...nuevo, clave: e.target.value })}
-            />
+            <label className="text-xs font-medium text-marmol-500">
+              Nombre (así se identificará en toda la app) *
+              <input className="campo mt-1" placeholder="Ej. Andrea Mesías" value={nuevo.nombre} onChange={(e) => setNuevo({ ...nuevo, nombre: e.target.value })} required />
+            </label>
+            <label className="text-xs font-medium text-marmol-500">
+              Correo (con él inicia sesión) *
+              <input className="campo mt-1" type="email" placeholder="nombre@empresa.com" value={nuevo.email} onChange={(e) => setNuevo({ ...nuevo, email: e.target.value })} required />
+            </label>
+            <label className="text-xs font-medium text-marmol-500">
+              Rol
+              <select className="campo mt-1" value={nuevo.rol} onChange={(e) => setNuevo({ ...nuevo, rol: e.target.value as Rol })}>
+                <option value="lider">Líder</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </label>
+            <label className="text-xs font-medium text-marmol-500">
+              Clave inicial (mínimo 8)
+              <input
+                className="campo mt-1"
+                type="text"
+                autoComplete="new-password"
+                value={nuevo.clave}
+                onChange={(e) => setNuevo({ ...nuevo, clave: e.target.value })}
+              />
+            </label>
           </div>
           <p className="text-xs text-marmol-400">
             Entrégale a la persona su correo y esta clave; entra por “Soy facilitador”. Si la cuenta ya existe en Supabase, deja la clave vacía: solo se le
@@ -100,7 +111,9 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
             <div key={u.id} className="space-y-3 p-4">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <div className="min-w-0 flex-1">
-                  <p className={cn('truncate font-medium', u.activo ? 'text-marmol-900' : 'text-marmol-400 line-through')}>{u.nombre || u.email}</p>
+                  <p className={cn('truncate font-medium', u.activo ? 'text-marmol-900' : 'text-marmol-400 line-through')}>
+                    {u.nombre || <em className="font-normal text-medio">Sin nombre: tócale Modificar para escribirlo</em>}
+                  </p>
                   <p className="truncate text-xs text-marmol-400">
                     {u.email}
                     {u.ultimoIngreso ? ` · último ingreso ${formatearFecha(u.ultimoIngreso)}` : ' · nunca ha ingresado'}
@@ -113,18 +126,17 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
                 )}
                 {u.principal && <span className="text-[11px] text-marmol-400">principal</span>}
                 {!u.activo && u.rol && <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-bajo">Desactivado</span>}
-                <div className="flex gap-1">
+                <div className="flex flex-wrap gap-1.5">
                   <button
                     onClick={() => {
                       setClave(null);
                       setRetirar(null);
                       setEditando(enEdicion ? null : { id: u.id, nombre: u.nombre || '', rol: u.rol ?? 'lider', activo: u.rol ? u.activo : true });
                     }}
-                    className="rounded-md p-1.5 text-marmol-400 hover:bg-marmol-100 hover:text-secundario"
-                    aria-label="Editar"
+                    className="inline-flex items-center gap-1 rounded-lg border border-marmol-200 px-2.5 py-1 text-xs font-medium text-marmol-600 hover:border-marca-300 hover:text-secundario"
                     title={u.principal ? 'Editar nombre' : u.rol ? 'Editar nombre, rol o estado' : 'Dar acceso'}
                   >
-                    <Pencil size={15} />
+                    <Pencil size={13} /> {u.rol ? 'Modificar' : 'Dar acceso'}
                   </button>
                   {!u.principal && (
                     <button
@@ -133,11 +145,10 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
                         setRetirar(null);
                         setClave(enClave ? null : { id: u.id, valor: '' });
                       }}
-                      className="rounded-md p-1.5 text-marmol-400 hover:bg-marmol-100 hover:text-secundario"
-                      aria-label="Cambiar clave"
+                      className="inline-flex items-center gap-1 rounded-lg border border-marmol-200 px-2.5 py-1 text-xs font-medium text-marmol-600 hover:border-marca-300 hover:text-secundario"
                       title="Cambiar clave"
                     >
-                      <KeyRound size={15} />
+                      <KeyRound size={13} /> Clave
                     </button>
                   )}
                   {!u.principal && u.id !== miId && (
@@ -147,11 +158,10 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
                         setClave(null);
                         setRetirar(retirar === u.id ? null : u.id);
                       }}
-                      className="rounded-md p-1.5 text-marmol-400 hover:bg-red-50 hover:text-bajo"
-                      aria-label="Retirar cuenta"
+                      className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-2.5 py-1 text-xs font-medium text-bajo hover:bg-red-50"
                       title="Retirar cuenta"
                     >
-                      <UserMinus size={15} />
+                      <UserMinus size={13} /> Retirar
                     </button>
                   )}
                 </div>
@@ -180,7 +190,14 @@ export function PanelUsuarios({ usuarios, miId }: { usuarios: UsuarioVista[]; mi
                     ejecutar(() => actualizarUsuario(u.id, { nombre: editando.nombre, rol: editando.rol, activo: editando.activo }), () => setEditando(null));
                   }}
                 >
-                  <input className="campo" value={editando.nombre} onChange={(e) => setEditando({ ...editando, nombre: e.target.value })} placeholder="Nombre" required />
+                  <input
+                    className="campo"
+                    value={editando.nombre}
+                    onChange={(e) => setEditando({ ...editando, nombre: e.target.value })}
+                    placeholder="Nombre con el que se identifica en la app"
+                    aria-label="Nombre"
+                    required
+                  />
                   {u.principal ? (
                     <span className="text-xs text-marmol-500 sm:col-span-2">Administrador principal: solo se cambia el nombre.</span>
                   ) : (

@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { db } from '@/lib/supabase/server';
 import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { procesosDe, refsEnviadas } from '@/lib/procesos-servidor';
+import { nombreFacilitador } from '@/lib/usuarios';
 import {
   CLASIFICACIONES,
   DESPERDICIOS,
@@ -37,7 +38,7 @@ export default async function InformeMakigamiPage({ params }: { params: Promise<
   const facilitador = await getFacilitador();
   if (!puedeAdministrarReto(facilitador, reto)) redirect(`/makigami/${reto.id}`);
 
-  const [{ data: carriles }, { data: pasos }, { data: cazas }, { data: propuestas }, { data: equipos }, { data: jugadores }, procesos, enviadas] = await Promise.all([
+  const [{ data: carriles }, { data: pasos }, { data: cazas }, { data: propuestas }, { data: equipos }, { data: jugadores }, procesos, enviadas, facilita] = await Promise.all([
     sb.from('mk_carriles').select('id, nombre').eq('reto_id', reto.id),
     sb.from('mk_pasos').select('id, carril_id, orden, descripcion, tiempo_trabajo_min, tiempo_espera_min, clasificacion').eq('reto_id', reto.id).order('orden'),
     sb.from('mk_cazas').select('id, paso_id, jugador_id, tipo_desperdicio, comentario, created_at').eq('reto_id', reto.id),
@@ -46,6 +47,7 @@ export default async function InformeMakigamiPage({ params }: { params: Promise<
     sb.from('mk_jugadores').select('id, equipo_id, nombres, apellidos, cargo, es_lider').eq('reto_id', reto.id),
     procesosDe(facilitador!),
     refsEnviadas(reto.proceso_id, reto.id),
+    nombreFacilitador(reto.creado_por),
   ]);
 
   const carrilDe = new Map(((carriles ?? []) as { id: string; nombre: string }[]).map((c) => [c.id, c.nombre]));
@@ -111,6 +113,7 @@ export default async function InformeMakigamiPage({ params }: { params: Promise<
         titulo={reto.titulo}
         subtitulo={reto.descripcion}
         datos={[
+          ['Facilitó', facilita ?? '—'],
           ['Proceso', `${reto.inicio_proceso || 'inicio'} → ${reto.fin_proceso || 'fin'}`],
           ['Pasos', String(listaPasos.length)],
           ['Equipos', String((equipos ?? []).length)],

@@ -12,6 +12,7 @@ import {
   type Frecuencia,
   type ProcesoMinimo,
 } from '@/lib/procesos';
+import { nombreFacilitador } from '@/lib/usuarios';
 import { EncabezadoInforme, Kpi, SeccionInforme } from '@/components/informes/partes';
 import { FormularioProceso } from '@/components/procesos/formulario-proceso';
 import { GraficaIndicador } from '@/components/procesos/grafica-indicador';
@@ -62,6 +63,7 @@ export default async function ProcesoPage({ params }: { params: Promise<{ id: st
   ];
   const juegosUnidos = juegos.filter((j) => j.procesoId === id).length;
 
+  const consultor = await nombreFacilitador(p.creado_por);
   const ultima = ultimaMedicion(meds);
   const avance = avanceMeta(proceso, ultima?.valor ?? null);
   const sem = SEMAFOROS[semaforo(proceso, meds)];
@@ -77,6 +79,7 @@ export default async function ProcesoPage({ params }: { params: Promise<{ id: st
         titulo={p.nombre}
         subtitulo={p.objetivo}
         datos={[
+          ['Consultora', consultor ?? '—'],
           ['Cliente', p.cliente || '—'],
           ['Área', p.area || '—'],
           ['Dueño del proceso', p.responsable || '—'],

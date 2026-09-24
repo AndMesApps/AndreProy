@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { enlaceYQr } from '@/lib/compartir';
+import { nombreFacilitador } from '@/lib/usuarios';
 import { db } from '@/lib/supabase/server';
 import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
 import { getJugador } from '@/lib/jugador';
@@ -25,7 +26,7 @@ export default async function RetoMakigamiPage({ params }: { params: Promise<{ i
   if (!reto) notFound();
 
   // Un Líder que abre el reto de otro líder entra como cualquier jugador (con el código).
-  const [facilitador, jugador] = await Promise.all([getFacilitador(), getJugador(reto.id)]);
+  const [facilitador, jugador, facilita] = await Promise.all([getFacilitador(), getJugador(reto.id), nombreFacilitador(reto.creado_por)]);
   const esFacilitador = puedeAdministrarReto(facilitador, reto);
   if (!esFacilitador && !jugador) redirect(`/makigami/unirse/${reto.codigo}`);
 
@@ -108,6 +109,7 @@ export default async function RetoMakigamiPage({ params }: { params: Promise<{ i
         <h1 className="mt-1 font-display text-2xl font-semibold text-secundario">{reto.titulo}</h1>
         {reto.descripcion && <p className="mt-1 max-w-3xl text-sm text-marmol-600">{reto.descripcion}</p>}
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-marmol-500">
+          {facilita && <span>🧑‍🏫 Facilita: {facilita}</span>}
           {reto.inicio_proceso && <span>▶ Empieza: {reto.inicio_proceso}</span>}
           {reto.fin_proceso && <span>⏹ Termina: {reto.fin_proceso}</span>}
         </div>
