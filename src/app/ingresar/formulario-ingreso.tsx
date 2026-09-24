@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { ingresar as ingresarServidor } from './actions';
 
 export function FormularioIngreso() {
   const router = useRouter();
@@ -15,10 +15,10 @@ export function FormularioIngreso() {
     e.preventDefault();
     setCargando(true);
     setError(null);
-    const { error } = await createClient().auth.signInWithPassword({ email: email.trim(), password });
-    if (error) {
+    const res = await ingresarServidor(email, password);
+    if (!res.ok) {
       setCargando(false);
-      return setError(error.message === 'Invalid login credentials' ? 'Correo o contraseña incorrectos.' : error.message);
+      return setError(res.error);
     }
     router.push('/makigami');
     router.refresh();
