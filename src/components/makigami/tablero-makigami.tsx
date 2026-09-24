@@ -10,6 +10,7 @@ import { FormularioPaso } from './formulario-paso';
 import { MapaMakigami } from './mapa-makigami';
 import { PanelCaceria } from './panel-caceria';
 import { RankingReto } from './ranking-reto';
+import { X } from 'lucide-react';
 import { Rediseno } from './rediseno';
 import type { CarrilVista, CazaVista, EquipoVista, Hallazgo, JugadorVista, PasoVista, PropuestaVista, RetoVista } from './tipos';
 
@@ -83,6 +84,16 @@ export function TableroMakigami({
   const onSimulacion = useCallback((s: Set<string>) => setPasosAtenuados(s), []);
 
   const seleccionado = pasos.find((p) => p.id === seleccionadoId) ?? null;
+
+  // Esc cierra el detalle del paso (fuera del mapeo, donde el formulario tiene su propio "Cancelar").
+  useEffect(() => {
+    if (!seleccionadoId || editandoMapa) return;
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSeleccionadoId(null);
+    };
+    window.addEventListener('keydown', alTeclear);
+    return () => window.removeEventListener('keydown', alTeclear);
+  }, [seleccionadoId, editandoMapa]);
   const numeroSeleccionado = seleccionado ? pasos.indexOf(seleccionado) + 1 : 0;
 
   // Resumen de la cacería: qué desperdicio se vio más
@@ -126,7 +137,8 @@ export function TableroMakigami({
             seleccionadoId={seleccionadoId}
             onSeleccionar={(id) => {
               setNuevoPaso(null);
-              setSeleccionadoId(id);
+              // Tocar otra vez el paso abierto cierra su detalle.
+              setSeleccionadoId((actual) => (actual === id && !editandoMapa ? null : id));
             }}
             pasosAtenuados={pasosAtenuados}
             mostrarCalor={reto.estado !== 'mapeo'}
@@ -173,17 +185,30 @@ export function TableroMakigami({
               <EditorCarriles retoId={reto.id} carriles={carriles} />
             )
           ) : seleccionado ? (
-            <PanelCaceria
-              key={seleccionado.id}
-              retoId={reto.id}
-              paso={seleccionado}
-              numero={numeroSeleccionado}
-              carril={carriles.find((c) => c.id === seleccionado.carril_id)}
-              hallazgos={hallazgosPorPaso.get(seleccionado.id) ?? []}
-              miJugadorId={miJugadorId}
-              puedeCazar={reto.estado === 'caceria'}
-              onFeedback={setAviso}
-            />
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setSeleccionadoId(null)}
+                className="absolute -right-1 -top-1 rounded-md p-1.5 text-marmol-400 hover:bg-marmol-100 hover:text-marmol-700"
+                aria-label="Cerrar detalle del paso"
+                title="Cerrar (Esc)"
+              >
+                <X size={18} />
+              </button>
+              <div className="pr-7">
+                <PanelCaceria
+                  key={seleccionado.id}
+                  retoId={reto.id}
+                  paso={seleccionado}
+                  numero={numeroSeleccionado}
+                  carril={carriles.find((c) => c.id === seleccionado.carril_id)}
+                  hallazgos={hallazgosPorPaso.get(seleccionado.id) ?? []}
+                  miJugadorId={miJugadorId}
+                  puedeCazar={reto.estado === 'caceria'}
+                  onFeedback={setAviso}
+                />
+              </div>
+            </div>
           ) : (
             <div className="space-y-3">
               <p className="text-sm text-marmol-600">
