@@ -27,16 +27,18 @@ import { diasHasta } from '@/lib/procesos';
 import { cn, formatearFecha } from '@/lib/utils';
 import { FormularioProyecto } from '@/components/proyectos/formulario-proyecto';
 import { BarraAvance } from '@/components/proyectos/registro';
+import { TableroProyectos } from '@/components/proyectos/tablero-proyectos';
 
 export const metadata = { title: 'Proyectos' };
 
 const FILTROS = { activos: 'Activos', todos: 'Todos', cerrados: 'Finalizados y cancelados' } as const;
 type Filtro = keyof typeof FILTROS;
 
-export default async function ProyectosPage({ searchParams }: { searchParams: Promise<{ ver?: string; grupo?: string }> }) {
+export default async function ProyectosPage({ searchParams }: { searchParams: Promise<{ ver?: string; grupo?: string; vista?: string }> }) {
   const facilitador = await getFacilitador();
   if (!facilitador) redirect('/ingresar');
-  const { ver, grupo } = await searchParams;
+  const { ver, grupo, vista } = await searchParams;
+  const enTablero = vista === 'tablero';
   const filtro: Filtro = ver && ver in FILTROS ? (ver as Filtro) : 'activos';
   const esAdmin = facilitador.rol === 'admin';
 
@@ -124,7 +126,7 @@ export default async function ProyectosPage({ searchParams }: { searchParams: Pr
 
   const url = (cambios: Record<string, string | undefined>) => {
     const q = new URLSearchParams();
-    const v = { ver: filtro === 'activos' ? undefined : filtro, grupo, ...cambios };
+    const v = { ver: filtro === 'activos' ? undefined : filtro, grupo, vista: enTablero ? 'tablero' : undefined, ...cambios };
     for (const [k, x] of Object.entries(v)) if (x) q.set(k, x);
     const s = q.toString();
     return `/proyectos${s ? `?${s}` : ''}`;
@@ -175,6 +177,14 @@ export default async function ProyectosPage({ searchParams }: { searchParams: Pr
           </Link>
         ))}
         {grupos.length > 0 && <span className="ml-2 text-marmol-400">Grupo:</span>}
+        <span className="ml-auto inline-flex overflow-hidden rounded-lg border border-marmol-200">
+          <Link href={url({ vista: undefined })} className={cn('px-3 py-1', !enTablero ? 'bg-secundario text-white' : 'bg-white text-marmol-600')}>
+            Tarjetas
+          </Link>
+          <Link href={url({ vista: 'tablero' })} className={cn('px-3 py-1', enTablero ? 'bg-secundario text-white' : 'bg-white text-marmol-600')}>
+            Tablero
+          </Link>
+        </span>
         {grupos.map((g) => (
           <Link key={g} href={url({ grupo: grupo === g ? undefined : g })} className={cn('rounded-full px-3 py-1', grupo === g ? 'bg-marca-600 font-semibold text-white' : 'bg-white text-marmol-600 ring-1 ring-marmol-200')}>
             {g}
@@ -272,8 +282,28 @@ export default async function ProyectosPage({ searchParams }: { searchParams: Pr
             </section>
           </div>
 
+          {enTablero && (
+            <section className="card p-4">
+              <h2 className="font-display text-lg font-semibold text-secundario">🗂️ Tablero de proyectos</h2>
+              <p className="mb-3 text-[11px] text-marmol-400">Arrastra un proyecto a otra columna para cambiar su estado (en el celular usa «Mover a…»).</p>
+              <TableroProyectos
+                proyectos={filas.map((f) => ({
+                  id: f.p.id,
+                  nombre: f.p.nombre,
+                  cliente: f.p.cliente,
+                  estado: f.p.estado,
+                  salud: f.salud,
+                  avance: f.avance,
+                  tiempo: f.tiempo,
+                  vencidos: f.vencidos,
+                  diasFin: f.p.fecha_fin ? diasHasta(f.p.fecha_fin) : null,
+                }))}
+              />
+            </section>
+          )}
+
           {/* Tarjetas */}
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <div className={cn('grid gap-3 md:grid-cols-2 xl:grid-cols-3', enTablero && 'hidden')}>
             {filas.map((f) => {
               const s = SALUD[f.salud];
               const diasSin = f.ultima ? -diasHasta(f.ultima) : null;

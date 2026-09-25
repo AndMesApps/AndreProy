@@ -130,6 +130,9 @@ export default async function PanelPage() {
           <Link href="/proyectos" className="rounded-lg bg-acento px-3 py-2 text-sm font-semibold text-secundario shadow hover:brightness-105">
             🗂️ Mis proyectos
           </Link>
+          <Link href="/finanzas" className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-secundario shadow hover:bg-marca-50">
+            💰 Mis finanzas
+          </Link>
           <Link href="/makigami" className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-secundario shadow hover:bg-marca-50">
             🎯 Nueva Cacería Makigami
           </Link>

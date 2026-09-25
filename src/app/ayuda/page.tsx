@@ -4,6 +4,7 @@ import { SeccionProyectos } from '@/components/manual/seccion-proyectos';
 import { SeccionProcesos } from '@/components/manual/seccion-procesos';
 import { SeccionJuegos } from '@/components/manual/seccion-juegos';
 import { SeccionGlosario } from '@/components/manual/seccion-glosario';
+import { SeccionFinanzas } from '@/components/manual/seccion-finanzas';
 
 export const metadata = { title: 'Manual de usuario' };
 
@@ -20,11 +21,12 @@ const INDICE: [string, string, string, [string, string][]?][] = [
       ['proyectos-cronograma', 'Cronograma'],
       ['proyectos-objetivos', 'Objetivos y KPIs'],
       ['proyectos-bitacora', 'Bitácora'],
-      ['proyectos-finanzas', 'Horas y pagos'],
+      ['proyectos-finanzas', 'Finanzas del proyecto'],
       ['proyectos-riesgos', 'Riesgos'],
       ['proyectos-informe', 'Informe de avance'],
     ],
   ],
+  ['finanzas', '💰', 'Finanzas y rentabilidad'],
   ['procesos', '📊', 'Control de procesos'],
   ['informes', '📄', 'Informes y opciones de mejora'],
   ['makigami', '🎯', 'Cacería Makigami'],
@@ -85,6 +87,7 @@ export default function ManualPage() {
         <div className="min-w-0 space-y-6">
           <SeccionInicio />
           <SeccionProyectos />
+          <SeccionFinanzas />
           <SeccionProcesos />
           <SeccionJuegos />
           <SeccionGlosario />

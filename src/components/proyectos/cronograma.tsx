@@ -7,6 +7,7 @@ import { ESTADOS_HITO, PLANTILLAS, diasParaVencer, hitoAbierto, hoyISO, type Est
 import { cn, formatearFecha } from '@/lib/utils';
 import { CalendarPlus, Plus } from 'lucide-react';
 import { FormularioRegistro, type Referencias, type Registro } from './registro';
+import { Kanban } from '@/components/kanban';
 
 export interface HitoVista extends Registro {
   id: string;
@@ -57,7 +58,7 @@ export function Cronograma({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [editando, setEditando] = useState<HitoVista | 'nuevo' | null>(null);
-  const [vista, setVista] = useState<'gantt' | 'tabla'>('gantt');
+  const [vista, setVista] = useState<'gantt' | 'tabla' | 'tablero'>('gantt');
   const [ocultarCumplidos, setOcultarCumplidos] = useState(false);
   const [plantilla, setPlantilla] = useState('');
   const [diaHabil, setDiaHabil] = useState('3');
@@ -142,9 +143,9 @@ export function Cronograma({
               <input type="checkbox" checked={ocultarCumplidos} onChange={(e) => setOcultarCumplidos(e.target.checked)} /> Ocultar cumplidos
             </label>
             <div className="inline-flex overflow-hidden rounded-lg border border-marmol-200">
-              {(['gantt', 'tabla'] as const).map((v) => (
+              {(['gantt', 'tabla', 'tablero'] as const).map((v) => (
                 <button key={v} type="button" onClick={() => setVista(v)} className={cn('px-2.5 py-1', vista === v ? 'bg-secundario text-white' : 'bg-white text-marmol-600')}>
-                  {v === 'gantt' ? 'Gantt' : 'Tabla'}
+                  {v === 'gantt' ? 'Gantt' : v === 'tabla' ? 'Tabla' : 'Tablero'}
                 </button>
               ))}
             </div>
@@ -158,6 +159,34 @@ export function Cronograma({
         <p className="rounded-lg bg-marmol-50 p-6 text-center text-sm text-marmol-500">
           El cronograma está vacío. Agrega hitos a mano o desde una plantilla (necesita la fecha de inicio y la de finalización del proyecto).
         </p>
+      ) : vista === 'tablero' && !soloLectura ? (
+        <div className="space-y-3">
+          <p className="text-[11px] text-marmol-400">Arrastra una tarjeta a otra columna para cambiar su estado (en el celular usa «Mover a…»). Toca el nombre para editar el hito.</p>
+          <Kanban
+            columnas={(Object.keys(ESTADOS_HITO) as EstadoHito[]).map((e) => ({ id: e, titulo: ESTADOS_HITO[e].nombre, clase: ESTADOS_HITO[e].clase }))}
+            items={visibles}
+            columnaDe={(h) => h.estado}
+            onMover={(h, estado) => ejecutar(() => cambiarEstadoHito(proyectoId, h.id, estado as EstadoHito))}
+            deshabilitado={pending}
+            vacio="Sin hitos"
+            tarjeta={(h) => (
+              <div>
+                <button type="button" onClick={() => setEditando(h)} className="text-left font-medium leading-snug text-marmol-800 hover:text-secundario">
+                  {h.nombre}
+                </button>
+                <p className="mt-0.5 text-[11px] text-marmol-400">
+                  {h.fase && `${h.fase} · `}
+                  {h.responsable ?? 'sin responsable'}
+                </p>
+                <p className="mt-1 text-[11px]">
+                  {h.fecha_limite ? formatearFecha(h.fecha_limite).replace(/ de \d{4}$/, '') : 'sin fecha'} · <Vence hito={h} />
+                </p>
+                {h.proximo_paso && <p className="mt-1 text-[11px] text-marca-700">→ {h.proximo_paso}</p>}
+              </div>
+            )}
+          />
+          {editando && editando !== 'nuevo' && formulario(editando)}
+        </div>
       ) : vista === 'gantt' || soloLectura ? (
         <div className="overflow-x-auto">
           <div className="min-w-[44rem]">

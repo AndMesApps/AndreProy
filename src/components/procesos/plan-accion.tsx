@@ -7,6 +7,7 @@ import { ESTADOS_ACCION, ORIGENES_ACCION, accionVencida, diasHasta, type EstadoA
 import { PRIORIDADES, type Recomendacion } from '@/lib/recomendaciones';
 import { cn, formatearFecha } from '@/lib/utils';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Kanban } from '@/components/kanban';
 
 export interface AccionVista {
   id: string;
@@ -31,6 +32,7 @@ export function PlanAccion({ procesoId, acciones }: { procesoId: string; accione
   const [error, setError] = useState<string | null>(null);
   const [borrador, setBorrador] = useState<Borrador | null>(null);
   const [confirmar, setConfirmar] = useState<string | null>(null);
+  const [vista, setVista] = useState<'lista' | 'tablero'>('lista');
 
   const ejecutar = (fn: () => Promise<{ ok: boolean; error?: string }>, despues?: () => void) => {
     setError(null);
@@ -98,6 +100,13 @@ export function PlanAccion({ procesoId, acciones }: { procesoId: string; accione
             </div>
           </div>
         )}
+        <div className="no-imprimir inline-flex overflow-hidden rounded-lg border border-marmol-200 text-xs">
+          {(['lista', 'tablero'] as const).map((v) => (
+            <button key={v} type="button" onClick={() => setVista(v)} className={cn('px-2.5 py-1', vista === v ? 'bg-secundario text-white' : 'bg-white text-marmol-600')}>
+              {v === 'lista' ? 'Lista' : 'Tablero'}
+            </button>
+          ))}
+        </div>
         {!borrador?.id && !borrador && (
           <button type="button" onClick={() => setBorrador(VACIO)} className="boton-secundario no-imprimir py-1.5 text-xs">
             <Plus size={13} /> Nueva acción
@@ -107,7 +116,36 @@ export function PlanAccion({ procesoId, acciones }: { procesoId: string; accione
       {borrador && !borrador.id && formulario}
       {error && <p className="text-sm text-bajo">{error}</p>}
 
-      {orden.length === 0 ? (
+      {vista === 'tablero' && orden.length > 0 ? (
+        <>
+          <Kanban
+            columnas={(Object.keys(ESTADOS_ACCION) as EstadoAccion[]).map((e) => ({ id: e, titulo: ESTADOS_ACCION[e].nombre, clase: ESTADOS_ACCION[e].clase.replace('line-through', '') }))}
+            items={orden}
+            columnaDe={(a) => a.estado}
+            onMover={(a, estado) => ejecutar(() => cambiarEstadoAccion(procesoId, a.id, estado as EstadoAccion))}
+            deshabilitado={pending}
+            vacio="Sin acciones"
+            tarjeta={(a) => (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setBorrador({ id: a.id, titulo: a.titulo, detalle: a.detalle ?? '', responsable: a.responsable ?? '', fechaCompromiso: a.fecha_compromiso ?? '' })}
+                  className="text-left font-medium leading-snug text-marmol-800 hover:text-secundario"
+                >
+                  {a.titulo}
+                </button>
+                <p className="mt-0.5 text-[11px] text-marmol-400">
+                  {ORIGENES_ACCION[a.origen]} · 👤 {a.responsable || 'sin responsable'}
+                </p>
+                {a.fecha_compromiso && (
+                  <p className={cn('mt-0.5 text-[11px]', accionVencida(a) ? 'font-semibold text-bajo' : 'text-marmol-500')}>📅 {formatearFecha(a.fecha_compromiso)}</p>
+                )}
+              </div>
+            )}
+          />
+          {borrador?.id && formulario}
+        </>
+      ) : orden.length === 0 ? (
         <p className="rounded-lg bg-marmol-50 p-4 text-sm text-marmol-500">
           El plan está vacío. Agrega acciones a mano o envíalas desde el informe de un juego (Cacería Makigami o Carrera Kaizen).
         </p>

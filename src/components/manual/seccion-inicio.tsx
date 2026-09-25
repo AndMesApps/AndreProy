@@ -107,6 +107,7 @@ export function SeccionInicio() {
             filas={[
               ['🧭 Mi panel', 'Tu página de inicio: lo urgente de hoy.'],
               ['🗂️ Proyectos', 'Todos tus proyectos de consultoría (portafolio).'],
+              ['💰 Finanzas', 'Tus parámetros, la proyección mes a mes, la planilla de seguridad social y la rentabilidad de cada proyecto.'],
               ['🎯 Makigami', 'Los retos de Cacería Makigami.'],
               ['🔁 Kaizen', 'Las Carreras Kaizen.'],
               ['📊 Procesos', 'El Control de procesos.'],

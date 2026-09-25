@@ -24,7 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Link href="/" className="font-display text-lg font-bold text-secundario">
               AndMes<span className="text-marca-500">Apps</span>
             </Link>
-            <nav className="flex items-center gap-3 text-sm text-marmol-600 sm:gap-4">
+            <nav className="flex min-w-0 items-center gap-3 overflow-x-auto text-sm text-marmol-600 [scrollbar-width:none] sm:gap-4">
               {facilitador && (
                 <Link href="/panel" className="font-semibold text-secundario hover:text-marca-600">
                   🧭<span className="hidden sm:inline"> Mi panel</span>
@@ -33,6 +33,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               {facilitador && (
                 <Link href="/proyectos" className="hover:text-marca-600" title="Proyectos">
                   🗂️<span className="hidden lg:inline"> Proyectos</span>
+                </Link>
+              )}
+              {facilitador && (
+                <Link href="/finanzas" className="hover:text-marca-600" title="Mis finanzas">
+                  💰<span className="hidden lg:inline"> Finanzas</span>
                 </Link>
               )}
               <Link href="/makigami" className="hover:text-marca-600" title="Cacería Makigami">

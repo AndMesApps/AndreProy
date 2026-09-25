@@ -33,7 +33,9 @@ import { BarraAvance } from '@/components/proyectos/registro';
 import { Cronograma } from '@/components/proyectos/cronograma';
 import { ObjetivosKpis } from '@/components/proyectos/objetivos-kpis';
 import { Bitacora } from '@/components/proyectos/bitacora';
-import { Documentos, Finanzas, Riesgos } from '@/components/proyectos/finanzas-riesgos-documentos';
+import { Documentos, Riesgos } from '@/components/proyectos/finanzas-riesgos-documentos';
+import { Finanzas } from '@/components/proyectos/finanzas';
+import { parametrosDe } from '@/lib/finanzas-servidor';
 import { ProcesosProyecto } from '@/components/proyectos/procesos-proyecto';
 import { FormularioProyecto } from '@/components/proyectos/formulario-proyecto';
 import { ArrowLeft, FileText } from 'lucide-react';
@@ -45,7 +47,7 @@ const VISTAS = [
   ['cronograma', '🗓️ Cronograma'],
   ['objetivos', '🎯 Objetivos y KPIs'],
   ['bitacora', '📝 Bitácora'],
-  ['finanzas', '💵 Horas y pagos'],
+  ['finanzas', '💰 Finanzas'],
   ['riesgos', '⚠️ Riesgos'],
   ['procesos', '🔄 Procesos'],
   ['documentos', '📎 Documentos'],
@@ -80,6 +82,10 @@ export default async function ProyectoPage({ params, searchParams }: { params: P
 
   const { proyecto: p, hitos, objetivos, kpis, mediciones, bitacora, pagos, riesgos, documentos, procesos, referencias } = datos;
   const consultora = await nombreFacilitador(p.creado_por);
+  const { parametros } = await parametrosDe(p.creado_por ?? facilitador.id);
+  const horasPorMes: [string, number][] = [
+    ...bitacora.reduce((m, b) => m.set(b.fecha.slice(0, 7), (m.get(b.fecha.slice(0, 7)) ?? 0) + (Number(b.tiempo_min) || 0) / 60), new Map<string, number>()),
+  ];
   const diag: DatosDiagnostico = { proyecto: p, hitos, objetivos, kpis, mediciones, bitacora, pagos, riesgos, procesos: procesos.length };
   const avance = avanceCronograma(hitos);
   const tiempo = avanceTiempo(p);
@@ -398,7 +404,16 @@ export default async function ProyectoPage({ params, searchParams }: { params: P
       )}
       {vista === 'finanzas' && (
         <section className="card p-4">
-          <Finanzas proyectoId={p.id} pagos={pagos} horasContratadas={p.horas_contratadas} horasEjecutadas={horas} valorContrato={p.valor_contrato} avance={avance} />
+          <Finanzas
+            proyectoId={p.id}
+            proyecto={p}
+            parametros={parametros}
+            horasEjecutadas={horas}
+            horasPorMes={horasPorMes}
+            avance={avance}
+            movimientos={pagos}
+            presupuesto={datos.presupuesto}
+          />
         </section>
       )}
       {vista === 'riesgos' && (

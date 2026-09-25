@@ -303,7 +303,7 @@ export async function guardarRegistro(entidad: Entidad, proyectoId: string, id: 
       const { data } = await sb.from(TABLA_REFERENCIA[campo.referencia]).select('id').eq('id', r.valor as string).eq('proyecto_id', proyectoId).maybeSingle();
       if (!data) return { ok: false, error: `${campo.etiqueta}: no pertenece a este proyecto` };
     }
-    fila[campo.clave] = r.valor;
+    fila[campo.clave] = campo.clave === 'reembolsable' ? r.valor === 'true' : r.valor;
   }
   if (entidad === 'hitos') fila.updated_at = new Date().toISOString();
   if (entidad === 'bitacora' && !id) fila.registrado_por = ctx.facilitador.id;
@@ -349,5 +349,69 @@ export async function vincularProceso(proyectoId: string, procesoId: string, uni
   if (error) return { ok: false, error: error.message };
   refrescar(proyectoId);
   revalidatePath(`/procesos/${procesoId}`);
+  return { ok: true };
+}
+
+// ----------------------------------------------------------------------------
+// Finanzas del proyecto: modelo de cobro y requisitos para cobrar
+// ----------------------------------------------------------------------------
+
+const ModeloCobroSchema = z.object({
+  modalidadCobro: z.enum(['valor_fijo', 'por_horas', 'mixto']),
+  valorContrato: z.number().finite().nonnegative().nullable(),
+  valorHora: z.number().finite().nonnegative().nullable(),
+  horasContratadas: z.number().finite().nonnegative().nullable(),
+  cobraIva: z.boolean(),
+  retefuentePct: z.number().finite().min(0).max(100).nullable(),
+  reteicaPorMil: z.number().finite().min(0).max(100).nullable(),
+  otrasRetencionesPct: z.number().finite().min(0).max(100),
+  participacionAliadoPct: z.number().finite().min(0).max(100),
+  viaticosPactados: z.number().finite().nonnegative().nullable(),
+  requisitosCobro: z.string().max(3000),
+});
+
+export type DatosModeloCobro = z.infer<typeof ModeloCobroSchema>;
+
+export async function guardarModeloCobro(proyectoId: string, input: DatosModeloCobro): Promise<Resultado> {
+  if (!(await requerirProyecto(proyectoId))) return { ok: false, error: 'No autorizado' };
+  const parsed = ModeloCobroSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Datos inválidos' };
+  const d = parsed.data;
+  if (d.modalidadCobro !== 'valor_fijo' && !d.valorHora) return { ok: false, error: 'Escribe el valor de cada hora.' };
+  // Por horas, el valor del contrato es horas × valor hora.
+  const valorContrato = d.modalidadCobro === 'por_horas' && d.valorHora && d.horasContratadas ? d.valorHora * d.horasContratadas : d.valorContrato;
+  const { error } = await db()
+    .from('pr_proyectos')
+    .update({
+      modalidad_cobro: d.modalidadCobro,
+      valor_contrato: valorContrato,
+      valor_hora: d.valorHora,
+      horas_contratadas: d.horasContratadas,
+      cobra_iva: d.cobraIva,
+      retefuente_pct: d.retefuentePct,
+      reteica_por_mil: d.reteicaPorMil,
+      otras_retenciones_pct: d.otrasRetencionesPct,
+      participacion_aliado_pct: d.participacionAliadoPct,
+      viaticos_pactados: d.viaticosPactados,
+      requisitos_cobro: d.requisitosCobro.trim() || null,
+    })
+    .eq('id', proyectoId);
+  if (error) return { ok: false, error: error.message };
+  refrescar(proyectoId);
+  revalidatePath('/finanzas');
+  return { ok: true };
+}
+
+/** Marca o desmarca un requisito como cumplido en un cobro. */
+export async function alternarRequisito(proyectoId: string, pagoId: string, requisito: string): Promise<Resultado> {
+  if (!(await requerirProyecto(proyectoId))) return { ok: false, error: 'No autorizado' };
+  const sb = db();
+  const { data: pago } = await sb.from('pr_pagos').select('requisitos_cumplidos').eq('id', pagoId).eq('proyecto_id', proyectoId).maybeSingle();
+  if (!pago) return { ok: false, error: 'Cobro no encontrado' };
+  const actuales = (pago.requisitos_cumplidos as string[] | null) ?? [];
+  const nuevos = actuales.includes(requisito) ? actuales.filter((r) => r !== requisito) : [...actuales, requisito];
+  const { error } = await sb.from('pr_pagos').update({ requisitos_cumplidos: nuevos }).eq('id', pagoId);
+  if (error) return { ok: false, error: error.message };
+  refrescar(proyectoId);
   return { ok: true };
 }

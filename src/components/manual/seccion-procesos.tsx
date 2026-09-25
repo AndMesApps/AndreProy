@@ -77,6 +77,9 @@ export function SeccionProcesos() {
             </Paso>
             <Paso>Cambia el estado con el selector de colores: Pendiente → En curso → Hecha (o Descartada).</Paso>
             <Paso>El lápiz ✏️ edita la acción y la caneca 🗑️ la borra.</Paso>
+            <Paso>
+              Con <strong>Lista | Tablero</strong> cambias a un Kanban: Pendiente, En curso, Hecha y Descartada. Arrastra las tarjetas para cambiar su estado.
+            </Paso>
           </Pasos>
           <p>
             Cada acción muestra de dónde vino: ✍️ Manual, 🎯 Cacería Makigami, 🔁 Carrera Kaizen o 📄 Informe. Las vencidas salen en rojo. La barra «Avance del plan» cuenta

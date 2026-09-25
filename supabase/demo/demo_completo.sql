@@ -302,8 +302,6 @@ begin
     (pr2, '2026-08-11', 'Visita de diagnóstico y firma del acta de inicio.', 240, 'al_dia', 'Entregar el plan de trabajo', '2026-08-14', v_dueno),
     (pr2, '2026-08-28', 'Capacitación en tablero digital de producción (2 sesiones).', 480, 'al_dia', 'Recolectar datos de línea base', '2026-09-05', v_dueno),
     (pr2, '2026-09-12', 'Envío de la línea base de los 6 indicadores.', 300, 'pendiente', 'Esperar la revisión del cliente', '2026-09-16', v_dueno);
-  insert into pr_pagos (proyecto_id, concepto, tipo, valor, fecha_limite, estado) values
-    (pr2, 'Aporte del cliente 10 %', 'contrapartida', 1410000, '2026-09-09', 'pendiente');
   insert into pr_riesgos (proyecto_id, descripcion, probabilidad, impacto, mitigacion, responsable, estado) values
     (pr2, 'Superar las 30 horas acordadas antes de que el cliente apruebe el plan.', 'alta', 'alto', null, 'Andrea', 'abierto');
 
@@ -414,6 +412,65 @@ begin
     (pr4, k1, '2026-08-08', 19, '19 de 20 aprobaron'),
     (pr4, k2, '2026-08-14', 12, null),
     (pr4, k3, '2026-08-14', 4.7, null);
+
+
+  -- ==========================================================================
+  -- 6. FINANZAS (modelo de cobro, presupuesto, cobros con requisitos, viáticos)
+  -- ==========================================================================
+  if v_dueno is not null then
+    insert into fn_parametros (usuario_id, meta_ingreso_mensual, margen_objetivo_pct)
+    values (v_dueno, 12000000, 40)
+    on conflict (usuario_id) do nothing;
+  end if;
+
+  -- 6a. Distribuidora Andina: valor fijo.
+  update pr_proyectos set modalidad_cobro = 'valor_fijo', valor_hora = null, cobra_iva = false, retefuente_pct = 11,
+    requisitos_cobro = E'Factura electrónica\nPlanilla de seguridad social (PILA) pagada del mes\nInforme de actividades del periodo\nAprobación de la Jefe de Compras'
+  where id = pr;
+  insert into pr_presupuesto (proyecto_id, categoria, descripcion, valor_planeado, reembolsable) values
+    (pr, 'transporte', 'Taxis a la sede del cliente (16 visitas)', 640000, false),
+    (pr, 'alimentacion', 'Refrigerios de los talleres', 300000, false),
+    (pr, 'materiales', 'Materiales de los talleres Makigami y Kaizen', 350000, false),
+    (pr, 'software', 'Herramientas digitales (proporción del mes)', 200000, false);
+  update pr_pagos set categoria = 'materiales' where proyecto_id = pr and tipo = 'gasto';
+  update pr_pagos set requisitos_cumplidos = array['Factura electrónica', 'Planilla de seguridad social (PILA) pagada del mes', 'Informe de actividades del periodo', 'Aprobación de la Jefe de Compras']
+  where proyecto_id = pr and concepto like 'Anticipo%';
+  update pr_pagos set requisitos_cumplidos = array['Factura electrónica', 'Planilla de seguridad social (PILA) pagada del mes']
+  where proyecto_id = pr and concepto like 'Segundo pago%';
+  insert into pr_pagos (proyecto_id, concepto, tipo, valor, fecha_limite, fecha_pago, estado, categoria) values
+    (pr, 'Taxis de agosto y septiembre', 'gasto', 280000, '2026-09-24', '2026-09-24', 'pagado', 'transporte'),
+    (pr, 'Refrigerios taller Makigami', 'gasto', 120000, '2026-09-22', '2026-09-22', 'pagado', 'alimentacion');
+
+  -- 6b. Confecciones Río Claro: por horas, con viáticos y un aliado que trajo el cliente.
+  update pr_proyectos set modalidad_cobro = 'por_horas', valor_hora = 235000, horas_contratadas = 60, valor_contrato = 14100000,
+    cobra_iva = false, participacion_aliado_pct = 15, viaticos_pactados = 1800000, reteica_por_mil = 7,
+    requisitos_cobro = E'Cuenta de cobro con las horas del mes\nPlanilla de seguridad social (PILA) pagada del mes\nInforme de actividades con evidencias\nAprobación del comité directivo'
+  where id = pr2;
+  insert into pr_presupuesto (proyecto_id, categoria, descripcion, valor_planeado, reembolsable) values
+    (pr2, 'transporte', 'Bus intermunicipal ida y vuelta (6 viajes)', 900000, true),
+    (pr2, 'alojamiento', 'Hotel (6 noches)', 1080000, true),
+    (pr2, 'alimentacion', 'Alimentación en los viajes', 480000, true),
+    (pr2, 'materiales', 'Impresión de tableros y formatos', 250000, false);
+  insert into pr_pagos (proyecto_id, concepto, tipo, valor, horas, fecha_limite, fecha_pago, estado, requisitos_cumplidos, categoria, reembolsable) values
+    (pr2, 'Horas de agosto (20 h)', 'cobro', 4700000, 20, '2026-09-10', '2026-09-08', 'pagado',
+       array['Cuenta de cobro con las horas del mes', 'Planilla de seguridad social (PILA) pagada del mes', 'Informe de actividades con evidencias', 'Aprobación del comité directivo'], null, false),
+    (pr2, 'Horas de septiembre', 'cobro', 2350000, 10, '2026-10-10', null, 'pendiente',
+       array['Cuenta de cobro con las horas del mes'], null, false),
+    (pr2, 'Viáticos de agosto', 'viatico', 600000, null, '2026-09-10', '2026-09-08', 'pagado', '{}', null, false),
+    (pr2, 'Viáticos de septiembre', 'viatico', 600000, null, '2026-10-10', null, 'pendiente', '{}', null, false),
+    (pr2, 'Bus a la planta (2 viajes)', 'gasto', 300000, null, '2026-09-12', '2026-09-12', 'pagado', '{}', 'transporte', true),
+    (pr2, 'Hotel (2 noches)', 'gasto', 360000, null, '2026-09-12', '2026-09-12', 'pagado', '{}', 'alojamiento', true),
+    (pr2, 'Alimentación en viaje', 'gasto', 150000, null, '2026-09-12', '2026-09-12', 'pagado', '{}', 'alimentacion', true);
+
+  -- 6c. App de inventarios: mixto (valor fijo + horas adicionales) y con IVA.
+  update pr_proyectos set modalidad_cobro = 'mixto', valor_hora = 180000, cobra_iva = true,
+    requisitos_cobro = E'Factura electrónica con IVA\nPlanilla de seguridad social (PILA) pagada del mes\nActa de entrega del sprint'
+  where id = pr3;
+  insert into pr_presupuesto (proyecto_id, categoria, descripcion, valor_planeado) values
+    (pr3, 'software', 'Servidor y base de datos (3 meses)', 450000),
+    (pr3, 'apoyo', 'Diseñador para el prototipo', 1500000);
+  insert into pr_pagos (proyecto_id, concepto, tipo, valor, fecha_limite, fecha_pago, estado, categoria) values
+    (pr3, 'Diseñador del prototipo', 'gasto', 1500000, '2026-09-18', '2026-09-18', 'pagado', 'apoyo');
 
   raise notice 'Demo creada. Dueña: %', coalesce((select email from auth.users where id = v_dueno), 'NINGUNA (solo la ven los administradores)');
 end $$;

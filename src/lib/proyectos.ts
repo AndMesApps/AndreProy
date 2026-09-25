@@ -6,6 +6,7 @@
  */
 import { avanceMeta, diasHasta, type ProcesoMinimo } from '@/lib/procesos';
 import type { Recomendacion } from '@/lib/recomendaciones';
+import { CATEGORIAS_GASTO } from '@/lib/finanzas';
 
 // ----------------------------------------------------------------------------
 // Catálogos
@@ -152,15 +153,28 @@ export const ENTIDADES = {
   },
   pagos: {
     tabla: 'pr_pagos',
-    singular: 'pago',
+    singular: 'movimiento',
     campos: [
-      { clave: 'concepto', etiqueta: 'Concepto', tipo: 'texto', requerido: true, placeholder: 'Ej. Anticipo 50 %' },
-      { clave: 'tipo', etiqueta: 'Tipo', tipo: 'opcion', requerido: true, valorInicial: 'cobro', opciones: { cobro: 'Cobro al cliente', contrapartida: 'Aporte o cofinanciación', gasto: 'Gasto' } },
-      { clave: 'valor', etiqueta: 'Valor (COP)', tipo: 'numero', requerido: true },
+      { clave: 'concepto', etiqueta: 'Concepto', tipo: 'texto', requerido: true, placeholder: 'Ej. Anticipo 40 %, taxi a la planta, horas de septiembre' },
+      { clave: 'tipo', etiqueta: 'Tipo', tipo: 'opcion', requerido: true, valorInicial: 'cobro', opciones: { cobro: 'Cobro al cliente', contrapartida: 'Aporte o cofinanciación', viatico: 'Viáticos que paga el cliente', gasto: 'Gasto' } },
+      { clave: 'valor', etiqueta: 'Valor (COP, sin IVA)', tipo: 'numero', requerido: true },
       { clave: 'estado', etiqueta: 'Estado', tipo: 'opcion', requerido: true, valorInicial: 'pendiente', opciones: { pendiente: 'Pendiente', facturado: 'Facturado', pagado: 'Pagado', anulado: 'Anulado' } },
+      { clave: 'categoria', etiqueta: 'Categoría del gasto', tipo: 'opcion', opciones: CATEGORIAS_GASTO },
+      { clave: 'horas', etiqueta: 'Horas que cubre este cobro', tipo: 'numero' },
       { clave: 'fecha_limite', etiqueta: 'Fecha límite', tipo: 'fecha' },
       { clave: 'fecha_pago', etiqueta: 'Fecha de pago', tipo: 'fecha' },
+      { clave: 'reembolsable', etiqueta: '¿El cliente lo reembolsa?', tipo: 'opcion', valorInicial: 'false', opciones: { false: 'No', true: 'Sí, me lo reembolsa' } },
       { clave: 'soporte', etiqueta: 'Soporte (enlace o nombre del archivo)', tipo: 'texto', ancho: true },
+    ],
+  },
+  presupuesto: {
+    tabla: 'pr_presupuesto',
+    singular: 'gasto planeado',
+    campos: [
+      { clave: 'categoria', etiqueta: 'Categoría', tipo: 'opcion', requerido: true, valorInicial: 'transporte', opciones: CATEGORIAS_GASTO },
+      { clave: 'descripcion', etiqueta: 'Descripción', tipo: 'texto', requerido: true, placeholder: 'Ej. 8 viajes a la planta en taxi' },
+      { clave: 'valor_planeado', etiqueta: 'Valor planeado (COP)', tipo: 'numero', requerido: true },
+      { clave: 'reembolsable', etiqueta: '¿El cliente lo reembolsa?', tipo: 'opcion', valorInicial: 'false', opciones: { false: 'No', true: 'Sí' } },
     ],
   },
   riesgos: {
@@ -254,7 +268,7 @@ export interface BitacoraMinima {
 export interface PagoMinimo {
   id: string;
   concepto: string;
-  tipo: 'cobro' | 'contrapartida' | 'gasto';
+  tipo: 'cobro' | 'contrapartida' | 'gasto' | 'viatico';
   valor: number;
   estado: 'pendiente' | 'facturado' | 'pagado' | 'anulado';
   fecha_limite: string | null;

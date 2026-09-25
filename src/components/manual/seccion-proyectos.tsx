@@ -17,7 +17,8 @@ export function SeccionProyectos() {
             <strong>Cinco cifras arriba</strong>: proyectos activos, en riesgo o atrasados, hitos vencidos, horas trabajadas este mes y dinero por cobrar.
           </li>
           <li>
-            <strong>Filtros</strong>: Activos, Todos, Finalizados, y por grupo o aliado (por ejemplo «Acescorp y Andrea»).
+            <strong>Filtros</strong>: Activos, Todos, Finalizados, y por grupo o aliado (por ejemplo «Acescorp y Andrea»). Con <strong>Tarjetas | Tablero</strong> ves los
+            proyectos en un Kanban por estado (Por iniciar, En curso, Pausado, Finalizado, Cancelado) y los mueves arrastrando.
           </li>
           <li>
             <strong>🛣️ Hoja de ruta</strong>: cada proyecto es una barra que va de su fecha de inicio a su fecha de fin. La parte pintada es lo que ya avanzó. La línea
@@ -131,8 +132,8 @@ export function SeccionProyectos() {
             escribas del mes siguiente (ej. el 3.er día hábil).
           </Paso>
           <Paso>
-            Cambia entre <strong>Gantt</strong> (las barras en el tiempo) y <strong>Tabla</strong> (la lista, como en Excel). En la tabla puedes cambiar el estado directo
-            en la columna Estado.
+            Cambia entre <strong>Gantt</strong> (las barras en el tiempo), <strong>Tabla</strong> (la lista, como en Excel) y <strong>Tablero</strong> (un Kanban con una
+            columna por estado: arrastra la tarjeta a otra columna para cambiar su estado; en el celular usa «Mover a…»).
           </Paso>
           <Paso>Toca un hito (en el Gantt o en la tabla) para editarlo o borrarlo.</Paso>
         </Pasos>
@@ -230,23 +231,29 @@ export function SeccionProyectos() {
         </Recuadro>
       </Sub>
 
-      <Sub id="proyectos-finanzas" titulo="💵 Pestaña Horas y pagos">
+      <Sub id="proyectos-finanzas" titulo="💰 Pestaña Finanzas">
+        <p>
+          Aquí configuras cómo se cobra el proyecto y ves cuánto te queda de verdad. Está explicada paso a paso en <Ir href="#finanzas">Finanzas: cuánto te queda de
+          verdad</Ir>. En resumen:
+        </p>
         <ul className="ml-5 list-disc space-y-1">
           <li>
-            <strong>⏱ Horas</strong>: una barra con las horas usadas. La rayita oscura es el avance del cronograma: lo sano es que la barra no la pase por mucho.
+            <strong>Configurar</strong>: valor fijo, por horas o mixto; IVA; retenciones; aliado; viáticos; requisitos para cobrar.
           </li>
           <li>
-            <strong>💵 Dinero</strong>: valor del contrato, cobrado, por cobrar, vencido y gastos.
+            <strong>Cifras clave</strong>: lo que te queda libre, el valor real de tu hora, cuánto puedes gastar y la seguridad social del proyecto.
           </li>
           <li>
-            <Boton>+ Pago o cobro</Boton>: concepto, tipo (cobro al cliente, aporte o cofinanciación, o gasto), valor, estado (pendiente, facturado, pagado, anulado), fecha límite, fecha
-            de pago y soporte.
+            <strong>Rentabilidad planeado contra real</strong>, lo que entra a tu cuenta, horas, presupuesto de gastos por categoría y los movimientos.
+          </li>
+          <li>
+            <Boton>+ Movimiento</Boton>: cobros (con horas y requisitos), viáticos que paga el cliente, aportes y gastos.
           </li>
         </ul>
         <Recuadro tipo="ejemplo">
           <p>
             <em>Segundo pago 30 %</em> · Cobro · 5.400.000 · Facturado · límite 30/09. Si llega el 30/09 sin marcarlo «Pagado», sale en rojo como vencido y aparece en las
-            alertas.
+            alertas y en la agenda.
           </p>
         </Recuadro>
       </Sub>

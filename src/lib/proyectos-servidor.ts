@@ -5,7 +5,8 @@ import { semaforo, ultimaMedicion, type Frecuencia, type ProcesoMinimo } from '@
 import type { HitoVista } from '@/components/proyectos/cronograma';
 import type { IntervencionVista } from '@/components/proyectos/bitacora';
 import type { KpiVista, MedicionVista, ObjetivoVista } from '@/components/proyectos/objetivos-kpis';
-import type { DocumentoVista, PagoVista, RiesgoVista } from '@/components/proyectos/finanzas-riesgos-documentos';
+import type { DocumentoVista, RiesgoVista } from '@/components/proyectos/finanzas-riesgos-documentos';
+import type { MovimientoVista, PresupuestoVista } from '@/components/proyectos/finanzas';
 import type { ProcesoDelProyecto } from '@/components/proyectos/procesos-proyecto';
 import type { Referencias } from '@/components/proyectos/registro';
 import type { EstadoProyecto, TipoProyecto } from '@/lib/proyectos';
@@ -34,6 +35,15 @@ export interface ProyectoCompleto {
   reglas: string | null;
   enlaces: string | null;
   creado_por: string | null;
+  modalidad_cobro: 'valor_fijo' | 'por_horas' | 'mixto';
+  valor_hora: number | null;
+  cobra_iva: boolean;
+  retefuente_pct: number | null;
+  reteica_por_mil: number | null;
+  otras_retenciones_pct: number;
+  participacion_aliado_pct: number;
+  viaticos_pactados: number | null;
+  requisitos_cobro: string | null;
 }
 
 const num = (v: unknown) => (v == null ? null : Number(v));
@@ -47,7 +57,7 @@ export async function cargarProyecto(id: string, facilitador: Facilitador) {
   let consultaLibres = sb.from('pc_procesos').select('id, nombre, cliente, proyecto_id').eq('activo', true).order('nombre');
   if (facilitador.rol !== 'admin') consultaLibres = consultaLibres.eq('creado_por', facilitador.id);
 
-  const [hitos, objetivos, kpis, mediciones, bitacora, pagos, riesgos, documentos, procesos, libres] = await Promise.all([
+  const [hitos, objetivos, kpis, mediciones, bitacora, pagos, riesgos, documentos, procesos, libres, presupuesto] = await Promise.all([
     sb.from('pr_hitos').select('*').eq('proyecto_id', id).order('orden'),
     sb.from('pr_objetivos').select('*').eq('proyecto_id', id).order('created_at'),
     sb.from('pr_kpis').select('*').eq('proyecto_id', id).order('created_at'),
@@ -58,6 +68,7 @@ export async function cargarProyecto(id: string, facilitador: Facilitador) {
     sb.from('pr_documentos').select('*').eq('proyecto_id', id),
     sb.from('pc_procesos').select('id, nombre, indicador, unidad, sentido, linea_base, meta, frecuencia').eq('proyecto_id', id),
     consultaLibres,
+    sb.from('pr_presupuesto').select('*').eq('proyecto_id', id).order('created_at'),
   ]);
 
   const listaProcesos = (procesos.data ?? []) as any[];
@@ -92,7 +103,8 @@ export async function cargarProyecto(id: string, facilitador: Facilitador) {
   const vKpis = ((kpis.data ?? []) as any[]).map((k) => ({ ...k, linea_base: num(k.linea_base), meta: num(k.meta) })) as KpiVista[];
   const vMediciones = ((mediciones.data ?? []) as any[]).map((m) => ({ ...m, valor: Number(m.valor) })) as MedicionVista[];
   const vBitacora = (bitacora.data ?? []) as IntervencionVista[];
-  const vPagos = ((pagos.data ?? []) as any[]).map((x) => ({ ...x, valor: Number(x.valor) })) as PagoVista[];
+  const vPagos = ((pagos.data ?? []) as any[]).map((x) => ({ ...x, valor: Number(x.valor), horas: num(x.horas), requisitos_cumplidos: x.requisitos_cumplidos ?? [] })) as MovimientoVista[];
+  const vPresupuesto = ((presupuesto.data ?? []) as any[]).map((x) => ({ ...x, valor_planeado: Number(x.valor_planeado) })) as PresupuestoVista[];
 
   const referencias: Referencias = {
     hitos: vHitos.map((h) => ({ id: h.id, etiqueta: `${h.fase ? `${h.fase} · ` : ''}${h.nombre}` })),
@@ -101,13 +113,26 @@ export async function cargarProyecto(id: string, facilitador: Facilitador) {
   };
 
   return {
-    proyecto: { ...p, horas_contratadas: num(p.horas_contratadas), valor_contrato: num(p.valor_contrato) } as ProyectoCompleto,
+    proyecto: {
+      ...p,
+      horas_contratadas: num(p.horas_contratadas),
+      valor_contrato: num(p.valor_contrato),
+      valor_hora: num(p.valor_hora),
+      retefuente_pct: num(p.retefuente_pct),
+      reteica_por_mil: num(p.reteica_por_mil),
+      otras_retenciones_pct: Number(p.otras_retenciones_pct) || 0,
+      participacion_aliado_pct: Number(p.participacion_aliado_pct) || 0,
+      viaticos_pactados: num(p.viaticos_pactados),
+      modalidad_cobro: p.modalidad_cobro ?? 'valor_fijo',
+      cobra_iva: Boolean(p.cobra_iva),
+    } as ProyectoCompleto,
     hitos: vHitos,
     objetivos: vObjetivos,
     kpis: vKpis,
     mediciones: vMediciones,
     bitacora: vBitacora,
     pagos: vPagos,
+    presupuesto: vPresupuesto,
     riesgos: (riesgos.data ?? []) as RiesgoVista[],
     documentos: (documentos.data ?? []) as DocumentoVista[],
     procesos: vistaProcesos,
