@@ -86,6 +86,9 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 - No las corro yo: el usuario las pega en Supabase → SQL Editor y las ejecuta.
 - `supabase/demo/reto_papeleria.sql`: reto de demostración (código `CAZA26`, compra de papelería,
   12.4 → 6.4 días, 2 equipos inventados, estado cerrado). Se puede correr varias veces.
+- `supabase/demo/demo_completo.sql` (después del anterior): historia completa de «Distribuidora Andina
+  S.A.S.» → proyecto con todo → procesos → CAZA26 + Carrera Kaizen `KAIZ26` → plan de acción; más 3
+  proyectos para el portafolio. Todo con grupo «Demostración» (se borra y recrea al correrlo).
 
 ## Estado (al 2026-09-24)
 - Hecho: app desplegada; 3 roles con pantalla Usuarios; reto demo; detalle del paso con botón de cerrar.
