@@ -65,7 +65,7 @@ export async function ResumenProyectosPanel({ facilitador }: { facilitador: Faci
                     <span className="block truncate text-[11px] text-marmol-400">{f.p.nombre}</span>
                   </span>
                   <BarraAvance valor={f.avance} esperado={f.tiempo} tono={f.salud === 'atrasado' ? 'bg-bajo' : f.salud === 'en_riesgo' ? 'bg-acento' : 'bg-marca-500'} alto="h-2" />
-                  <span className="w-10 text-right text-xs font-semibold text-marmol-700">{pct(f.avance)}</span>
+                  <span className="w-11 shrink-0 text-right text-xs font-semibold text-marmol-700">{pct(f.avance)}</span>
                 </Link>
               </li>
             ))}

@@ -371,7 +371,7 @@ export function formatearPesos(n: number | null | undefined) {
 
 export function formatearHoras(h: number | null | undefined) {
   if (h == null) return '—';
-  return `${Math.round(h * 10) / 10} h`;
+  return `${(Math.round(h * 10) / 10).toLocaleString('es-CO')} h`;
 }
 
 /**
@@ -387,7 +387,8 @@ export function leerNumero(texto: string) {
   return Number.isFinite(n) ? n : null;
 }
 
-export const pct = (n: number | null | undefined) => (n == null ? '—' : `${Math.round(n * 100)} %`);
+/** Porcentaje con espacio que no se parte ("29 %" nunca queda en dos líneas). */
+export const pct = (n: number | null | undefined) => (n == null ? '—' : `${Math.round(n * 100)} %`);
 
 // ----------------------------------------------------------------------------
 // Plantillas de cronograma
@@ -732,7 +733,8 @@ export function resumenEjecutivo(d: DatosDiagnostico & { nombre: string; cliente
     let frase = `El proyecto «${d.nombre}» con ${d.cliente} va en el día ${dia} de ${total} (${pct(tiempo)} del tiempo)`;
     if (avance != null) {
       const brecha = Math.round((avance - tiempo) * 100);
-      frase += ` y lleva ${pct(avance)} del cronograma cumplido: ${brecha >= 5 ? `va adelantado ${brecha} puntos` : brecha >= -10 ? 'va al día' : `va atrasado ${-brecha} puntos`}.`;
+      const vencidos = d.hitos.filter((h) => (diasParaVencer(h) ?? 1) < 0).length;
+      frase += ` y lleva ${pct(avance)} del cronograma cumplido: ${brecha >= 5 ? `va adelantado ${brecha} puntos` : brecha >= -10 ? 'va al día' : `va atrasado ${-brecha} puntos`}${brecha >= -10 && vencidos ? `, aunque ${vencidos === 1 ? 'tiene 1 hito vencido que lo pone en riesgo' : `tiene ${vencidos} hitos vencidos que lo ponen en riesgo`}` : ''}.`;
     } else frase += ', pero aún no tiene cronograma para medir el avance.';
     out.push(frase);
   } else out.push(`El proyecto «${d.nombre}» con ${d.cliente} no tiene fechas de inicio y fin: ponlas para medir el avance contra el tiempo.`);

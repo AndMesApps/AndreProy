@@ -207,7 +207,11 @@ export default async function PanelPage() {
                       {formatearValor(p.ultima, p.unidad)}
                       {p.meta != null && <span className="text-marmol-400"> / {formatearValor(p.meta)}</span>}
                     </span>
-                    {p.vencidas.length > 0 && <span className="rounded-full bg-red-100 px-1.5 text-[10px] font-semibold text-bajo">{p.vencidas.length} vencidas</span>}
+                    {p.vencidas.length > 0 && (
+                      <span className="rounded-full bg-red-100 px-1.5 text-[10px] font-semibold text-bajo">
+                        {p.vencidas.length} {p.vencidas.length === 1 ? 'vencida' : 'vencidas'}
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}

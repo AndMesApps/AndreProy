@@ -162,7 +162,7 @@ export function Cronograma({
         <div className="overflow-x-auto">
           <div className="min-w-[44rem]">
             {/* Encabezado de meses */}
-            <div className="relative ml-[15rem] h-6 border-b border-marmol-200 text-[10px] text-marmol-400">
+            <div className="relative ml-[15rem] mr-3 h-6 border-b border-marmol-200 text-[10px] text-marmol-400">
               {meses.map((m) => (
                 <span key={m.etiqueta} className="absolute top-1 -translate-x-1/2 whitespace-nowrap" style={{ left: `${m.x}%` }}>
                   {m.etiqueta}
@@ -172,7 +172,7 @@ export function Cronograma({
             <div className="relative">
               {/* Línea de hoy */}
               {rango && t(hoy) >= min! && t(hoy) <= max! && (
-                <div className="pointer-events-none absolute bottom-0 top-0 z-10 ml-[15rem] w-[calc(100%-15rem)]">
+                <div className="pointer-events-none absolute bottom-0 top-0 z-10 ml-[15rem] w-[calc(100%-15.75rem)]">
                   <div className="absolute bottom-0 top-0 w-0.5 bg-bajo/70" style={{ left: `${x(hoy)}%` }}>
                     <span className="absolute -top-0 left-1 rounded bg-bajo px-1 text-[9px] font-semibold text-white">hoy</span>
                   </div>
@@ -196,7 +196,7 @@ export function Cronograma({
                             <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} aria-hidden />
                             <span className={cn('truncate', h.estado === 'cumplido' ? 'text-marmol-400 line-through' : 'text-marmol-800')}>{h.nombre}</span>
                           </span>
-                          <span className="relative h-7 flex-1">
+                          <span className="relative mr-3 h-7 flex-1">
                             {h.fecha_limite &&
                               (h.fecha_inicio ? (
                                 <span

@@ -186,7 +186,7 @@ export default async function ProyectosPage({ searchParams }: { searchParams: Pr
         </div>
       ) : (
         <>
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
             {/* Hoja de ruta */}
             <section className="card p-4">
               <h2 className="font-display text-lg font-semibold text-secundario">🛣️ Hoja de ruta</h2>
@@ -239,7 +239,7 @@ export default async function ProyectosPage({ searchParams }: { searchParams: Pr
               {agenda.length === 0 ? (
                 <p className="mt-3 text-sm text-alto">✓ Nada pendiente en los próximos 14 días.</p>
               ) : (
-                <ol className="mt-3 max-h-[26rem] space-y-1.5 overflow-y-auto pr-1">
+                <ol className="mt-3 max-h-[20rem] space-y-1.5 overflow-y-auto pr-1">
                   {agenda.map((e: EventoAgenda & { proyecto: any }, i) => {
                     const d = diasHasta(e.fecha);
                     return (
@@ -298,18 +298,18 @@ export default async function ProyectosPage({ searchParams }: { searchParams: Pr
                     <div className="flex items-center gap-2">
                       <span className="w-20 text-marmol-500">Cronograma</span>
                       <BarraAvance valor={f.avance} esperado={f.tiempo} tono={f.salud === 'atrasado' ? 'bg-bajo' : f.salud === 'en_riesgo' ? 'bg-acento' : 'bg-marca-500'} alto="h-2" />
-                      <span className="w-9 text-right font-semibold text-marmol-700">{pct(f.avance)}</span>
+                      <span className="w-11 shrink-0 text-right font-semibold text-marmol-700">{pct(f.avance)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="w-20 text-marmol-500">Objetivos</span>
                       <BarraAvance valor={f.objetivos} tono="bg-alto" alto="h-2" />
-                      <span className="w-9 text-right font-semibold text-marmol-700">{pct(f.objetivos)}</span>
+                      <span className="w-11 shrink-0 text-right font-semibold text-marmol-700">{pct(f.objetivos)}</span>
                     </div>
                   </div>
                   <p className="flex flex-wrap gap-x-3 text-[11px] text-marmol-500">
                     {f.p.fecha_fin && <span>🏁 {diasHasta(f.p.fecha_fin) >= 0 ? `faltan ${diasHasta(f.p.fecha_fin)} d` : 'fecha pasada'}</span>}
                     <span>⏱ {formatearHoras(f.horas)}{f.p.horas_contratadas ? ` / ${formatearHoras(f.p.horas_contratadas)}` : ''}</span>
-                    {f.vencidos > 0 && <span className="font-semibold text-bajo">🚩 {f.vencidos} vencidos</span>}
+                    {f.vencidos > 0 && <span className="font-semibold text-bajo">🚩 {f.vencidos} {f.vencidos === 1 ? 'vencido' : 'vencidos'}</span>}
                     {diasSin != null && f.p.frecuencia_dias && diasSin > f.p.frecuencia_dias && <span className="font-semibold text-medio">💤 {diasSin} d sin intervenir</span>}
                   </p>
                 </Link>
