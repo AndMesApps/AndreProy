@@ -8,6 +8,7 @@ import { ETAPAS_RETO, type EstadoReto } from '@/lib/makigami';
 import { describirMomento } from '@/lib/kaizen';
 import { SEMAFOROS, accionVencida, formatearValor, semaforo, ultimaMedicion, type AccionMinima, type ProcesoMinimo, type Semaforo } from '@/lib/procesos';
 import { MiNombre } from '@/components/panel/mi-nombre';
+import { ResumenProyectosPanel } from '@/components/proyectos/resumen-panel';
 import { TarjetaCompartir } from '@/components/panel/tarjeta-compartir';
 import { cn, formatearFecha } from '@/lib/utils';
 import { ArrowRight, FileText } from 'lucide-react';
@@ -126,13 +127,16 @@ export default async function PanelPage() {
         <MiNombre nombre={facilitador.nombre} sinNombre={facilitador.nombre === facilitador.email} />
         <p className="mt-1 text-sm text-white/85">Juegos para diagnosticar y entrenar, control para sostener. Todo lo de tus clientes en un solo lugar.</p>
         <div className="mt-4 flex flex-wrap gap-2">
+          <Link href="/proyectos" className="rounded-lg bg-acento px-3 py-2 text-sm font-semibold text-secundario shadow hover:brightness-105">
+            🗂️ Mis proyectos
+          </Link>
           <Link href="/makigami" className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-secundario shadow hover:bg-marca-50">
             🎯 Nueva Cacería Makigami
           </Link>
           <Link href="/kaizen" className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-secundario shadow hover:bg-marca-50">
             🔁 Nueva Carrera Kaizen
           </Link>
-          <Link href="/procesos" className="rounded-lg bg-acento px-3 py-2 text-sm font-semibold text-secundario shadow hover:brightness-105">
+          <Link href="/procesos" className="rounded-lg bg-white px-3 py-2 text-sm font-semibold text-secundario shadow hover:bg-marca-50">
             📊 Control de procesos
           </Link>
         </div>
@@ -147,6 +151,8 @@ export default async function PanelPage() {
           </div>
         ))}
       </div>
+
+      <ResumenProyectosPanel facilitador={facilitador} />
 
       <section className="space-y-3">
         <div className="flex items-baseline justify-between gap-2">

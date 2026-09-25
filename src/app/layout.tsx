@@ -30,6 +30,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   🧭<span className="hidden sm:inline"> Mi panel</span>
                 </Link>
               )}
+              {facilitador && (
+                <Link href="/proyectos" className="hover:text-marca-600" title="Proyectos">
+                  🗂️<span className="hidden lg:inline"> Proyectos</span>
+                </Link>
+              )}
               <Link href="/makigami" className="hover:text-marca-600" title="Cacería Makigami">
                 🎯<span className="hidden lg:inline"> Makigami</span>
               </Link>

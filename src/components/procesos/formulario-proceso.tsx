@@ -48,7 +48,20 @@ const INDICADORES: { indicador: string; unidad: string; sentido: 'bajar' | 'subi
 const numero = (v: string) => (v.trim() === '' ? null : Number(v.replace(',', '.')));
 
 /** Crea un proceso, o lo edita si recibe procesoId + datosIniciales. */
-export function FormularioProceso({ procesoId, datosIniciales, abierto = false }: { procesoId?: string; datosIniciales?: DatosFormularioProceso; abierto?: boolean }) {
+export function FormularioProceso({
+  procesoId,
+  datosIniciales,
+  abierto = false,
+  proyectoId,
+  textoBoton = 'Nuevo proceso',
+}: {
+  procesoId?: string;
+  datosIniciales?: DatosFormularioProceso;
+  abierto?: boolean;
+  /** Crea el proceso ya unido a este proyecto y se queda en la página actual. */
+  proyectoId?: string;
+  textoBoton?: string;
+}) {
   const router = useRouter();
   const esEdicion = Boolean(procesoId);
   const [mostrar, setMostrar] = useState(abierto);
@@ -77,10 +90,10 @@ export function FormularioProceso({ procesoId, datosIniciales, abierto = false }
       frecuencia: datos.frecuencia,
     };
     startTransition(async () => {
-      const res = procesoId ? await actualizarProceso(procesoId, input) : await crearProceso(input);
+      const res = procesoId ? await actualizarProceso(procesoId, input) : await crearProceso(input, proyectoId);
       if (!res.ok) return setError(res.error);
       setMostrar(false);
-      if (!procesoId && 'id' in res) router.push(`/procesos/${res.id}`);
+      if (!procesoId && !proyectoId && 'id' in res) router.push(`/procesos/${res.id}`);
       else router.refresh();
     });
   }
@@ -92,7 +105,7 @@ export function FormularioProceso({ procesoId, datosIniciales, abierto = false }
       </button>
     ) : (
       <button type="button" onClick={() => setMostrar(true)} className="inline-flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-secundario shadow transition hover:bg-marca-50">
-        <Plus size={16} /> Nuevo proceso
+        <Plus size={16} /> {textoBoton}
       </button>
     );
   }

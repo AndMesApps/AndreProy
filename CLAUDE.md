@@ -14,6 +14,13 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 - `/kaizen` — **Carrera Kaizen** (mejorar, modo taller): rondas cronometradas; ronda 1 = línea base
   (hacer, verificar); rondas 2..N = PDCA (planear con tarjeta Kaizen: problema, 5 porqués, idea,
   predicción → hacer → verificar → actuar: estándar o descartada). Lógica y puntos en `src/lib/kaizen.ts`.
+- `/proyectos` — **Proyectos de consultoría** (inspirado en el Excel Control_Intervencion_Diaria, hoja
+  Fábricas Productividad): ficha, cronograma con Gantt y estados del Excel (plantillas + seguimientos
+  mensuales al día hábil N), objetivos y KPIs, bitácora (horas y días sin intervenir), horas y pagos,
+  riesgos (matriz), documentos, procesos unidos (`pc_procesos.proyecto_id`). Salud = avance vs. tiempo;
+  resumen ejecutivo y alertas automáticas (`src/lib/proyectos.ts`); portafolio con hoja de ruta y agenda;
+  informe de avance imprimible (`?finanzas=0` lo oculta). Registros genéricos: `ENTIDADES` define los
+  campos y `guardarRegistro` valida; el formulario sale solo (`components/proyectos/registro.tsx`).
 - `/procesos` — **Control de procesos**: proceso con indicador (línea base, meta, sentido bajar/subir),
   mediciones, plan de acción (`pc_acciones`) y juegos unidos (`proceso_id` en `mk_retos`/`kz_sesiones`).
 - Informes imprimibles (PDF desde el navegador) con opciones de mejora automáticas:
@@ -72,7 +79,7 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   solo se guarda su hash (`mk_jugadores.token_hash`). Ver `src/lib/jugador.ts`.
 - Los puntos no se guardan: se calculan en vivo (`calcularPuntos` en `src/lib/makigami.ts`,
   `calcularMarcador` en `src/lib/kaizen.ts`).
-- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos). Todas con RLS sin políticas.
+- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos), `pr_*` (proyectos). Todas con RLS sin políticas.
 
 ## Base de datos
 - Migraciones en `supabase/migrations/`, siempre idempotentes (`if not exists`, `do $$ ... exception`).
@@ -86,6 +93,7 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 - Migraciones 0001–0004 corridas en Supabase (confirmado 2026-09-24). Probado en producción con sesión de
   administradora: Carrera Kaizen completa (3 rondas, 2 equipos), informe, envío al plan y proceso.
   Los datos de prueba se borraron.
+- **Pendiente:** la usuaria debe correr `0005_proyectos.sql` en Supabase (proyectos).
 - Usuarios: cada facilitador escribe su nombre en /panel (`cambiarMiNombre`); en /usuarios se crean,
   editan (nombre, rol, activo) y retiran (`retirarUsuario` borra la cuenta de Auth) cuentas.
 - Probar jugadores sin navegador: POST a la página con cabecera `Next-Action: <id>` (el id sale del HTML

@@ -48,6 +48,27 @@ export default async function Inicio() {
       </div>
 
       <div className="card flex flex-wrap items-center gap-4 p-5">
+        <p className="text-4xl">🗂️</p>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-marca-600">Ejecutar</p>
+          <h2 className="font-display text-xl font-semibold text-secundario">Proyectos de consultoría</h2>
+          <p className="mt-1 text-sm text-marmol-500">
+            Cronograma con Gantt, objetivos y KPIs, bitácora de intervenciones, horas, pagos, riesgos y documentos. Un resumen ejecutivo que se escribe solo y
+            alertas de lo que hay que atender.
+          </p>
+        </div>
+        {facilitador ? (
+          <Link href="/proyectos" className="boton">
+            Ver mis proyectos
+          </Link>
+        ) : (
+          <Link href="/ingresar" className="boton-secundario">
+            Soy facilitador
+          </Link>
+        )}
+      </div>
+
+      <div className="card flex flex-wrap items-center gap-4 p-5">
         <p className="text-4xl">📊</p>
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-marca-600">Sostener</p>

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { db } from '@/lib/supabase/server';
 import { getFacilitador, puedeAdministrarReto } from '@/lib/auth';
@@ -64,6 +65,7 @@ export default async function ProcesoPage({ params }: { params: Promise<{ id: st
   const juegosUnidos = juegos.filter((j) => j.procesoId === id).length;
 
   const consultor = await nombreFacilitador(p.creado_por);
+  const { data: proyecto } = p.proyecto_id ? await sb.from('pr_proyectos').select('id, nombre').eq('id', p.proyecto_id).maybeSingle() : { data: null };
   const ultima = ultimaMedicion(meds);
   const avance = avanceMeta(proceso, ultima?.valor ?? null);
   const sem = SEMAFOROS[semaforo(proceso, meds)];
@@ -80,6 +82,7 @@ export default async function ProcesoPage({ params }: { params: Promise<{ id: st
         subtitulo={p.objetivo}
         datos={[
           ['Consultora', consultor ?? '—'],
+          ...(proyecto ? ([['Proyecto', proyecto.nombre as string]] as [string, string][]) : []),
           ['Cliente', p.cliente || '—'],
           ['Área', p.area || '—'],
           ['Dueño del proceso', p.responsable || '—'],
@@ -104,7 +107,14 @@ export default async function ProcesoPage({ params }: { params: Promise<{ id: st
             frecuencia: proceso.frecuencia,
           }}
         />
-        <OpcionesProceso procesoId={p.id} activo={p.activo} />
+        <div className="flex flex-wrap items-center gap-3">
+          {proyecto && (
+            <Link href={`/proyectos/${proyecto.id}`} className="no-imprimir text-xs font-semibold text-marca-600 hover:underline">
+              🗂️ Ir al proyecto
+            </Link>
+          )}
+          <OpcionesProceso procesoId={p.id} activo={p.activo} />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">

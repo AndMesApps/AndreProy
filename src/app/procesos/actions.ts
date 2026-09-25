@@ -57,19 +57,27 @@ function filaProceso(d: DatosProceso) {
   };
 }
 
-export async function crearProceso(input: DatosProceso) {
+/** Crea un proceso; con proyectoId queda unido a ese proyecto de consultoría. */
+export async function crearProceso(input: DatosProceso, proyectoId?: string) {
   const facilitador = await getFacilitador();
   if (!facilitador) return { ok: false as const, error: 'No autorizado' };
   const parsed = ProcesoSchema.safeParse(input);
   if (!parsed.success) return { ok: false as const, error: parsed.error.issues[0]?.message ?? 'Datos inválidos' };
+  let proyecto: string | null = null;
+  if (proyectoId) {
+    const { data: pr } = await db().from('pr_proyectos').select('id, creado_por').eq('id', proyectoId).maybeSingle();
+    if (!pr || !puedeAdministrarReto(facilitador, pr)) return { ok: false as const, error: 'No puedes usar ese proyecto' };
+    proyecto = pr.id as string;
+  }
   const { data, error } = await db()
     .from('pc_procesos')
-    .insert({ ...filaProceso(parsed.data), creado_por: facilitador.id })
+    .insert({ ...filaProceso(parsed.data), creado_por: facilitador.id, proyecto_id: proyecto })
     .select('id')
     .single();
   if (error) return { ok: false as const, error: error.message };
   revalidatePath(RUTA);
   revalidatePath('/panel');
+  if (proyecto) revalidatePath(`/proyectos/${proyecto}`);
   return { ok: true as const, id: data.id as string };
 }
 
