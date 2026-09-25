@@ -123,7 +123,7 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 - Migraciones 0001–0004 corridas en Supabase (confirmado 2026-09-24). Probado en producción con sesión de
   administradora: Carrera Kaizen completa (3 rondas, 2 equipos), informe, envío al plan y proceso.
   Los datos de prueba se borraron.
-- **Pendiente:** la usuaria debe correr `0008_mudalab.sql` y volver a correr `demo/demo_completo.sql` (trae el caso MudaLab MUDA26).
+- Migraciones 0001–0008 y demo_completo.sql corridas (confirmado 2026-09-24). MudaLab MUDA26 verificado en producción (informe, puntajes, Banco, envío al plan). Revisión responsive por iframes a 390/768/1366 px: sin desbordes.
 - Usuarios: cada facilitador escribe su nombre en /panel (`cambiarMiNombre`); en /usuarios se crean,
   editan (nombre, rol, activo) y retiran (`retirarUsuario` borra la cuenta de Auth) cuentas.
 - Probar jugadores sin navegador: POST a la página con cabecera `Next-Action: <id>` (el id sale del HTML
