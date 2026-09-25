@@ -131,7 +131,8 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   administradora: Carrera Kaizen completa (3 rondas, 2 equipos), informe, envío al plan y proceso.
   Los datos de prueba se borraron.
 - Migraciones 0001–0008 y demo_completo.sql corridas (confirmado 2026-09-24). MudaLab MUDA26 verificado en producción (informe, puntajes, Banco, envío al plan). Revisión responsive por iframes a 390/768/1366 px: sin desbordes.
-- 0009_riesgo.sql corrida (2026-09-25). **Pendiente:** la usuaria debe correr `demo/ruta_riesgo.sql` (RIES26).
+- 0009_riesgo.sql y demo/ruta_riesgo.sql corridas (2026-09-25). RIES26 verificado en producción (informe, 3 certificados,
+  sin desbordes a 390/768 px). Falta probar una partida real como jugador (retos 1-8 desde el celular).
 - Usuarios: cada facilitador escribe su nombre en /panel (`cambiarMiNombre`); en /usuarios se crean,
   editan (nombre, rol, activo) y retiran (`retirarUsuario` borra la cuenta de Auth) cuentas.
 - Probar jugadores sin navegador: POST a la página con cabecera `Next-Action: <id>` (el id sale del HTML

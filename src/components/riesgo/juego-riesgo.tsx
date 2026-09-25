@@ -62,7 +62,7 @@ export function TableroRuta({ hechos, abiertos }: { hechos: number[]; abiertos: 
             >
               <p className="text-xl leading-none">{e.emoji}</p>
               <p className="mt-0.5 text-[10px] font-bold uppercase leading-tight tracking-wide text-secundario">{e.nombre}</p>
-              {e.retos.length > 0 && <p className="text-[10px] text-marmol-500">Retos {e.retos.join(' y ')}{completa ? ' ✓' : ''}</p>}
+              {e.retos.length > 0 && <p className="text-[10px] text-marmol-500">{e.retos.length === 1 ? 'Reto' : 'Retos'} {e.retos.join(' y ')}{completa ? ' ✓' : ''}</p>}
             </div>
             {i < ESTACIONES.length - 1 && <span className="px-1 text-marmol-400 md:py-0">↓</span>}
           </div>

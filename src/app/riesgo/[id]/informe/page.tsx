@@ -92,7 +92,7 @@ export default async function InformeRiesgo({ params }: { params: Promise<{ id: 
         <Kpi titulo="Guardianes del Riesgo" valor={`${certificados.length} de ${conJuego.length}`} nota={`equipos certificados (mínimo ${config.umbral} %)`} tono="text-alto" />
         <Kpi titulo="Comprensión promedio" valor={promedio == null ? '—' : `${promedio} %`} nota={promedio == null ? '' : `${nivelComprension(promedio).emoji} ${nivelComprension(promedio).nombre}`} />
         <Kpi titulo="Retos completados" valor={String(retosHechos)} nota={`de ${eqs.length * RETOS.length} posibles`} />
-        <Kpi titulo="Alertas ignoradas" valor={String(ignoradas)} nota={`${confidencial} veces se compartió información reservada`} tono={ignoradas + confidencial ? 'text-bajo' : 'text-alto'} />
+        <Kpi titulo="Alertas ignoradas" valor={String(ignoradas)} nota={`${confidencial} ${confidencial === 1 ? 'vez' : 'veces'} se compartió información reservada`} tono={ignoradas + confidencial ? 'text-bajo' : 'text-alto'} />
       </div>
 
       <SeccionInforme titulo="🏆 Resultado por equipo" descripcion="Participación, retos completados, nivel de comprensión y certificación.">
@@ -149,7 +149,7 @@ export default async function InformeRiesgo({ params }: { params: Promise<{ id: 
           ))}
         </div>
         <p className="mt-2 text-[11px] text-marmol-500">
-          Niveles de comprensión: {NIVELES_COMPRENSION.map((n) => `${n.emoji} ${n.nombre} (${n.desde} % o más: ${n.ayuda.toLowerCase()})`).join(' · ')}
+          Niveles de comprensión: {NIVELES_COMPRENSION.map((n) => `${n.emoji} ${n.nombre} (${n.desde ? `${n.desde} % o más` : 'menos de 50 %'}: ${n.ayuda.toLowerCase()})`).join(' · ')}
         </p>
       </SeccionInforme>
 
