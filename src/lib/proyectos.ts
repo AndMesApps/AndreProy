@@ -155,7 +155,7 @@ export const ENTIDADES = {
     singular: 'pago',
     campos: [
       { clave: 'concepto', etiqueta: 'Concepto', tipo: 'texto', requerido: true, placeholder: 'Ej. Anticipo 50 %' },
-      { clave: 'tipo', etiqueta: 'Tipo', tipo: 'opcion', requerido: true, valorInicial: 'cobro', opciones: { cobro: 'Cobro al cliente', contrapartida: 'Contrapartida', gasto: 'Gasto' } },
+      { clave: 'tipo', etiqueta: 'Tipo', tipo: 'opcion', requerido: true, valorInicial: 'cobro', opciones: { cobro: 'Cobro al cliente', contrapartida: 'Aporte o cofinanciación', gasto: 'Gasto' } },
       { clave: 'valor', etiqueta: 'Valor (COP)', tipo: 'numero', requerido: true },
       { clave: 'estado', etiqueta: 'Estado', tipo: 'opcion', requerido: true, valorInicial: 'pendiente', opciones: { pendiente: 'Pendiente', facturado: 'Facturado', pagado: 'Pagado', anulado: 'Anulado' } },
       { clave: 'fecha_limite', etiqueta: 'Fecha límite', tipo: 'fecha' },
@@ -391,6 +391,51 @@ export function leerNumero(texto: string) {
 export const pct = (n: number | null | undefined) => (n == null ? '—' : `${Math.round(n * 100)} %`);
 
 // ----------------------------------------------------------------------------
+// Biblioteca de KPIs sugeridos (indicadores típicos de consultoría en procesos)
+// ----------------------------------------------------------------------------
+
+export interface KpiSugerido {
+  nombre: string;
+  formula: string;
+  unidad: string;
+  sentido: 'subir' | 'bajar';
+  categoria: string;
+}
+
+export const KPIS_SUGERIDOS: KpiSugerido[] = [
+  { categoria: '⏱ Tiempo', nombre: 'Tiempo de ciclo del proceso', formula: 'Días calendario desde que llega la solicitud hasta que se entrega el resultado (promedio del periodo).', unidad: 'días', sentido: 'bajar' },
+  { categoria: '⏱ Tiempo', nombre: 'Tiempo de respuesta', formula: 'Horas entre la solicitud y la primera respuesta al cliente interno o externo.', unidad: 'horas', sentido: 'bajar' },
+  { categoria: '⏱ Tiempo', nombre: 'Entregas a tiempo', formula: 'Entregas dentro del plazo acordado / total de entregas × 100.', unidad: '%', sentido: 'subir' },
+  { categoria: '⚙️ Productividad', nombre: 'Productividad por persona', formula: 'Unidades (o casos) terminados / personas / días trabajados.', unidad: 'unidades por persona al día', sentido: 'subir' },
+  { categoria: '⚙️ Productividad', nombre: 'Cumplimiento del plan de producción', formula: 'Unidades producidas / unidades programadas × 100.', unidad: '%', sentido: 'subir' },
+  { categoria: '⚙️ Productividad', nombre: 'Eficiencia global de los equipos (OEE)', formula: 'Disponibilidad × rendimiento × calidad.', unidad: '%', sentido: 'subir' },
+  { categoria: '⚙️ Productividad', nombre: 'Horas extra', formula: 'Horas extra pagadas en el mes.', unidad: 'horas al mes', sentido: 'bajar' },
+  { categoria: '✅ Calidad', nombre: 'Errores o reprocesos', formula: 'Casos devueltos o rehechos / total de casos × 100.', unidad: '%', sentido: 'bajar' },
+  { categoria: '✅ Calidad', nombre: 'Quejas o reclamos', formula: 'Número de quejas o reclamos recibidos en el mes.', unidad: 'quejas al mes', sentido: 'bajar' },
+  { categoria: '✅ Calidad', nombre: 'Satisfacción del cliente', formula: 'Promedio de la encuesta de satisfacción (1 = muy mala, 5 = excelente).', unidad: 'puntos (1 a 5)', sentido: 'subir' },
+  { categoria: '💵 Costo', nombre: 'Costo por unidad o por caso', formula: 'Costo total del proceso en el mes / unidades o casos atendidos.', unidad: 'COP', sentido: 'bajar' },
+  { categoria: '💵 Costo', nombre: 'Ahorro logrado', formula: 'Ahorro anual estimado de las mejoras implementadas.', unidad: 'COP', sentido: 'subir' },
+  { categoria: '📦 Inventario', nombre: 'Trabajo acumulado en proceso', formula: 'Casos o unidades esperando en el proceso al cierre de la semana.', unidad: 'unidades', sentido: 'bajar' },
+  { categoria: '📦 Inventario', nombre: 'Rotación de inventario', formula: 'Costo de lo vendido / inventario promedio.', unidad: 'veces al año', sentido: 'subir' },
+  { categoria: '🧠 Personas', nombre: 'Personas capacitadas', formula: 'Personas que completaron la formación y aprobaron la evaluación.', unidad: 'personas', sentido: 'subir' },
+  { categoria: '🧠 Personas', nombre: 'Ideas de mejora implementadas', formula: 'Ideas del equipo puestas en práctica en el mes.', unidad: 'ideas al mes', sentido: 'subir' },
+  { categoria: '🧠 Personas', nombre: 'Procesos documentados y estandarizados', formula: 'Procesos con procedimiento vigente y equipo entrenado.', unidad: 'procesos', sentido: 'subir' },
+  { categoria: '💻 Digital', nombre: 'Adopción de la herramienta', formula: 'Usuarios que la usan cada semana / usuarios previstos × 100.', unidad: '%', sentido: 'subir' },
+  { categoria: '💻 Digital', nombre: 'Registros hechos en papel', formula: 'Registros que todavía se llevan en papel o Excel suelto / total × 100.', unidad: '%', sentido: 'bajar' },
+];
+
+export function kpiSugerido(nombre: string) {
+  return KPIS_SUGERIDOS.find((k) => k.nombre === nombre);
+}
+
+/** Objetivos de ejemplo que trae cada plantilla, con los KPIs sugeridos que los miden. */
+export interface ObjetivoPlantilla {
+  descripcion: string;
+  criterio: string;
+  kpis: string[];
+}
+
+// ----------------------------------------------------------------------------
 // Plantillas de cronograma
 // ----------------------------------------------------------------------------
 
@@ -406,10 +451,15 @@ export interface HitoPlantilla {
   peso?: number;
 }
 
-export const PLANTILLAS: Record<string, { nombre: string; descripcion: string; hitos: HitoPlantilla[]; seguimientos?: boolean }> = {
+export const PLANTILLAS: Record<string, { nombre: string; descripcion: string; hitos: HitoPlantilla[]; objetivos?: ObjetivoPlantilla[]; seguimientos?: boolean }> = {
   consultoria: {
     nombre: 'Consultoría en procesos',
     descripcion: 'Arranque → Diagnóstico (Makigami) → Diseño → Implementación (Kaizen) → Control → Cierre.',
+    objetivos: [
+      { descripcion: 'Reducir el tiempo del proceso intervenido', criterio: 'El tiempo de ciclo promedio del último mes llega a la meta acordada.', kpis: ['Tiempo de ciclo del proceso'] },
+      { descripcion: 'Disminuir los errores y reprocesos', criterio: 'El % de casos devueltos o rehechos llega a la meta.', kpis: ['Errores o reprocesos'] },
+      { descripcion: 'Dejar al equipo del cliente preparado para sostener las mejoras', criterio: 'Procesos documentados y personas capacitadas según lo acordado.', kpis: ['Personas capacitadas', 'Procesos documentados y estandarizados'] },
+    ],
     hitos: [
       { fase: 'Arranque', nombre: 'Reunión de arranque y acta de inicio', que_cumplir: 'Alcance, cronograma, responsables y canales acordados y firmados.', vence: 0.03, peso: 1 },
       { fase: 'Arranque', nombre: 'Levantamiento de información', insumos: 'Procedimientos, formatos, datos históricos, organigrama.', empieza: 0.02, vence: 0.12, peso: 2 },
@@ -426,22 +476,32 @@ export const PLANTILLAS: Record<string, { nombre: string; descripcion: string; h
     ],
   },
   programa: {
-    nombre: 'Programa con plan de trabajo y seguimientos',
-    descripcion: 'Tipo Fábricas de Productividad: acta de alineación, PT1, PT2 con línea base, contrapartida, seguimientos mensuales, medición de salida y acta de cierre.',
+    nombre: 'Plan de trabajo con seguimientos',
+    descripcion: 'Acta de inicio, plan de trabajo aprobado, línea base de indicadores, un seguimiento por cada mes, medición intermedia, medición final e informe de cierre.',
+    objetivos: [
+      { descripcion: 'Aumentar la productividad del área intervenida', criterio: 'La productividad por persona sube al menos lo acordado frente a la línea base.', kpis: ['Productividad por persona'] },
+      { descripcion: 'Cumplir las entregas a tiempo', criterio: 'El % de entregas a tiempo llega a la meta.', kpis: ['Entregas a tiempo'] },
+      { descripcion: 'Reducir el costo del proceso', criterio: 'El costo por unidad baja hasta la meta.', kpis: ['Costo por unidad o por caso'] },
+    ],
     seguimientos: true,
     hitos: [
-      { fase: 'Alineación', nombre: 'Acta de alineación', que_cumplir: 'Fechas, horas, topes y compromisos firmados por las partes.', vence: 0.02, peso: 1 },
-      { fase: 'Plan de trabajo', nombre: 'PT1 - Plan de trabajo parte 1', que_cumplir: 'Hallazgos, objetivo, cronograma por fases e indicadores.', insumos: 'Diagnóstico y visita a la empresa.', vence: 0.08, peso: 2 },
-      { fase: 'Plan de trabajo', nombre: 'PT2 - Línea base e indicadores', que_cumplir: 'Línea base de cada indicador y metas, con soportes.', insumos: 'Datos del mes base entregados por la empresa.', vence: 0.2, peso: 3 },
-      { fase: 'Administrativo', nombre: 'Contrapartida', que_cumplir: 'Pago de la contrapartida y soporte cargado.', insumos: 'Comprobante de pago.', vence: 0.3, peso: 1 },
-      { fase: 'Ejecución', nombre: 'Medición intermedia (recomendada)', vence: 0.55, peso: 1 },
-      { fase: 'Cierre', nombre: 'Medición de salida', que_cumplir: 'Medir los indicadores en el último mes con los mismos cálculos de la línea base.', vence: 0.97, peso: 2 },
-      { fase: 'Cierre', nombre: 'Acta de cierre + encuestas', que_cumplir: 'Resultados, monetización, entregables y encuestas.', vence: 1, peso: 2 },
+      { fase: 'Inicio', nombre: 'Acta de inicio y acuerdos', que_cumplir: 'Fechas, horas, alcance, responsables y reglas de trabajo firmados por las partes.', vence: 0.03, peso: 1 },
+      { fase: 'Planeación', nombre: 'Plan de trabajo', que_cumplir: 'Hallazgos iniciales, objetivos, actividades por fase, cronograma e indicadores.', insumos: 'Diagnóstico y visita al cliente.', vence: 0.1, peso: 2 },
+      { fase: 'Planeación', nombre: 'Aprobación del plan de trabajo', que_cumplir: 'El cliente revisa y aprueba el plan.', vence: 0.14, peso: 1 },
+      { fase: 'Planeación', nombre: 'Línea base de indicadores', que_cumplir: 'Valor inicial de cada indicador y su meta, con soportes.', insumos: 'Datos del periodo base entregados por el cliente.', vence: 0.2, peso: 3 },
+      { fase: 'Ejecución', nombre: 'Medición intermedia', que_cumplir: 'Medir los indicadores a mitad de camino y ajustar el plan si hace falta.', vence: 0.55, peso: 1 },
+      { fase: 'Cierre', nombre: 'Medición final', que_cumplir: 'Medir los indicadores con los mismos cálculos de la línea base.', vence: 0.95, peso: 2 },
+      { fase: 'Cierre', nombre: 'Informe final y acta de cierre', que_cumplir: 'Resultados contra la meta, entregables, lecciones aprendidas y encuesta de satisfacción.', vence: 1, peso: 2 },
     ],
   },
   aplicativo: {
     nombre: 'Desarrollo de aplicativo',
     descripcion: 'Requisitos → Prototipo → Sprints → Pruebas → Capacitación → Producción.',
+    objetivos: [
+      { descripcion: 'Que el equipo use la nueva herramienta en su día a día', criterio: 'Al menos la meta de usuarios la usa cada semana.', kpis: ['Adopción de la herramienta'] },
+      { descripcion: 'Eliminar los registros en papel y Excel sueltos', criterio: 'Los registros del proceso se hacen en la app.', kpis: ['Registros hechos en papel'] },
+      { descripcion: 'Que los usuarios queden satisfechos con la herramienta', criterio: 'Encuesta de satisfacción al cierre.', kpis: ['Satisfacción del cliente'] },
+    ],
     hitos: [
       { fase: 'Descubrimiento', nombre: 'Levantamiento de requisitos', empieza: 0, vence: 0.1, peso: 2 },
       { fase: 'Descubrimiento', nombre: 'Prototipo aprobado por el cliente', empieza: 0.1, vence: 0.2, peso: 2 },
@@ -456,6 +516,11 @@ export const PLANTILLAS: Record<string, { nombre: string; descripcion: string; h
   capacitacion: {
     nombre: 'Capacitación',
     descripcion: 'Necesidades → Diseño → Sesiones → Evaluación → Informe.',
+    objetivos: [
+      { descripcion: 'Formar a los participantes previstos', criterio: 'Personas que completan y aprueban la formación.', kpis: ['Personas capacitadas'] },
+      { descripcion: 'Que apliquen lo aprendido en su trabajo', criterio: 'Ideas de mejora puestas en práctica después de la formación.', kpis: ['Ideas de mejora implementadas'] },
+      { descripcion: 'Lograr una formación bien valorada', criterio: 'Promedio de la encuesta de satisfacción.', kpis: ['Satisfacción del cliente'] },
+    ],
     hitos: [
       { fase: 'Preparación', nombre: 'Diagnóstico de necesidades', vence: 0.1, peso: 1 },
       { fase: 'Preparación', nombre: 'Diseño del contenido y materiales', empieza: 0.1, vence: 0.3, peso: 2 },

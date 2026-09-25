@@ -1,3 +1,4 @@
+import { EnlaceAyuda } from '@/components/manual/enlace-ayuda';
 import { redirect } from 'next/navigation';
 import { getFacilitador } from '@/lib/auth';
 import { listarUsuarios } from '@/lib/usuarios';
@@ -14,7 +15,10 @@ export default async function UsuariosPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-bold text-secundario">Usuarios</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="font-display text-2xl font-bold text-secundario">Usuarios</h1>
+          <EnlaceAyuda seccion="usuarios" />
+        </div>
         <p className="mt-1 text-sm text-marmol-500">
           Aquí creas las cuentas de quienes dirigen los retos. Los jugadores no necesitan cuenta: entran con el código de cada reto.
         </p>

@@ -148,7 +148,7 @@ export function FormularioProyecto({ proyectoId, datosIniciales, grupos = [] }: 
           </datalist>
         </Campo>
         <Campo etiqueta="Programa o línea">
-          <input value={datos.programa} onChange={set('programa')} placeholder="Ej. Fábricas de Productividad · Transformación Digital" className="campo" />
+          <input value={datos.programa} onChange={set('programa')} placeholder="Ej. Programa de productividad 2026" className="campo" />
         </Campo>
         <Campo etiqueta="Estado">
           <select value={datos.estado} onChange={set('estado')} className="campo">
@@ -201,8 +201,8 @@ export function FormularioProyecto({ proyectoId, datosIniciales, grupos = [] }: 
         <Campo etiqueta="Celular del contacto">
           <input type="tel" value={datos.contactoCelular} onChange={set('contactoCelular')} className="campo" />
         </Campo>
-        <Campo etiqueta="Gestor(a) o supervisor(a) externo" ancho>
-          <input value={datos.gestorExterno} onChange={set('gestorExterno')} placeholder="Ej. Gestora del programa, interventoría" className="campo" />
+        <Campo etiqueta="Supervisor o interventor externo (si lo hay)" ancho>
+          <input value={datos.gestorExterno} onChange={set('gestorExterno')} placeholder="Ej. Comité de gerencia, interventoría" className="campo" />
         </Campo>
       </Bloque>
 
@@ -210,7 +210,7 @@ export function FormularioProyecto({ proyectoId, datosIniciales, grupos = [] }: 
         <summary className="cursor-pointer text-sm font-semibold text-marmol-700">📜 Reglas clave y enlaces (opcional)</summary>
         <div className="mt-3 grid gap-3">
           <Campo etiqueta="Reglas clave del contrato o programa (topes, plazos, condiciones)" ancho>
-            <textarea value={datos.reglas} onChange={set('reglas')} rows={4} placeholder="Ej. Máximo 30 h ejecutadas antes de aprobar el PT1. Seguimiento mensual a más tardar el 3.er día hábil." className="campo" />
+            <textarea value={datos.reglas} onChange={set('reglas')} rows={4} placeholder="Ej. Informe de avance el primer lunes de cada mes. Cambios de alcance solo con acta firmada." className="campo" />
           </Campo>
           <Campo etiqueta="Enlaces y especificaciones (Drive, plataforma del programa, repositorio…)" ancho>
             <textarea value={datos.enlaces} onChange={set('enlaces')} rows={3} className="campo" />

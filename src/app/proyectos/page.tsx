@@ -1,3 +1,4 @@
+import { EnlaceAyuda } from '@/components/manual/enlace-ayuda';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getFacilitador } from '@/lib/auth';
@@ -136,7 +137,10 @@ export default async function ProyectosPage({ searchParams }: { searchParams: Pr
           🧭
         </div>
         <div className="relative max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-widest text-acento">Consultoría · Ejecutar y controlar</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-acento">Consultoría · Ejecutar y controlar</p>
+            <EnlaceAyuda seccion="proyectos" claro />
+          </div>
           <h1 className="mt-1 font-display text-3xl font-bold">Proyectos</h1>
           <p className="mt-2 text-sm text-white/85">
             Cada proyecto con su cronograma, objetivos, KPIs, bitácora, horas, pagos, riesgos, documentos y los procesos del cliente. La app te dice cómo va y qué

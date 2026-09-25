@@ -1,3 +1,4 @@
+import { EnlaceAyuda } from '@/components/manual/enlace-ayuda';
 import Link from 'next/link';
 import { getFacilitador } from '@/lib/auth';
 import { nombresCreadores } from '@/lib/usuarios';
@@ -49,7 +50,10 @@ export default async function KaizenPage() {
           🔁
         </div>
         <div className="relative max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-widest text-acento">Juego por equipos · Kaizen</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-acento">Juego por equipos · Kaizen</p>
+            <EnlaceAyuda seccion="kaizen" claro />
+          </div>
           <h1 className="mt-1 font-display text-3xl font-bold">Carrera Kaizen</h1>
           <p className="mt-2 text-sm text-white/85">
             Los equipos producen en rondas cronometradas. Antes de cada ronda buscan la causa de sus problemas, eligen una mejora y predicen el resultado.

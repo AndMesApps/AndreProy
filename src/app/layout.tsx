@@ -51,6 +51,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   👥<span className="hidden lg:inline"> Usuarios</span>
                 </Link>
               )}
+              <Link href="/ayuda" className="hover:text-marca-600" title="Manual de usuario">
+                ❓<span className="hidden lg:inline"> Ayuda</span>
+              </Link>
             </nav>
             <div className="ml-auto text-sm">
               {facilitador ? (

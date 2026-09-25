@@ -11,6 +11,7 @@ import {
   PLANTILLAS,
   TIPOS_PROYECTO,
   hitosDePlantilla,
+  kpiSugerido,
   hoyISO,
   leerNumero,
   seguimientosMensuales,
@@ -182,9 +183,33 @@ async function insertarPlantilla(proyectoId: string, clave: string, inicio: stri
     const seg = seguimientosMensuales(inicio, fin, diaSeguimiento ?? 3);
     filas.push(...seg.map((h, i) => ({ ...h, orden: base + 1000 + i * 10, proyecto_id: proyectoId })));
   }
-  if (!filas.length) return { ok: true };
-  const { error } = await sb.from('pr_hitos').insert(filas);
-  return error ? { ok: false, error: `El proyecto se creó, pero no el cronograma: ${error.message}` } : { ok: true };
+  if (filas.length) {
+    const { error } = await sb.from('pr_hitos').insert(filas);
+    if (error) return { ok: false, error: `El proyecto se creó, pero no el cronograma: ${error.message}` };
+  }
+  await insertarObjetivosSugeridos(proyectoId, clave);
+  return { ok: true };
+}
+
+/** Objetivos y KPIs de ejemplo de la plantilla (solo si el proyecto aún no tiene objetivos). */
+async function insertarObjetivosSugeridos(proyectoId: string, clave: string) {
+  const sugeridos = PLANTILLAS[clave]?.objetivos;
+  if (!sugeridos?.length) return;
+  const sb = db();
+  const { count } = await sb.from('pr_objetivos').select('id', { count: 'exact', head: true }).eq('proyecto_id', proyectoId);
+  if ((count ?? 0) > 0) return;
+  for (const o of sugeridos) {
+    const { data } = await sb
+      .from('pr_objetivos')
+      .insert({ proyecto_id: proyectoId, descripcion: o.descripcion, criterio: o.criterio, estado: 'pendiente', peso: 1 })
+      .select('id')
+      .single();
+    if (!data) continue;
+    const kpis = o.kpis.map(kpiSugerido).filter((k): k is NonNullable<typeof k> => Boolean(k));
+    if (kpis.length) {
+      await sb.from('pr_kpis').insert(kpis.map((k) => ({ proyecto_id: proyectoId, objetivo_id: data.id, nombre: k.nombre, formula: k.formula, unidad: k.unidad, sentido: k.sentido })));
+    }
+  }
 }
 
 export async function aplicarPlantilla(proyectoId: string, clave: string, diaSeguimiento?: number): Promise<Resultado> {

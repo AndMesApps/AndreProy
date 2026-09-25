@@ -1,3 +1,4 @@
+import { EnlaceAyuda } from '@/components/manual/enlace-ayuda';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { getFacilitador } from '@/lib/auth';
@@ -120,6 +121,7 @@ export default async function ProyectoPage({ params, searchParams }: { params: P
           <ArrowLeft size={12} /> Proyectos
         </Link>
         <div className="flex flex-wrap items-center gap-3">
+          <EnlaceAyuda seccion="proyectos-resumen" />
           <AccionesProyecto proyectoId={p.id} estado={p.estado} />
           <Link href={`/proyectos/${p.id}/informe`} className="boton py-1.5">
             <FileText size={14} /> Informe de avance
@@ -345,7 +347,7 @@ export default async function ProyectoPage({ params, searchParams }: { params: P
                       )}
                     </p>
                   )}
-                  {p.gestor_externo && <p className="mt-1">🏛️ Gestor(a) externo: {p.gestor_externo}</p>}
+                  {p.gestor_externo && <p className="mt-1">🏛️ Supervisor externo: {p.gestor_externo}</p>}
                 </div>
               )}
               {p.reglas && (

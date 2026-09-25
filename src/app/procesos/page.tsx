@@ -1,3 +1,4 @@
+import { EnlaceAyuda } from '@/components/manual/enlace-ayuda';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getFacilitador } from '@/lib/auth';
@@ -48,7 +49,10 @@ export default async function ProcesosPage({ searchParams }: { searchParams: Pro
           📊
         </div>
         <div className="relative max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-widest text-acento">Mejora continua · Sostener</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-acento">Mejora continua · Sostener</p>
+            <EnlaceAyuda seccion="procesos" claro />
+          </div>
           <h1 className="mt-1 font-display text-3xl font-bold">Control de procesos</h1>
           <p className="mt-2 text-sm text-white/85">
             Los procesos de tus clientes con su indicador, la meta, las mediciones y el plan de acción. Las mejoras que salen de los juegos llegan aquí para

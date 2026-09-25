@@ -14,8 +14,9 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 - `/kaizen` — **Carrera Kaizen** (mejorar, modo taller): rondas cronometradas; ronda 1 = línea base
   (hacer, verificar); rondas 2..N = PDCA (planear con tarjeta Kaizen: problema, 5 porqués, idea,
   predicción → hacer → verificar → actuar: estándar o descartada). Lógica y puntos en `src/lib/kaizen.ts`.
-- `/proyectos` — **Proyectos de consultoría** (inspirado en el Excel Control_Intervencion_Diaria, hoja
-  Fábricas Productividad): ficha, cronograma con Gantt y estados del Excel (plantillas + seguimientos
+- `/proyectos` — **Proyectos de consultoría**, con identidad propia (NO usar términos de un programa
+  en particular como PT1/PT2/contrapartida/gestora: hablar de plan de trabajo, cronograma, seguimientos,
+  aporte o cofinanciación, supervisor externo). Ficha, cronograma con Gantt y estados del Excel (plantillas + seguimientos
   mensuales al día hábil N), objetivos y KPIs, bitácora (horas y días sin intervenir), horas y pagos,
   riesgos (matriz), documentos, procesos unidos (`pc_procesos.proyecto_id`). Salud = avance vs. tiempo;
   resumen ejecutivo y alertas automáticas (`src/lib/proyectos.ts`); portafolio con hoja de ruta y agenda;

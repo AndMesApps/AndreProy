@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { avanceKpi, avanceObjetivo, pct, ultimaDe, type KpiMinimo, type MedicionMinima, type ObjetivoMinimo } from '@/lib/proyectos';
+import { KPIS_SUGERIDOS, avanceKpi, avanceObjetivo, pct, ultimaDe, type KpiMinimo, type MedicionMinima, type ObjetivoMinimo } from '@/lib/proyectos';
 import { formatearValor } from '@/lib/procesos';
 import { cn, formatearFecha } from '@/lib/utils';
 import { Pencil, Plus } from 'lucide-react';
@@ -54,7 +54,7 @@ export function ObjetivosKpis({
 }) {
   const [form, setForm] = useState<
     | { tipo: 'objetivo'; registro?: ObjetivoVista }
-    | { tipo: 'kpi'; registro?: KpiVista; objetivoId?: string }
+    | { tipo: 'kpi'; registro?: KpiVista; objetivoId?: string; sugerido?: Record<string, string> }
     | { tipo: 'medicion'; kpiId: string }
     | null
   >(null);
@@ -118,10 +118,33 @@ export function ObjetivosKpis({
         <button type="button" onClick={() => setForm({ tipo: 'kpi' })} className="boton-secundario py-1.5">
           <Plus size={14} /> KPI
         </button>
+        <select
+          value=""
+          onChange={(e) => {
+            const k = KPIS_SUGERIDOS.find((x) => x.nombre === e.target.value);
+            if (k) setForm({ tipo: 'kpi', sugerido: { nombre: k.nombre, formula: k.formula, unidad: k.unidad, sentido: k.sentido } });
+          }}
+          className="campo w-auto max-w-xs py-1.5 text-xs"
+          aria-label="KPI sugerido"
+        >
+          <option value="">📚 Agregar un KPI sugerido…</option>
+          {[...new Set(KPIS_SUGERIDOS.map((k) => k.categoria))].map((cat) => (
+            <optgroup key={cat} label={cat}>
+              {KPIS_SUGERIDOS.filter((k) => k.categoria === cat).map((k) => (
+                <option key={k.nombre} value={k.nombre}>
+                  {k.nombre} ({k.unidad})
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
       </div>
       {form?.tipo === 'objetivo' && !form.registro && <FormularioRegistro entidad="objetivos" proyectoId={proyectoId} onListo={cerrar} />}
       {form?.tipo === 'kpi' && !form.registro && (
-        <FormularioRegistro entidad="kpis" proyectoId={proyectoId} referencias={referencias} fijos={form.objetivoId ? { objetivo_id: form.objetivoId } : undefined} onListo={cerrar} />
+        <FormularioRegistro entidad="kpis" proyectoId={proyectoId} referencias={referencias} fijos={{ ...(form.sugerido ?? {}), ...(form.objetivoId ? { objetivo_id: form.objetivoId } : {}) }}
+          titulo={form.sugerido ? `KPI sugerido: ${form.sugerido.nombre}. Elige el objetivo y pon la línea base y la meta.` : undefined}
+          onListo={cerrar}
+        />
       )}
 
       {objetivos.length === 0 && kpis.length === 0 ? (

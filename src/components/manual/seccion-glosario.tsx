@@ -1,0 +1,78 @@
+import { Pregunta, Seccion, Sub, Tabla } from './piezas';
+
+export function SeccionGlosario() {
+  return (
+    <>
+      <Seccion id="preguntas" emoji="🙋" titulo="Preguntas frecuentes" resumen="Dudas comunes, respondidas en una o dos frases.">
+        <div className="space-y-2">
+          <Pregunta p="¿Se guarda todo automáticamente?">
+            <p>Sí, apenas tocas Guardar, Registrar o cambias un estado. No hay que exportar ni guardar archivos.</p>
+          </Pregunta>
+          <Pregunta p="¿Puedo usar la app en el celular?">
+            <p>Sí. Todo funciona en el celular; en pantallas pequeñas algunas tablas se desplazan de lado con el dedo.</p>
+          </Pregunta>
+          <Pregunta p="¿Cómo le mando al cliente un informe?">
+            <p>Abre el informe (del proyecto, del proceso o del juego), toca «Imprimir o guardar PDF», elige «Guardar como PDF» y envía el archivo.</p>
+          </Pregunta>
+          <Pregunta p="Borré algo por error, ¿se puede recuperar?">
+            <p>No. Por eso la app siempre pide confirmar antes de borrar. Si dudas, en vez de borrar usa «Archivar» (procesos), «Cancelado» (proyectos) o «Descartada» (acciones).</p>
+          </Pregunta>
+          <Pregunta p="¿Los clientes o jugadores pueden ver mis proyectos o mis finanzas?">
+            <p>No. Los jugadores solo ven el juego al que entraron. Los proyectos, procesos y finanzas solo los ven tú y los administradores.</p>
+          </Pregunta>
+          <Pregunta p="¿Qué son los datos de «Demostración»?">
+            <p>
+              Son ejemplos inventados (Distribuidora Andina, Confecciones Río Claro, Metalmecánica del Sur, Clínica Santa Lucía, el reto CAZA26 y la carrera KAIZ26) para
+              ver cómo fluye la información. Todos tienen el grupo «Demostración» y se pueden borrar cuando empieces con tus clientes reales.
+            </p>
+          </Pregunta>
+          <Pregunta p="¿Qué hago si algo no carga o se ve raro?">
+            <p>Recarga la página (tecla F5 o arrastra hacia abajo en el celular). Si sigue igual, cierra sesión con «Salir» y vuelve a entrar.</p>
+          </Pregunta>
+        </div>
+      </Seccion>
+
+      <Seccion id="glosario" emoji="📖" titulo="Glosario" resumen="Las palabras técnicas que usa la app, explicadas sin enredos.">
+        <Sub titulo="Mejora continua y Lean">
+          <Tabla
+            filas={[
+              ['Lean', 'Forma de trabajar que busca quitar todo lo que no agrega valor al cliente.'],
+              ['Desperdicio', 'Todo lo que gasta tiempo o esfuerzo y no le agrega valor a quien recibe el resultado. Ej.: esperar una firma dos días.'],
+              ['Agrega valor', 'Lo que transforma algo y el cliente pagaría por ello.'],
+              ['Eficiencia del proceso', 'Qué porcentaje del tiempo total agrega valor. Ej.: 3 horas de 12 días ≈ 1 %.'],
+              ['Traspaso', 'Cada vez que el trabajo pasa de un área a otra. Cada traspaso trae cola y riesgo de error.'],
+              ['Makigami', 'Mapa del proceso en forma de rollo, con carriles por área y pasos con tiempos.'],
+              ['Kaizen', '«Cambio para mejor»: mejoras pequeñas, una a la vez, comprobadas con datos.'],
+              ['PDCA', 'Planear, Hacer (Do), Verificar (Check), Actuar: el ciclo para mejorar con método.'],
+              ['5 porqués', 'Preguntar «¿por qué?» varias veces hasta llegar a la causa de fondo de un problema.'],
+              ['Estándar', 'La forma acordada de hacer algo, que todos siguen hasta que se mejore.'],
+              ['Poka-yoke', 'Algo que hace imposible (o muy difícil) cometer un error. Ej.: un campo obligatorio.'],
+              ['5S digital', 'Orden de la información: cada archivo en su lugar y fácil de encontrar.'],
+            ]}
+          />
+        </Sub>
+        <Sub titulo="Proyectos e indicadores">
+          <Tabla
+            filas={[
+              ['Hito', 'Algo que hay que entregar o cumplir en una fecha.'],
+              ['Fase', 'Grupo de hitos de una misma etapa: Arranque, Diagnóstico, Diseño…'],
+              ['Cronograma / Gantt', 'Los hitos puestos en el tiempo, como barras de inicio a fin.'],
+              ['Peso', 'Qué tanto cuenta un hito en el avance del proyecto.'],
+              ['Plan de trabajo', 'El documento que dice qué se hará, cuándo y cómo se medirá.'],
+              ['Seguimiento', 'Reporte periódico (por ejemplo mensual) de lo que se hizo y las horas usadas.'],
+              ['KPI o indicador', 'El número que muestra si algo mejora. Ej.: días que tarda una compra.'],
+              ['Línea base', 'Cómo está el indicador antes de mejorar. Es el punto de partida.'],
+              ['Meta', 'A dónde se quiere llegar con el indicador.'],
+              ['Avance hacia la meta', 'Qué parte del camino entre la línea base y la meta ya se recorrió.'],
+              ['Semáforo', '🟢 bien, 🟡 atención, 🔴 problema, ⚪ sin datos.'],
+              ['Riesgo', 'Algo que podría pasar y frenar el proyecto. Se mide con probabilidad × impacto.'],
+              ['Mitigación', 'Lo que se hace para que un riesgo no pase o duela menos.'],
+              ['Aporte o cofinanciación', 'Dinero que pone el cliente o un tercero para financiar parte del proyecto.'],
+              ['Bitácora', 'El diario de las intervenciones: qué se hizo, cuándo y cuánto tiempo.'],
+            ]}
+          />
+        </Sub>
+      </Seccion>
+    </>
+  );
+}

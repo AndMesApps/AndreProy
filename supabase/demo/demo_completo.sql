@@ -275,35 +275,61 @@ begin
   -- 5. OTROS PROYECTOS para llenar el portafolio
   -- ==========================================================================
 
-  -- 5a. Programa con plan de trabajo, en riesgo (hitos rechazados y vencidos).
+  -- 5a. Plan de trabajo con seguimientos mensuales, en riesgo (hitos rechazados y vencidos).
   insert into pr_proyectos (nombre, cliente, grupo, tipo, programa, objetivo_general, contacto_nombre, contacto_cargo, gestor_externo,
     fecha_inicio, fecha_fin, fecha_cierre_limite, horas_contratadas, valor_contrato, frecuencia_dias, estado, reglas, creado_por)
-  values ('Fábrica de productividad · Transformación digital', 'Confecciones Río Claro', 'Demostración', 'programa',
-    'Programa de productividad · Línea Transformación Digital',
+  values ('Transformación digital de producción', 'Confecciones Río Claro', 'Demostración', 'programa',
+    'Programa de productividad 2026',
     'Subir la productividad del área de producción con herramientas digitales y medirla con 6 indicadores.',
-    'Mauricio Duarte', 'Gerente general', 'Gestora del programa',
+    'Mauricio Duarte', 'Gerente general', 'Comité directivo del cliente',
     '2026-08-10', '2026-11-08', '2026-11-13', 60, 14100000, 7, 'en_curso',
-    E'1. Máximo 30 h ejecutadas antes de aprobar el PT1 y 36 h antes de aprobar el PT2.\n2. Seguimiento mensual a más tardar el 3.er día hábil del mes siguiente.\n3. Subsanar un rechazo en 2 días calendario.',
+    E'1. No pasar de 30 horas ejecutadas antes de que el cliente apruebe el plan de trabajo.
+2. Seguimiento mensual a más tardar el 3.er día hábil del mes siguiente.
+3. Corregir un entregable devuelto en máximo 2 días.',
     v_dueno)
   returning id into pr2;
   insert into pr_hitos (proyecto_id, fase, nombre, que_cumplir, insumos, responsable, fecha_inicio, fecha_limite, fecha_real, estado, peso, situacion, proximo_paso, orden) values
-    (pr2, 'Alineación', 'Acta de alineación', 'Fechas, horas, topes y compromisos firmados.', null, 'Andrea', null, '2026-08-12', '2026-08-11', 'cumplido', 1, null, null, 10),
-    (pr2, 'Plan de trabajo', 'PT1 - Plan de trabajo parte 1', 'Hallazgos, objetivo, cronograma por fases e indicadores.', 'Diagnóstico y visita.', 'Andrea', null, '2026-08-17', '2026-08-14', 'cumplido', 2, 'Aprobado el 20/08.', null, 20),
-    (pr2, 'Plan de trabajo', 'PT2 - Línea base e indicadores', 'Línea base de los 6 indicadores y metas con variación ≥ 8 %.', 'Datos de julio de la empresa.', 'Andrea', null, '2026-09-01', '2026-09-12', 'rechazado', 3, 'Rechazado el 15/09: el periodo de la línea base no coincide con el acta.', 'Corregir el periodo y reenviar', 30),
-    (pr2, 'Administrativo', 'Contrapartida', 'Pago de la contrapartida y soporte cargado.', 'Comprobante de pago.', 'Empresa', null, '2026-09-09', null, 'pendiente', 1, 'La empresa no ha confirmado el pago.', 'Llamar a Mauricio', 40),
+    (pr2, 'Inicio', 'Acta de inicio y acuerdos', 'Fechas, horas, alcance y reglas de trabajo firmados.', null, 'Andrea', null, '2026-08-12', '2026-08-11', 'cumplido', 1, null, null, 10),
+    (pr2, 'Planeación', 'Plan de trabajo', 'Hallazgos iniciales, objetivos, actividades por fase e indicadores.', 'Diagnóstico y visita.', 'Andrea', null, '2026-08-17', '2026-08-14', 'cumplido', 2, 'Aprobado por el cliente el 20/08.', null, 20),
+    (pr2, 'Planeación', 'Línea base de indicadores', 'Valor inicial de los 6 indicadores y sus metas.', 'Datos de julio del cliente.', 'Andrea', null, '2026-09-01', '2026-09-12', 'rechazado', 3, 'Devuelto el 15/09: el cliente pidió usar agosto como periodo base.', 'Recalcular con agosto y reenviar', 30),
+    (pr2, 'Planeación', 'Datos de producción de agosto', 'Recibir del cliente los datos de agosto para la línea base.', 'Reporte de producción y horas.', 'Mauricio Duarte', null, '2026-09-09', null, 'pendiente', 1, 'El cliente no ha enviado los datos.', 'Llamar a Mauricio', 40),
     (pr2, 'Seguimientos', 'Seguimiento agosto 2026', 'Reportar actividades, horas reales y evidencias de agosto.', null, 'Andrea', '2026-08-01', '2026-09-03', '2026-09-02', 'cumplido', 1, '20 h reportadas.', null, 1000),
-    (pr2, 'Seguimientos', 'Seguimiento septiembre 2026', 'Reportar actividades, horas reales y evidencias de septiembre.', null, 'Andrea', '2026-09-01', '2026-10-05', null, 'bloqueado', 1, 'No se puede crear hasta aprobar el PT2.', 'Depende del PT2', 1010),
+    (pr2, 'Seguimientos', 'Seguimiento septiembre 2026', 'Reportar actividades, horas reales y evidencias de septiembre.', null, 'Andrea', '2026-09-01', '2026-10-05', null, 'bloqueado', 1, 'Depende de que se apruebe la línea base.', 'Esperar la línea base', 1010),
     (pr2, 'Seguimientos', 'Seguimiento octubre 2026', 'Reportar actividades, horas reales y evidencias de octubre.', null, 'Andrea', '2026-10-01', '2026-11-04', null, 'pendiente', 1, null, null, 1020),
-    (pr2, 'Cierre', 'Medición de salida', 'Medir los indicadores en el último mes.', null, 'Andrea', null, '2026-11-06', null, 'pendiente', 2, null, null, 50),
-    (pr2, 'Cierre', 'Acta de cierre + encuestas', 'Resultados, monetización, entregables y encuestas.', null, 'Andrea', null, '2026-11-08', null, 'pendiente', 2, null, null, 60);
+    (pr2, 'Cierre', 'Medición final', 'Medir los indicadores con los mismos cálculos de la línea base.', null, 'Andrea', null, '2026-11-06', null, 'pendiente', 2, null, null, 50),
+    (pr2, 'Cierre', 'Informe final y acta de cierre', 'Resultados contra la meta, entregables y encuesta de satisfacción.', null, 'Andrea', null, '2026-11-08', null, 'pendiente', 2, null, null, 60);
   insert into pr_bitacora (proyecto_id, fecha, actividad, tiempo_min, estado_tras, proximo_paso, fecha_proximo, registrado_por) values
-    (pr2, '2026-08-11', 'Visita de diagnóstico y firma del acta de alineación.', 240, 'al_dia', 'Radicar PT1', '2026-08-14', v_dueno),
+    (pr2, '2026-08-11', 'Visita de diagnóstico y firma del acta de inicio.', 240, 'al_dia', 'Entregar el plan de trabajo', '2026-08-14', v_dueno),
     (pr2, '2026-08-28', 'Capacitación en tablero digital de producción (2 sesiones).', 480, 'al_dia', 'Recolectar datos de línea base', '2026-09-05', v_dueno),
-    (pr2, '2026-09-12', 'Envío del PT2 con línea base de los 6 indicadores.', 300, 'pendiente', 'Esperar aprobación de la gestora', '2026-09-16', v_dueno);
+    (pr2, '2026-09-12', 'Envío de la línea base de los 6 indicadores.', 300, 'pendiente', 'Esperar la revisión del cliente', '2026-09-16', v_dueno);
   insert into pr_pagos (proyecto_id, concepto, tipo, valor, fecha_limite, estado) values
-    (pr2, 'Contrapartida 10 %', 'contrapartida', 1410000, '2026-09-09', 'pendiente');
+    (pr2, 'Aporte del cliente 10 %', 'contrapartida', 1410000, '2026-09-09', 'pendiente');
   insert into pr_riesgos (proyecto_id, descripcion, probabilidad, impacto, mitigacion, responsable, estado) values
-    (pr2, 'Superar el tope de 36 horas sin el PT2 aprobado.', 'alta', 'alto', null, 'Andrea', 'abierto');
+    (pr2, 'Superar las 30 horas acordadas antes de que el cliente apruebe el plan.', 'alta', 'alto', null, 'Andrea', 'abierto');
+
+  -- Objetivos y KPIs del programa (línea base con agosto, meta al cierre).
+  insert into pr_objetivos (proyecto_id, descripcion, criterio, responsable, fecha_meta, estado, peso)
+    values (pr2, 'Aumentar la productividad de la planta en al menos 15 %', 'Prendas terminadas por operaria al día, promedio del mes.', 'Mauricio Duarte', '2026-11-06', 'en_curso', 2)
+    returning id into o1;
+  insert into pr_kpis (proyecto_id, objetivo_id, nombre, formula, unidad, sentido, linea_base, meta, fuente)
+    values (pr2, o1, 'Productividad por persona', 'Prendas terminadas / operarias / días trabajados.', 'prendas por persona al día', 'subir', 38, 44, 'Reporte de producción')
+    returning id into k1;
+  insert into pr_objetivos (proyecto_id, descripcion, criterio, responsable, fecha_meta, estado, peso)
+    values (pr2, 'Cumplir las entregas a los clientes a tiempo', 'Pedidos despachados en la fecha prometida.', 'Jefe de despachos', '2026-11-06', 'en_curso', 1)
+    returning id into o2;
+  insert into pr_kpis (proyecto_id, objetivo_id, nombre, formula, unidad, sentido, linea_base, meta, fuente)
+    values (pr2, o2, 'Entregas a tiempo', 'Pedidos a tiempo / pedidos despachados × 100.', '%', 'subir', 72, 90, 'Registro de despachos')
+    returning id into k2;
+  insert into pr_objetivos (proyecto_id, descripcion, criterio, responsable, fecha_meta, estado, peso)
+    values (pr2, 'Llevar el control de producción en el tablero digital', 'Registros de producción hechos en el tablero y no en papel.', 'Andrea', '2026-10-15', 'en_curso', 1)
+    returning id into o3;
+  insert into pr_kpis (proyecto_id, objetivo_id, nombre, formula, unidad, sentido, linea_base, meta, fuente)
+    values (pr2, o3, 'Registros hechos en papel', 'Registros en papel / total de registros × 100.', '%', 'bajar', 100, 10, 'Tablero digital')
+    returning id into k3;
+  insert into pr_mediciones (proyecto_id, kpi_id, fecha, valor, nota) values
+    (pr2, k1, '2026-08-31', 38, 'Línea base (agosto)'), (pr2, k1, '2026-09-15', 40, null),
+    (pr2, k2, '2026-08-31', 72, 'Línea base'), (pr2, k2, '2026-09-15', 70, 'Dos pedidos grandes atrasados'),
+    (pr2, k3, '2026-08-31', 100, 'Todo en papel'), (pr2, k3, '2026-09-15', 60, 'Corte y confección ya usan el tablero');
 
   -- 5b. Aplicativo, al día.
   insert into pr_proyectos (nombre, cliente, grupo, tipo, objetivo_general, contacto_nombre, contacto_cargo,
@@ -328,6 +354,27 @@ begin
     (pr3, 'Anticipo 50 %', 'cobro', 12000000, '2026-09-05', '2026-09-04', 'pagado'),
     (pr3, 'Pago contra entrega 50 %', 'cobro', 12000000, '2026-12-05', null, 'pendiente');
 
+  -- Objetivos y KPIs del aplicativo.
+  insert into pr_objetivos (proyecto_id, descripcion, criterio, responsable, fecha_meta, estado, peso)
+    values (pr3, 'Que el almacén use la app en su día a día', 'Usuarios de almacén y compras que la usan cada semana.', 'Sergio Pineda', '2026-11-30', 'pendiente', 1)
+    returning id into o1;
+  insert into pr_kpis (proyecto_id, objetivo_id, nombre, formula, unidad, sentido, linea_base, meta, fuente)
+    values (pr3, o1, 'Adopción de la herramienta', 'Usuarios activos por semana / 8 usuarios previstos × 100.', '%', 'subir', 0, 90, 'Registro de uso de la app')
+    returning id into k1;
+  insert into pr_objetivos (proyecto_id, descripcion, criterio, responsable, fecha_meta, estado, peso)
+    values (pr3, 'Evitar que la planta se quede sin materia prima', 'Paradas de producción por falta de material en el mes.', 'Sergio Pineda', '2026-11-30', 'en_curso', 2)
+    returning id into o2;
+  insert into pr_kpis (proyecto_id, objetivo_id, nombre, formula, unidad, sentido, linea_base, meta, fuente)
+    values (pr3, o2, 'Paradas por falta de material', 'Veces al mes que se detiene la producción por falta de material.', 'paradas al mes', 'bajar', 6, 1, 'Bitácora de producción')
+    returning id into k2;
+  insert into pr_objetivos (proyecto_id, descripcion, criterio, responsable, fecha_meta, estado, peso)
+    values (pr3, 'Que los usuarios queden satisfechos con la app', 'Encuesta al terminar las pruebas.', 'Andrea', '2026-11-18', 'pendiente', 1)
+    returning id into o3;
+  insert into pr_kpis (proyecto_id, objetivo_id, nombre, formula, unidad, sentido, linea_base, meta, fuente)
+    values (pr3, o3, 'Satisfacción del cliente', 'Promedio de la encuesta (1 a 5).', 'puntos (1 a 5)', 'subir', null, 4.5, 'Encuesta');
+  insert into pr_mediciones (proyecto_id, kpi_id, fecha, valor, nota) values
+    (pr3, k2, '2026-08-31', 6, 'Línea base (agosto)'), (pr3, k2, '2026-09-22', 5, null);
+
   -- 5c. Capacitación finalizada.
   insert into pr_proyectos (nombre, cliente, grupo, tipo, objetivo_general, fecha_inicio, fecha_fin, horas_contratadas, valor_contrato, estado, creado_por)
   values ('Formación Lean para líderes', 'Clínica Santa Lucía', 'Demostración', 'capacitacion',
@@ -343,6 +390,30 @@ begin
     (pr4, '2026-08-14', 'Entrega de certificados e informe final. 19 de 20 líderes aprobaron.', 120, 'finalizado', v_dueno);
   insert into pr_pagos (proyecto_id, concepto, tipo, valor, fecha_limite, fecha_pago, estado) values
     (pr4, 'Pago único', 'cobro', 9600000, '2026-08-30', '2026-08-28', 'pagado');
+
+  -- Objetivos y KPIs de la capacitación (ya cumplidos).
+  insert into pr_objetivos (proyecto_id, descripcion, criterio, responsable, fecha_meta, estado, peso)
+    values (pr4, 'Formar a 20 líderes en herramientas Lean', 'Líderes que completan y aprueban la evaluación.', 'Andrea', '2026-08-15', 'cumplido', 2)
+    returning id into o1;
+  insert into pr_kpis (proyecto_id, objetivo_id, nombre, formula, unidad, sentido, linea_base, meta, fuente)
+    values (pr4, o1, 'Personas capacitadas', 'Líderes que aprobaron la evaluación final.', 'personas', 'subir', 0, 20, 'Listas y evaluaciones')
+    returning id into k1;
+  insert into pr_objetivos (proyecto_id, descripcion, criterio, responsable, fecha_meta, estado, peso)
+    values (pr4, 'Que apliquen lo aprendido en sus servicios', 'Mejoras implementadas por los líderes al mes de terminar.', 'Coordinación de calidad', '2026-08-15', 'cumplido', 1)
+    returning id into o2;
+  insert into pr_kpis (proyecto_id, objetivo_id, nombre, formula, unidad, sentido, linea_base, meta, fuente)
+    values (pr4, o2, 'Ideas de mejora implementadas', 'Mejoras puestas en práctica por los líderes formados.', 'ideas', 'subir', 0, 10, 'Informe de calidad')
+    returning id into k2;
+  insert into pr_objetivos (proyecto_id, descripcion, criterio, responsable, fecha_meta, estado, peso)
+    values (pr4, 'Lograr una formación bien valorada', 'Promedio de la encuesta de satisfacción.', 'Andrea', '2026-08-15', 'cumplido', 1)
+    returning id into o3;
+  insert into pr_kpis (proyecto_id, objetivo_id, nombre, formula, unidad, sentido, linea_base, meta, fuente)
+    values (pr4, o3, 'Satisfacción del cliente', 'Promedio de la encuesta (1 a 5).', 'puntos (1 a 5)', 'subir', 3, 4.5, 'Encuesta final')
+    returning id into k3;
+  insert into pr_mediciones (proyecto_id, kpi_id, fecha, valor, nota) values
+    (pr4, k1, '2026-08-08', 19, '19 de 20 aprobaron'),
+    (pr4, k2, '2026-08-14', 12, null),
+    (pr4, k3, '2026-08-14', 4.7, null);
 
   raise notice 'Demo creada. Dueña: %', coalesce((select email from auth.users where id = v_dueno), 'NINGUNA (solo la ven los administradores)');
 end $$;

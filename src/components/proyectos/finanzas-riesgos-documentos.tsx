@@ -19,7 +19,7 @@ const ESTADO_PAGO: Record<PagoMinimo['estado'], string> = {
   pagado: 'bg-green-100 text-alto',
   anulado: 'bg-marmol-50 text-marmol-400 line-through',
 };
-const TIPO_PAGO = { cobro: '💰 Cobro', contrapartida: '🤝 Contrapartida', gasto: '🧾 Gasto' } as const;
+const TIPO_PAGO = { cobro: '💰 Cobro', contrapartida: '🤝 Aporte o cofinanciación', gasto: '🧾 Gasto' } as const;
 
 export function Finanzas({
   proyectoId,

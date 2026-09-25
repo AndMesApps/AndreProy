@@ -1,3 +1,4 @@
+import { EnlaceAyuda } from '@/components/manual/enlace-ayuda';
 import Link from 'next/link';
 import { getFacilitador } from '@/lib/auth';
 import { nombresCreadores } from '@/lib/usuarios';
@@ -60,7 +61,10 @@ export default async function MakigamiPage() {
           🎯
         </div>
         <div className="relative max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-widest text-acento">Juego por equipos · Lean</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-acento">Juego por equipos · Lean</p>
+            <EnlaceAyuda seccion="makigami" claro />
+          </div>
           <h1 className="mt-1 font-display text-3xl font-bold">Cacería Makigami</h1>
           <p className="mt-2 text-sm text-white/85">
             Dibujamos un proceso real en un gran rollo de papel digital —quién hace qué, cuánto tarda, cuánto espera— y los equipos salen a cazar los
