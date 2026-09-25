@@ -43,7 +43,9 @@ export default async function PanelPage() {
   if (!esAdmin) consulta5S = consulta5S.eq('creado_por', facilitador.id);
   let consultaMl = sb.from('ml_sesiones').select('id, codigo, titulo, estado, mision_actual, created_at, cerrado_en').order('created_at', { ascending: false }).limit(50);
   if (!esAdmin) consultaMl = consultaMl.eq('creado_por', facilitador.id);
-  const [{ data: retos }, { data: carreras }, { data: procesos }, { data: retos5s }, { data: casosMl }] = await Promise.all([consultaRetos, consultaCarreras, consultaProcesos, consulta5S, consultaMl]);
+  let consultaRr = sb.from('rr_sesiones').select('id, codigo, titulo, estado, reto_actual, created_at, cerrado_en').order('created_at', { ascending: false }).limit(50);
+  if (!esAdmin) consultaRr = consultaRr.eq('creado_por', facilitador.id);
+  const [{ data: retos }, { data: carreras }, { data: procesos }, { data: retos5s }, { data: casosMl }, { data: rutasRr }] = await Promise.all([consultaRetos, consultaCarreras, consultaProcesos, consulta5S, consultaMl, consultaRr]);
 
   const idsProcesos = ((procesos ?? []) as any[]).map((p) => p.id as string);
   const [{ data: mediciones }, { data: acciones }] = idsProcesos.length
@@ -104,6 +106,18 @@ export default async function PanelPage() {
         enlace: `${base}/mudalab/unirse/${s.codigo}`,
         fecha: s.created_at as string,
       })),
+    ...((rutasRr ?? []) as any[])
+      .filter((s) => s.estado !== 'cerrado')
+      .map((s) => ({
+        juego: '🗺️ Ruta del Riesgo',
+        id: s.id as string,
+        titulo: s.titulo as string,
+        codigo: s.codigo as string,
+        estado: s.reto_actual === 0 ? 'Preparación' : `Hasta el reto ${s.reto_actual}`,
+        ruta: `/riesgo/${s.id}`,
+        enlace: `${base}/riesgo/unirse/${s.codigo}`,
+        fecha: s.created_at as string,
+      })),
   ]
     .sort((a, b) => b.fecha.localeCompare(a.fecha))
     .slice(0, 12);
@@ -117,6 +131,7 @@ export default async function PanelPage() {
     ...((carreras ?? []) as any[]).map((s) => ({ juego: '🔁', id: s.id, titulo: s.titulo, ruta: `/kaizen/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
     ...((retos5s ?? []) as any[]).map((s) => ({ juego: '🧹', id: s.id, titulo: s.titulo, ruta: `/cincos/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
     ...((casosMl ?? []) as any[]).map((s) => ({ juego: '🕵️', id: s.id, titulo: s.titulo, ruta: `/mudalab/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
+    ...((rutasRr ?? []) as any[]).map((s) => ({ juego: '🗺️', id: s.id, titulo: s.titulo, ruta: `/riesgo/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
   ]
     .sort((a, b) => Number(b.cerrado) - Number(a.cerrado) || b.fecha.localeCompare(a.fecha))
     .slice(0, 8);
@@ -290,7 +305,7 @@ export default async function PanelPage() {
 
       <section className="space-y-3">
         <h2 className="font-display text-lg font-semibold text-secundario">🎲 Juegos</h2>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <TarjetaJuego
             ruta="/makigami"
             emoji="🎯"
@@ -322,6 +337,14 @@ export default async function PanelPage() {
             uso="Resolver un problema con método"
             descripcion="Agencias de detectives recorren DMAIC: van al Gemba, cazan las 8 Mudas, encuentran la causa raíz, experimentan con presupuesto y sostienen la mejora. Cierra con un Banco de oportunidades reales."
             total={(casosMl ?? []).length}
+          />
+          <TarjetaJuego
+            ruta="/riesgo"
+            emoji="🗺️"
+            nombre="La Ruta del Riesgo"
+            uso="Prevenir riesgos de LA/FT"
+            descripcion="8 retos de SAGRILAFT y SARLAFT: detectar señales, conocer la contraparte, encontrar al beneficiario final, seguir el dinero, clasificar y escalar. Certifica Guardianes del Riesgo."
+            total={(rutasRr ?? []).length}
           />
         </div>
         <p className="text-xs text-marmol-400">

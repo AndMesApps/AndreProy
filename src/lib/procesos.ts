@@ -18,6 +18,7 @@ export const ORIGENES_ACCION = {
   kaizen: '🔁 Carrera Kaizen',
   cincos: '🧹 Reto 5S',
   mudalab: '🕵️ MudaLab',
+  riesgo: '🗺️ Ruta del Riesgo',
   informe: '📄 Informe',
 } as const;
 export type OrigenAccion = keyof typeof ORIGENES_ACCION;

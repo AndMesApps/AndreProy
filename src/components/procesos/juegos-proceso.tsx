@@ -7,14 +7,14 @@ import { archivarProceso, eliminarProceso, vincularJuego } from '@/app/procesos/
 import { Archive, FileText, Link2, Trash2, Unlink } from 'lucide-react';
 
 export interface JuegoVinculable {
-  juego: 'makigami' | 'kaizen' | 'cincos' | 'mudalab';
+  juego: 'makigami' | 'kaizen' | 'cincos' | 'mudalab' | 'riesgo';
   id: string;
   titulo: string;
   estado: string;
   procesoId: string | null;
 }
 
-const NOMBRE_JUEGO = { makigami: '🎯 Cacería Makigami', kaizen: '🔁 Carrera Kaizen', cincos: '🧹 Reto 5S', mudalab: '🕵️ MudaLab' };
+const NOMBRE_JUEGO = { makigami: '🎯 Cacería Makigami', kaizen: '🔁 Carrera Kaizen', cincos: '🧹 Reto 5S', mudalab: '🕵️ MudaLab', riesgo: '🗺️ Ruta del Riesgo' };
 
 /** Los juegos que se hicieron sobre este proceso, y cómo unir otros. */
 export function JuegosProceso({ procesoId, juegos }: { procesoId: string; juegos: JuegoVinculable[] }) {

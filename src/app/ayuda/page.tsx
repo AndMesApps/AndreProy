@@ -7,6 +7,7 @@ import { SeccionGlosario } from '@/components/manual/seccion-glosario';
 import { SeccionFinanzas } from '@/components/manual/seccion-finanzas';
 import { SeccionCincos } from '@/components/manual/seccion-cincos';
 import { SeccionMudaLab } from '@/components/manual/seccion-mudalab';
+import { SeccionRiesgo } from '@/components/manual/seccion-riesgo';
 import { BuscadorManual } from '@/components/manual/buscador';
 
 export const metadata = { title: 'Manual de usuario' };
@@ -36,6 +37,7 @@ const INDICE: [string, string, string, [string, string][]?][] = [
   ['kaizen', '🔁', 'Carrera Kaizen'],
   ['cincos', '🧹', 'Reto 5S'],
   ['mudalab', '🕵️', 'MudaLab'],
+  ['riesgo', '🗺️', 'La Ruta del Riesgo'],
   ['jugadores', '📱', 'Para los jugadores'],
   ['usuarios', '👥', 'Usuarios'],
   ['preguntas', '🙋', 'Preguntas frecuentes'],
@@ -98,6 +100,7 @@ export default function ManualPage() {
           <SeccionJuegos />
           <SeccionCincos />
           <SeccionMudaLab />
+          <SeccionRiesgo />
           <SeccionGlosario />
         </div>
       </div>

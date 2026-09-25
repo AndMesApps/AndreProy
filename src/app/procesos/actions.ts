@@ -202,7 +202,7 @@ export async function eliminarAccion(procesoId: string, accionId: string): Promi
 // Juegos → proceso
 // ----------------------------------------------------------------------------
 
-const TABLA_JUEGO = { makigami: 'mk_retos', kaizen: 'kz_sesiones', cincos: 's5_sesiones', mudalab: 'ml_sesiones' } as const;
+const TABLA_JUEGO = { makigami: 'mk_retos', kaizen: 'kz_sesiones', cincos: 's5_sesiones', mudalab: 'ml_sesiones', riesgo: 'rr_sesiones' } as const;
 type JuegoProceso = keyof typeof TABLA_JUEGO;
 
 async function requerirJuego(juego: JuegoProceso, juegoId: string) {
@@ -225,7 +225,7 @@ export async function vincularJuego(juego: JuegoProceso, juegoId: string, proces
 
 const EnvioSchema = z.object({
   procesoId: z.string().uuid({ message: 'Elige el proceso' }),
-  juego: z.enum(['makigami', 'kaizen', 'cincos', 'mudalab']),
+  juego: z.enum(['makigami', 'kaizen', 'cincos', 'mudalab', 'riesgo']),
   juegoId: z.string().uuid(),
   items: z
     .array(z.object({ ref: z.string().min(1).max(200), titulo: z.string().trim().min(1).max(200), detalle: z.string().trim().max(2000).optional() }))

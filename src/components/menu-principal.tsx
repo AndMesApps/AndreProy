@@ -33,6 +33,7 @@ const JUEGOS: Opcion[] = [
   { href: '/kaizen', emoji: '🔁', nombre: 'Carrera Kaizen', ayuda: 'Entrenar la mejora continua' },
   { href: '/cincos', emoji: '🧹', nombre: 'Reto 5S', ayuda: 'Crear hábitos de orden' },
   { href: '/mudalab', emoji: '🕵️', nombre: 'MudaLab', ayuda: 'Resolver problemas con DMAIC' },
+  { href: '/riesgo', emoji: '🗺️', nombre: 'La Ruta del Riesgo', ayuda: 'Prevenir riesgos de LA/FT' },
 ];
 
 function gruposDe(usuario: UsuarioMenu | null): Grupo[] {

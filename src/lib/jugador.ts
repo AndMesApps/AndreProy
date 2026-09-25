@@ -62,6 +62,7 @@ const TABLAS = {
   kaizen: { tabla: 'kz_jugadores', columna: 'sesion_id' },
   cincos: { tabla: 's5_jugadores', columna: 'sesion_id' },
   mudalab: { tabla: 'ml_jugadores', columna: 'sesion_id' },
+  riesgo: { tabla: 'rr_jugadores', columna: 'sesion_id' },
 } as const;
 export type Juego = keyof typeof TABLAS;
 

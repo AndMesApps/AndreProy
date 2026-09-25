@@ -36,6 +36,14 @@ const JUEGOS = [
     que: 'Agencias de detectives resuelven un expediente: definen el caso, van al Gemba con fichas, cazan las 8 Mudas, llegan a la causa raíz, experimentan soluciones con presupuesto y evitan que la Muda regrese. Cierra con un Banco de oportunidades reales.',
     duracion: '2 horas + Mi proceso',
   },
+  {
+    ruta: '/riesgo',
+    emoji: '🗺️',
+    nombre: 'La Ruta del Riesgo — SAGRILAFT y SARLAFT',
+    para: 'Prevenir riesgos de LA/FT',
+    que: 'Ocho retos de decisiones sobre una empresa que crece: detectar señales de alerta, conocer a la contraparte, encontrar al beneficiario final, seguir el dinero, clasificar con semáforo, cartas de evento y escalar según el procedimiento. Certifica Guardianes del Riesgo.',
+    duracion: '1,5 a 2 horas (o individual a su ritmo)',
+  },
 ];
 
 /** Todos los juegos de la plataforma en un solo lugar. */
@@ -63,7 +71,7 @@ export default function JuegosPage() {
           </div>
         </div>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {JUEGOS.map((j) => (
           <Link key={j.ruta} href={j.ruta} className="card group flex flex-col p-5 transition hover:-translate-y-0.5 hover:border-marca-300 hover:shadow-md">
             <p className="text-4xl">{j.emoji}</p>

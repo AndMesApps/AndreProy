@@ -15,6 +15,8 @@
 --   + Reto 5S LIMP26 y caso MudaLab MUDA26 (con su Banco de oportunidades),
 --     unidos al proceso de compras.
 --
+--   + La Ruta del Riesgo RIES26: está en demo/ruta_riesgo.sql (córrelo después).
+--
 --   + 3 proyectos más para llenar el portafolio (uno al día, uno en riesgo y
 --     uno finalizado).
 --

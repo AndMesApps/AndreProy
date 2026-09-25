@@ -277,6 +277,7 @@ export function SeccionJuegos() {
               ['🔁 Kaizen', 'Con su equipo llena la tarjeta Kaizen, produce mientras corre el cronómetro, registra cuántas unidades salieron bien y decide si su idea se vuelve estándar.'],
               ['🧹 Reto 5S', 'Juega las misiones con su equipo según el rol que le toca, y en la misión real llena con su equipo la auditoría, las evidencias y los resultados.'],
               ['🕵️ MudaLab', 'Resuelve con su agencia las 5 misiones del expediente según su rol y, en el Mundo 2, registra Mudas de su propio trabajo y vota 👍 las de otros equipos.'],
+              ['🗺️ Ruta del Riesgo', 'Con su equipo (o solo) resuelve los 8 retos según su rol: detecta señales, pide información, encuentra al beneficiario final, sigue el dinero, clasifica y decide cómo escalar. Ve la explicación de cada decisión.'],
             ]}
           />
           <p>La pantalla del jugador cambia sola según la fase que abra la facilitadora. No hay que recargar.</p>

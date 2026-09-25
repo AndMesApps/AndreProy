@@ -30,6 +30,13 @@ const JUEGOS = [
     uso: 'Resolver',
     descripcion: 'Una agencia de detectives caza las 8 Mudas de un proceso, encuentra la causa raíz, experimenta soluciones con presupuesto y evita que la Muda regrese.',
   },
+  {
+    ruta: '/riesgo',
+    emoji: '🗺️',
+    nombre: 'La Ruta del Riesgo',
+    uso: 'Prevenir',
+    descripcion: 'Detectar, prevenir y reportar riesgos de LA/FT (SAGRILAFT y SARLAFT): señales de alerta, beneficiario final, seguir el dinero, semáforo y escalamiento.',
+  },
 ];
 
 export default async function Inicio() {
@@ -49,7 +56,7 @@ export default async function Inicio() {
         )}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {JUEGOS.map((j) => (
           <Link key={j.ruta} href={j.ruta} className="card group p-5 transition hover:-translate-y-0.5 hover:border-marca-300 hover:shadow-md">
             <p className="text-4xl">{j.emoji}</p>

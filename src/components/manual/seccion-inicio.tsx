@@ -38,7 +38,7 @@ export function SeccionInicio() {
               <strong>Ejecutar proyectos</strong> de consultoría sin perder nada de vista: fechas, entregables, horas, pagos y resultados.
             </li>
             <li>
-              <strong>Hacer talleres con juegos</strong> (Cacería Makigami, Carrera Kaizen, Reto 5S y MudaLab) para que el equipo del cliente encuentre y resuelva sus problemas.
+              <strong>Hacer talleres con juegos</strong> (Cacería Makigami, Carrera Kaizen, Reto 5S, MudaLab y La Ruta del Riesgo) para que el equipo del cliente encuentre y resuelva sus problemas.
             </li>
             <li>
               <strong>Controlar los procesos</strong> después del taller, para que las mejoras no se queden en el papel.
@@ -109,7 +109,7 @@ export function SeccionInicio() {
             filas={[
               ['🧭 Mi panel', 'Tu página de inicio: lo urgente de hoy.'],
               ['💼 Consultoría', '🗂️ Proyectos (tu portafolio), 📊 Control de procesos (indicadores, metas y plan de acción) y 💰 Mis finanzas (rentabilidad, impuestos y seguridad social).'],
-              ['🎲 Juegos', 'Todos los juegos, 🎯 Cacería Makigami, 🔁 Carrera Kaizen, 🧹 Reto 5S y 🕵️ MudaLab.'],
+              ['🎲 Juegos', 'Todos los juegos, 🎯 Cacería Makigami, 🔁 Carrera Kaizen, 🧹 Reto 5S, 🕵️ MudaLab y 🗺️ La Ruta del Riesgo.'],
               ['❓ Ayuda', 'Este manual, con buscador.'],
               ['Tu nombre (a la derecha)', 'Tu rol y tu correo, 👥 Usuarios y permisos (solo administradores) y el botón Salir.'],
             ]}

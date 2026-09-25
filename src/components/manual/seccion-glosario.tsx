@@ -22,7 +22,7 @@ export function SeccionGlosario() {
           </Pregunta>
           <Pregunta p="¿Qué son los datos de «Demostración»?">
             <p>
-              Son ejemplos inventados (Distribuidora Andina, Confecciones Río Claro, Metalmecánica del Sur, Clínica Santa Lucía, el reto CAZA26, la carrera KAIZ26, el Reto 5S LIMP26 y el caso MudaLab MUDA26) para
+              Son ejemplos inventados (Distribuidora Andina, Confecciones Río Claro, Metalmecánica del Sur, Clínica Santa Lucía, el reto CAZA26, la carrera KAIZ26, el Reto 5S LIMP26, el caso MudaLab MUDA26 y la Ruta del Riesgo RIES26) para
               ver cómo fluye la información. Todos tienen el grupo «Demostración» y se pueden borrar cuando empieces con tus clientes reales.
             </p>
           </Pregunta>
@@ -82,6 +82,23 @@ export function SeccionGlosario() {
               ['Mitigación', 'Lo que se hace para que un riesgo no pase o duela menos.'],
               ['Aporte o cofinanciación', 'Dinero que pone el cliente o un tercero para financiar parte del proyecto.'],
               ['Bitácora', 'El diario de las intervenciones: qué se hizo, cuándo y cuánto tiempo.'],
+            ]}
+          />
+        </Sub>
+        <Sub titulo="Prevención de LA/FT (La Ruta del Riesgo)">
+          <Tabla
+            filas={[
+              ['LA/FT', 'Lavado de activos (hacer que dinero ilícito parezca legal) y financiación del terrorismo.'],
+              ['SAGRILAFT y SARLAFT', 'Los sistemas de prevención de LA/FT en Colombia: SAGRILAFT para empresas vigiladas por la Supersociedades; SARLAFT para entidades financieras y otros sectores.'],
+              ['Señal de alerta', 'Algo que no encaja con lo que se sabe de un cliente, proveedor u operación. No es una acusación: es una razón para mirar mejor.'],
+              ['Contraparte', 'Cualquiera con quien la empresa tiene una relación: clientes, proveedores, socios, empleados.'],
+              ['Debida diligencia', 'Los pasos para conocer a una contraparte antes y durante la relación. Es más profunda (intensificada) cuando el riesgo es mayor.'],
+              ['Beneficiario final', 'La persona natural que de verdad es dueña o controla una empresa, aunque no aparezca en el primer papel.'],
+              ['PEP', 'Persona Expuesta Políticamente: alguien con un cargo público importante. No es una falta, pero pide más controles.'],
+              ['Listas restrictivas', 'Listas de personas vinculadas con delitos. La del Consejo de Seguridad de la ONU es obligatoria (vinculante) en Colombia.'],
+              ['Operación inusual', 'La que no corresponde al perfil de la contraparte. Se reporta internamente a quien defina el procedimiento.'],
+              ['ROS', 'Reporte de Operación Sospechosa a la UIAF (la Unidad de Información y Análisis Financiero). Lo hace el oficial de cumplimiento, no cada colaborador.'],
+              ['Reserva de la información', 'Lo que se analiza o reporta no se le cuenta a la contraparte ni a quien no lo necesita.'],
             ]}
           />
         </Sub>

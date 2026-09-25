@@ -40,7 +40,14 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   6 = Mundo 2 «Mi proceso» (`ml_oportunidades`, votos = uuid[] de jugadores). Todo en `src/lib/mudalab.ts`
   (`puntuar` en servidor guarda `resumen` jsonb; la misión 5 usa el plan de la 4; `marcadorMl` = madurez 1-8 e
   insignias; `recomendacionesMl` incluye las oportunidades más votadas con ref `ml-op-<id>`).
-- `/juegos` agrupa los cuatro juegos.
+- `/riesgo` — **La Ruta del Riesgo** (SAGRILAFT/SARLAFT, tablas `rr_*`): empresa inventada Textiles Horizonte;
+  8 retos (señales, contraparte con 5 fichas, beneficiario final con estructura de propiedad, sigue el dinero,
+  semáforo con razón, cartas de evento, escalar, caso final). Cada sesión guarda la ruta de la empresa (`marco`,
+  `responsable`, `canal`, `umbral`) y los textos usan `{responsable}`/`{canal}` (`conRuta`). Puntos de la tabla del
+  documento base; `puntuar` en servidor guarda `resumen` (competencias, señales, ignoradas, confidencial, fallos).
+  `marcadorRr` = 5 competencias, perfiles y certificación «Guardián del Riesgo»; informe «Cierre y evaluación» y
+  `/riesgo/[id]/certificados`. Todo en `src/lib/riesgo.ts`. Demo aparte: `supabase/demo/ruta_riesgo.sql` (RIES26).
+- `/juegos` agrupa los cinco juegos.
 - Menú (`src/components/menu-principal.tsx`, cliente): 🧭 Mi panel · 💼 Consultoría (Proyectos, Control de
   procesos, Mis finanzas) · 🎲 Juegos · ❓ Ayuda · menú de la persona (rol, Usuarios, Salir). En computador
   (lg+) son desplegables; en tablet/celular un botón ☰ abre una pantalla con los grupos. El encabezado NO
@@ -106,7 +113,7 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   solo se guarda su hash (`mk_jugadores.token_hash`). Ver `src/lib/jugador.ts`.
 - Los puntos no se guardan: se calculan en vivo (`calcularPuntos` en `src/lib/makigami.ts`,
   `calcularMarcador` en `src/lib/kaizen.ts`).
-- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos), `pr_*` (proyectos), `fn_*` (finanzas), `s5_*` (Reto 5S), `ml_*` (MudaLab). Todas con RLS sin políticas.
+- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos), `pr_*` (proyectos), `fn_*` (finanzas), `s5_*` (Reto 5S), `ml_*` (MudaLab), `rr_*` (Ruta del Riesgo). Todas con RLS sin políticas.
 
 ## Base de datos
 - Migraciones en `supabase/migrations/`, siempre idempotentes (`if not exists`, `do $$ ... exception`).
@@ -124,6 +131,7 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   administradora: Carrera Kaizen completa (3 rondas, 2 equipos), informe, envío al plan y proceso.
   Los datos de prueba se borraron.
 - Migraciones 0001–0008 y demo_completo.sql corridas (confirmado 2026-09-24). MudaLab MUDA26 verificado en producción (informe, puntajes, Banco, envío al plan). Revisión responsive por iframes a 390/768/1366 px: sin desbordes.
+- 0009_riesgo.sql corrida (2026-09-25). **Pendiente:** la usuaria debe correr `demo/ruta_riesgo.sql` (RIES26).
 - Usuarios: cada facilitador escribe su nombre en /panel (`cambiarMiNombre`); en /usuarios se crean,
   editan (nombre, rol, activo) y retiran (`retirarUsuario` borra la cuenta de Auth) cuentas.
 - Probar jugadores sin navegador: POST a la página con cabecera `Next-Action: <id>` (el id sale del HTML
