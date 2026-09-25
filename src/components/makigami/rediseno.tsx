@@ -98,7 +98,7 @@ export function Rediseno({
   return (
     <div className="space-y-4">
       {/* Simulador antes / después */}
-      <div className="card overmarca-hidden">
+      <div className="card overflow-hidden">
         <div className="bg-degradado px-5 py-4 text-white">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -286,7 +286,7 @@ function BarraTiempo({ etiqueta, valor, max, clase }: { etiqueta: string; valor:
   return (
     <div className="flex items-center gap-3">
       <span className="w-20 shrink-0 text-xs font-medium text-marmol-500">{etiqueta}</span>
-      <div className="h-4 flex-1 overmarca-hidden rounded-full bg-marmol-100">
+      <div className="h-4 flex-1 overflow-hidden rounded-full bg-marmol-100">
         <div className={`${clase} h-full rounded-full transition-all duration-700 ease-out`} style={{ width: `${max > 0 ? Math.max(2, (valor / max) * 100) : 0}%` }} />
       </div>
       <span className="w-16 shrink-0 text-right text-xs font-semibold text-marmol-700">{formatearDuracion(valor)}</span>

@@ -107,7 +107,7 @@ export function MapaMakigami({
   }
 
   return (
-    <div className="card overmarca-x-auto">
+    <div className="card overflow-x-auto">
       <div
         className="relative grid"
         style={{

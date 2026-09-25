@@ -122,35 +122,37 @@ export default async function InformeProyectoPage({ params, searchParams }: { pa
       {hitos.length > 0 && (
         <SeccionInforme titulo="🗓️ Cronograma">
           <Cronograma proyectoId={p.id} inicio={p.fecha_inicio} fin={p.fecha_fin} hitos={hitos} referencias={{}} soloLectura />
-          <table className="mt-4 w-full text-xs">
-            <thead className="text-left text-marmol-400">
-              <tr>
-                <th className="py-1 font-medium">Hito</th>
-                <th className="font-medium">Responsable</th>
-                <th className="font-medium">Fecha límite</th>
-                <th className="font-medium">Estado</th>
-                <th className="font-medium">Vence</th>
-              </tr>
-            </thead>
-            <tbody>
-              {hitosOrden.map((h) => (
-                <tr key={h.id} className="border-t border-marmol-100">
-                  <td className="py-1 pr-2 text-marmol-800">
-                    {h.nombre}
-                    {h.situacion && <span className="block text-[10px] text-marmol-500">{h.situacion}</span>}
-                  </td>
-                  <td className="pr-2 text-marmol-600">{h.responsable ?? '—'}</td>
-                  <td className="whitespace-nowrap pr-2 text-marmol-600">{h.fecha_limite ? formatearFecha(h.fecha_limite) : '—'}</td>
-                  <td className="pr-2">
-                    <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', ESTADOS_HITO[h.estado].clase)}>{ESTADOS_HITO[h.estado].nombre}</span>
-                  </td>
-                  <td className="whitespace-nowrap">
-                    <Vence hito={h} />
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="mt-4 w-full text-xs min-w-[30rem]">
+              <thead className="text-left text-marmol-400">
+                <tr>
+                  <th className="py-1 font-medium">Hito</th>
+                  <th className="font-medium">Responsable</th>
+                  <th className="font-medium">Fecha límite</th>
+                  <th className="font-medium">Estado</th>
+                  <th className="font-medium">Vence</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {hitosOrden.map((h) => (
+                  <tr key={h.id} className="border-t border-marmol-100">
+                    <td className="py-1 pr-2 text-marmol-800">
+                      {h.nombre}
+                      {h.situacion && <span className="block text-[10px] text-marmol-500">{h.situacion}</span>}
+                    </td>
+                    <td className="pr-2 text-marmol-600">{h.responsable ?? '—'}</td>
+                    <td className="whitespace-nowrap pr-2 text-marmol-600">{h.fecha_limite ? formatearFecha(h.fecha_limite) : '—'}</td>
+                    <td className="pr-2">
+                      <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold', ESTADOS_HITO[h.estado].clase)}>{ESTADOS_HITO[h.estado].nombre}</span>
+                    </td>
+                    <td className="whitespace-nowrap">
+                      <Vence hito={h} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </SeccionInforme>
       )}
 
@@ -178,18 +180,20 @@ export default async function InformeProyectoPage({ params, searchParams }: { pa
             {p.horas_contratadas ? ` de ${formatearHoras(p.horas_contratadas)}` : ''}.
           </p>
           {pagos.length > 0 && (
-            <table className="mt-2 w-full text-xs">
-              <tbody>
-                {pagos.map((x) => (
-                  <tr key={x.id} className="border-t border-marmol-100">
-                    <td className="py-1 text-marmol-800">{x.concepto}</td>
-                    <td className="text-right font-semibold">{formatearPesos(Number(x.valor))}</td>
-                    <td className="pl-3 text-marmol-500">{x.estado}</td>
-                    <td className="text-marmol-500">{x.fecha_limite ? formatearFecha(x.fecha_limite) : ''}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="mt-2 w-full text-xs min-w-[30rem]">
+                <tbody>
+                  {pagos.map((x) => (
+                    <tr key={x.id} className="border-t border-marmol-100">
+                      <td className="py-1 text-marmol-800">{x.concepto}</td>
+                      <td className="text-right font-semibold">{formatearPesos(Number(x.valor))}</td>
+                      <td className="pl-3 text-marmol-500">{x.estado}</td>
+                      <td className="text-marmol-500">{x.fecha_limite ? formatearFecha(x.fecha_limite) : ''}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </SeccionInforme>
       )}

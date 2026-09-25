@@ -56,7 +56,7 @@ export function AnalisisProceso({
       </div>
 
       <div>
-        <div className="flex h-5 w-full overmarca-hidden rounded-full bg-marmol-100">
+        <div className="flex h-5 w-full overflow-hidden rounded-full bg-marmol-100">
           {segmentos.map((s) =>
             s.valor > 0 ? (
               <div
