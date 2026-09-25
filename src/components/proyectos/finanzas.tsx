@@ -356,7 +356,7 @@ export function Finanzas({
                   const a = aportesDelMes(ingreso, parametros);
                   return (
                     <tr key={mes} className="border-t border-marmol-100 text-right">
-                      <td className="py-1 text-left capitalize text-marmol-700">{formatoMes(mes)}</td>
+                      <td className="py-1 text-left text-marmol-700">{formatoMes(mes)}</td>
                       <td>{pesos(ingreso)}</td>
                       <td>{pesos(a.ibc)}</td>
                       <td>{pesos(a.salud)}</td>

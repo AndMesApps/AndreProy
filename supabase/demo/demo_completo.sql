@@ -300,8 +300,12 @@ begin
     (pr2, 'Cierre', 'Informe final y acta de cierre', 'Resultados contra la meta, entregables y encuesta de satisfacción.', null, 'Andrea', null, '2026-11-08', null, 'pendiente', 2, null, null, 60);
   insert into pr_bitacora (proyecto_id, fecha, actividad, tiempo_min, estado_tras, proximo_paso, fecha_proximo, registrado_por) values
     (pr2, '2026-08-11', 'Visita de diagnóstico y firma del acta de inicio.', 240, 'al_dia', 'Entregar el plan de trabajo', '2026-08-14', v_dueno),
+    (pr2, '2026-08-18', 'Taller de indicadores con jefes de área.', 240, 'al_dia', 'Capacitación en tablero digital', '2026-08-28', v_dueno),
+    (pr2, '2026-08-25', 'Levantamiento de tiempos en corte y confección.', 240, 'al_dia', 'Capacitación en tablero digital', '2026-08-28', v_dueno),
     (pr2, '2026-08-28', 'Capacitación en tablero digital de producción (2 sesiones).', 480, 'al_dia', 'Recolectar datos de línea base', '2026-09-05', v_dueno),
-    (pr2, '2026-09-12', 'Envío de la línea base de los 6 indicadores.', 300, 'pendiente', 'Esperar la revisión del cliente', '2026-09-16', v_dueno);
+    (pr2, '2026-09-05', 'Acompañamiento en planta: registro en el tablero digital.', 180, 'al_dia', 'Enviar la línea base', '2026-09-12', v_dueno),
+    (pr2, '2026-09-12', 'Envío de la línea base de los 6 indicadores.', 300, 'pendiente', 'Esperar la revisión del cliente', '2026-09-16', v_dueno),
+    (pr2, '2026-09-19', 'Ajuste de la línea base con los datos de agosto.', 120, 'pendiente', 'Esperar la revisión del cliente', '2026-09-26', v_dueno);
   insert into pr_riesgos (proyecto_id, descripcion, probabilidad, impacto, mitigacion, responsable, estado) values
     (pr2, 'Superar las 30 horas acordadas antes de que el cliente apruebe el plan.', 'alta', 'alto', null, 'Andrea', 'abierto');
 

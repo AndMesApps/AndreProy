@@ -170,7 +170,7 @@ export default async function FinanzasPage() {
               <tbody>
                 {meses.map((m) => (
                   <tr key={m.mes} className={cn('border-t border-marmol-100 text-right align-top', m.mes === mesActual && 'bg-marca-50/60')}>
-                    <td className="py-1.5 text-left capitalize text-marmol-700">
+                    <td className="py-1.5 text-left text-marmol-700">
                       {formatoMes(m.mes)}
                       {m.mes === mesActual && <span className="ml-1 rounded bg-marca-500 px-1 text-[9px] font-semibold uppercase text-white">hoy</span>}
                       <span className="block text-[10px] normal-case text-marmol-400">{m.porProyecto.map((x) => x.cliente).join(' · ')}</span>
@@ -239,8 +239,8 @@ export default async function FinanzasPage() {
               <tbody>
                 {meses.map((m) => (
                   <tr key={m.mes} className="border-t border-marmol-100 text-right">
-                    <td className="py-1.5 text-left capitalize text-marmol-700">{formatoMes(m.mes)}</td>
-                    <td className="capitalize text-marmol-500">{formatoMes(mesSiguiente(m.mes))}</td>
+                    <td className="py-1.5 text-left text-marmol-700">{formatoMes(m.mes)}</td>
+                    <td className="text-marmol-500">{formatoMes(mesSiguiente(m.mes))}</td>
                     <td>{pesos(m.aportes.ibc)}</td>
                     <td>{pesos(m.aportes.salud)}</td>
                     <td>{pesos(m.aportes.pension)}</td>

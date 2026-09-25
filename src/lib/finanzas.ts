@@ -347,7 +347,8 @@ export function ingresoPorMes(p: ProyectoFinanzas, horasRealesPorMes: Map<string
 
 export function formatoMes(mes: string) {
   const [a, m] = mes.split('-').map(Number);
-  return new Date(a!, m! - 1, 15).toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
+  const t = new Date(a!, m! - 1, 15).toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
+  return t.charAt(0).toUpperCase() + t.slice(1);
 }
 
 export const pesos = (n: number | null | undefined) =>
