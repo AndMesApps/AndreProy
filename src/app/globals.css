@@ -55,3 +55,9 @@ textarea {
     margin: 14mm;
   }
 }
+
+/* Palabras encontradas por el buscador del manual. */
+::highlight(manual) {
+  background-color: #fde68a;
+  color: inherit;
+}

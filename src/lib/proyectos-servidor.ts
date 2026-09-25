@@ -73,14 +73,15 @@ export async function cargarProyecto(id: string, facilitador: Facilitador) {
 
   const listaProcesos = (procesos.data ?? []) as any[];
   const idsProcesos = listaProcesos.map((x) => x.id as string);
-  const [medProc, accProc, retos, carreras] = idsProcesos.length
+  const [medProc, accProc, retos, carreras, retos5s] = idsProcesos.length
     ? await Promise.all([
         sb.from('pc_mediciones').select('proceso_id, fecha, valor').in('proceso_id', idsProcesos),
         sb.from('pc_acciones').select('proceso_id, estado').in('proceso_id', idsProcesos),
         sb.from('mk_retos').select('proceso_id').in('proceso_id', idsProcesos),
         sb.from('kz_sesiones').select('proceso_id').in('proceso_id', idsProcesos),
+        sb.from('s5_sesiones').select('proceso_id').in('proceso_id', idsProcesos),
       ])
-    : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }];
+    : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }, { data: [] }];
 
   const vistaProcesos: ProcesoDelProyecto[] = listaProcesos.map((x) => {
     const proc: ProcesoMinimo = { ...x, linea_base: num(x.linea_base), meta: num(x.meta), frecuencia: x.frecuencia as Frecuencia };
@@ -94,7 +95,7 @@ export async function cargarProyecto(id: string, facilitador: Facilitador) {
       ultima: ultimaMedicion(meds)?.valor ?? null,
       semaforo: semaforo(proc, meds),
       accionesAbiertas: ((accProc.data ?? []) as any[]).filter((a) => a.proceso_id === x.id && (a.estado === 'pendiente' || a.estado === 'en_curso')).length,
-      juegos: [...((retos.data ?? []) as any[]), ...((carreras.data ?? []) as any[])].filter((j) => j.proceso_id === x.id).length,
+      juegos: [...((retos.data ?? []) as any[]), ...((carreras.data ?? []) as any[]), ...((retos5s.data ?? []) as any[])].filter((j) => j.proceso_id === x.id).length,
     };
   });
 

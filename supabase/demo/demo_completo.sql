@@ -36,6 +36,9 @@ declare
   -- carrera kaizen
   kz uuid; eq_a uuid; eq_f uuid; eq_c uuid;
   tk_a2 uuid; tk_a3 uuid; tk_f2 uuid;
+  -- reto 5S
+  s5 uuid; q1 uuid; q2 uuid; q3 uuid;
+  j1 uuid; j2 uuid; j3 uuid; j4 uuid; j5 uuid; j6 uuid; j7 uuid; j8 uuid;
 begin
   -- --------------------------------------------------------------------------
   -- Limpieza de la demo anterior
@@ -44,6 +47,8 @@ begin
   delete from pr_proyectos where grupo = 'Demostración';
   delete from kz_jugadores where sesion_id in (select id from kz_sesiones where codigo = 'KAIZ26');
   delete from kz_sesiones where codigo = 'KAIZ26';
+  delete from s5_jugadores where sesion_id in (select id from s5_sesiones where codigo = 'LIMP26');
+  delete from s5_sesiones where codigo = 'LIMP26';
 
   -- Dueña de la demo: la cuenta de Andrea (la primera que exista).
   select id into v_dueno from auth.users
@@ -475,6 +480,67 @@ begin
     (pr3, 'apoyo', 'Diseñador para el prototipo', 1500000);
   insert into pr_pagos (proyecto_id, concepto, tipo, valor, fecha_limite, fecha_pago, estado, categoria) values
     (pr3, 'Diseñador del prototipo', 'gasto', 1500000, '2026-09-18', '2026-09-18', 'pagado', 'apoyo');
+
+
+  -- ==========================================================================
+  -- 7. RETO 5S (ya jugado, unido al proceso de compras)
+  -- ==========================================================================
+  insert into s5_sesiones (codigo, titulo, descripcion, escenario, estado, mision_actual, registro_abierto, creado_por, proceso_id, cerrado_en, created_at)
+  values ('LIMP26', 'Reto 5S · Compras y Almacén', 'Del caos al flujo en el área de compras: primero jugamos, luego lo llevamos a nuestros puestos.',
+          'oficina', 'cerrado', 6, false, v_dueno, pc, '2026-09-24 12:00-05', '2026-09-18 08:00-05')
+  returning id into s5;
+  insert into s5_equipos (sesion_id, nombre, emoji, created_at) values (s5, 'Los Clasificadores', '🦊', '2026-09-18 08:05-05') returning id into q1;
+  insert into s5_equipos (sesion_id, nombre, emoji, created_at) values (s5, 'Orden y Flujo', '🦉', '2026-09-18 08:06-05') returning id into q2;
+  insert into s5_equipos (sesion_id, nombre, emoji, created_at) values (s5, 'Cero Búsquedas', '🐺', '2026-09-18 08:07-05') returning id into q3;
+  insert into s5_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (s5, q1, 'Paula', 'Gómez Arias', 'Jefe de Compras', true, 'femenino', true, md5(random()::text || clock_timestamp())) returning id into j1;
+  insert into s5_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (s5, q1, 'Esteban', 'Mora Ruiz', 'Analista de compras', false, 'masculino', true, md5(random()::text || clock_timestamp())) returning id into j2;
+  insert into s5_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (s5, q1, 'Natalia', 'Pérez Cano', 'Auxiliar administrativa', false, 'femenino', true, md5(random()::text || clock_timestamp())) returning id into j3;
+  insert into s5_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (s5, q2, 'Jorge', 'Salazar Vélez', 'Almacenista', true, 'masculino', true, md5(random()::text || clock_timestamp())) returning id into j4;
+  insert into s5_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (s5, q2, 'Camila', 'Ríos Henao', 'Analista contable', false, 'femenino', true, md5(random()::text || clock_timestamp())) returning id into j5;
+  insert into s5_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (s5, q2, 'Luis', 'Ortiz Gil', 'Auxiliar de compras', false, 'masculino', true, md5(random()::text || clock_timestamp())) returning id into j6;
+  insert into s5_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (s5, q3, 'Diana', 'López Marín', 'Coordinadora administrativa', true, 'femenino', true, md5(random()::text || clock_timestamp())) returning id into j7;
+  insert into s5_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (s5, q3, 'Felipe', 'Castro Soto', 'Asistente de gerencia', false, 'masculino', true, md5(random()::text || clock_timestamp())) returning id into j8;
+
+  -- Jugadas de cada misión (rotando quién entrega = colaboración).
+  insert into s5_intentos (sesion_id, equipo_id, mision, jugador_id, inicio, fin, aciertos, errores, puntos) values
+    (s5, q1, 1, j1, '2026-09-18 08:30-05', '2026-09-18 08:31:20-05', 18, 2, 197),
+    (s5, q1, 2, j2, '2026-09-18 08:45-05', '2026-09-18 08:52-05', 14, 1, 170),
+    (s5, q1, 3, j3, '2026-09-18 09:10-05', '2026-09-18 09:13-05', 9, 2, 176),
+    (s5, q1, 4, j1, '2026-09-18 09:30-05', '2026-09-18 09:36-05', 10, 1, 92),
+    (s5, q1, 5, j2, '2026-09-18 09:50-05', '2026-09-18 09:56-05', 10, 2, 124),
+    (s5, q2, 1, j4, '2026-09-18 08:30-05', '2026-09-18 08:32:10-05', 15, 5, 125),
+    (s5, q2, 2, j5, '2026-09-18 08:45-05', '2026-09-18 08:55-05', 12, 3, 146),
+    (s5, q2, 3, j6, '2026-09-18 09:10-05', '2026-09-18 09:14-05', 8, 4, 118),
+    (s5, q2, 4, j4, '2026-09-18 09:30-05', '2026-09-18 09:38-05', 7, 4, 42),
+    (s5, q2, 5, j5, '2026-09-18 09:50-05', '2026-09-18 09:57-05', 8, 4, 98),
+    (s5, q3, 1, j7, '2026-09-18 08:30-05', '2026-09-18 08:31:05-05', 17, 3, 180),
+    (s5, q3, 2, j8, '2026-09-18 08:45-05', '2026-09-18 08:50-05', 15, 1, 181),
+    (s5, q3, 3, j7, '2026-09-18 09:10-05', '2026-09-18 09:12:30-05', 10, 1, 205),
+    (s5, q3, 4, j8, '2026-09-18 09:30-05', '2026-09-18 09:35-05', 9, 2, 84),
+    (s5, q3, 5, j7, '2026-09-18 09:50-05', '2026-09-18 09:55-05', 11, 1, 132);
+
+  -- Misiones reales.
+  insert into s5_misiones_reales (sesion_id, equipo_id, tipo_area, area, problema, foto_antes, foto_despues, hallazgos, acciones, resultados, auditoria_antes, auditoria_despues, estado, comentario, puntos_bono) values
+    (s5, q1, 'Archivo', 'Archivo de compras, primer piso', 'Se tardan hasta 15 minutos buscando una orden de compra; hay cajas de años viejos mezcladas con las del mes.',
+     'Foto en el grupo de WhatsApp del equipo (18/09)', 'Foto en el grupo de WhatsApp del equipo (23/09)',
+     '{"innecesarios": 14, "desorden": 9, "suciedad": 2, "problemas": 3, "riesgos": 1, "obsoleta": 6}',
+     '{"Clasificar": "Sacamos 14 cajas: 9 a archivo central y 5 a reciclaje", "Ordenar": "Estantes etiquetados por año y proveedor; lo del mes a la altura de la mano", "Limpiar": "Se reparó la gotera que mojaba las cajas", "Estandarizar": "Foto estándar pegada en la puerta y mapa del archivo", "Sostener": "Revisión de 5 minutos cada viernes con responsable rotativo"}',
+     '{"minutos_ahorrados": 25, "busqueda_antes": 900, "busqueda_despues": 45, "espacio_liberado": 3, "elementos_eliminados": 14, "riesgos_eliminados": 1}',
+     '{"0": 1, "1": 1, "2": 2, "3": 0, "4": 1}', '{"0": 4, "1": 4, "2": 3, "3": 3, "4": 3}', 'validada', 'Excelente: el tiempo de búsqueda bajó de 15 minutos a 45 segundos.', 80),
+    (s5, q2, 'Puesto de trabajo', 'Bodega de insumos de oficina', 'Nunca se sabe cuánto papel y tóner queda; se piden compras urgentes.',
+     'Foto en Drive', 'Foto en Drive',
+     '{"innecesarios": 6, "desorden": 11, "suciedad": 1, "problemas": 2, "riesgos": 2}',
+     '{"Clasificar": "Retiramos cajas vacías y tóner de impresoras que ya no existen", "Ordenar": "Estantes con nivel mínimo y máximo marcado", "Limpiar": "Limpieza y revisión de humedad", "Estandarizar": "Tarjeta kanban para pedir cuando se llega al mínimo"}',
+     '{"minutos_ahorrados": 10, "elementos_eliminados": 6, "riesgos_eliminados": 2}',
+     '{"0": 2, "1": 1, "2": 2, "3": 1, "4": 1}', '{"0": 3, "1": 4, "2": 3, "3": 3, "4": 2}', 'enviada', null, 0),
+    (s5, q3, 'Información digital', 'Carpeta compartida de Compras', 'Hay 4 versiones del formato de solicitud y nadie sabe cuál usar.',
+     null, null, '{"obsoleta": 12}', '{"Clasificar": "Identificamos 12 archivos obsoletos"}', '{}',
+     '{"0": 1, "1": 1, "2": 2, "3": 1, "4": 1}', '{}', 'borrador', null, 0);
+
+  -- Una mejora del reto 5S ya llegó al plan del proceso.
+  insert into pc_acciones (proceso_id, titulo, detalle, responsable, fecha_compromiso, estado, origen, origen_id, origen_ref) values
+    (pc, 'Replicar la mejora de 🦊 Los Clasificadores en «Archivo de compras, primer piso» (25 % → 85 %)',
+     'Estantes por año y proveedor, foto estándar y revisión de 5 minutos cada viernes. Llevarlo al archivo de contabilidad.', 'Paula Gómez', '2026-10-17', 'pendiente', 'cincos', s5, s5 || ':s5-replicar-' || q1);
 
   raise notice 'Demo creada. Dueña: %', coalesce((select email from auth.users where id = v_dueno), 'NINGUNA (solo la ven los administradores)');
 end $$;

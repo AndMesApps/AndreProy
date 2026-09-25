@@ -16,6 +16,13 @@ const JUEGOS = [
     uso: 'Mejorar',
     descripcion: 'Rondas cronometradas donde cada equipo busca la causa de sus problemas, prueba una mejora y predice el resultado. Gana quien mejora de verdad, con datos.',
   },
+  {
+    ruta: '/cincos',
+    emoji: '🧹',
+    nombre: 'Reto 5S',
+    uso: 'Sostener',
+    descripcion: 'Del caos al flujo: misiones de decisiones para clasificar, ordenar, limpiar buscando la causa, estandarizar y sostener. Termina en un espacio real de la empresa.',
+  },
 ];
 
 export default async function Inicio() {
@@ -35,7 +42,7 @@ export default async function Inicio() {
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         {JUEGOS.map((j) => (
           <Link key={j.ruta} href={j.ruta} className="card group p-5 transition hover:-translate-y-0.5 hover:border-marca-300 hover:shadow-md">
             <p className="text-4xl">{j.emoji}</p>

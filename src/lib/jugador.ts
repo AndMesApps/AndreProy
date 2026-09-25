@@ -60,6 +60,7 @@ export interface JugadorActual {
 const TABLAS = {
   makigami: { tabla: 'mk_jugadores', columna: 'reto_id' },
   kaizen: { tabla: 'kz_jugadores', columna: 'sesion_id' },
+  cincos: { tabla: 's5_jugadores', columna: 'sesion_id' },
 } as const;
 export type Juego = keyof typeof TABLAS;
 

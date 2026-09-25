@@ -36,15 +36,18 @@ export default async function ProcesoPage({ params }: { params: Promise<{ id: st
 
   let consultaRetos = sb.from('mk_retos').select('id, titulo, estado, proceso_id').order('created_at', { ascending: false }).limit(100);
   let consultaCarreras = sb.from('kz_sesiones').select('id, titulo, estado, proceso_id').order('created_at', { ascending: false }).limit(100);
+  let consulta5S = sb.from('s5_sesiones').select('id, titulo, estado, proceso_id').order('created_at', { ascending: false }).limit(100);
   if (facilitador.rol !== 'admin') {
     consultaRetos = consultaRetos.eq('creado_por', facilitador.id);
     consultaCarreras = consultaCarreras.eq('creado_por', facilitador.id);
+    consulta5S = consulta5S.eq('creado_por', facilitador.id);
   }
-  const [{ data: mediciones }, { data: acciones }, { data: retos }, { data: carreras }] = await Promise.all([
+  const [{ data: mediciones }, { data: acciones }, { data: retos }, { data: carreras }, { data: retos5s }] = await Promise.all([
     sb.from('pc_mediciones').select('id, fecha, valor, nota').eq('proceso_id', id).order('fecha'),
     sb.from('pc_acciones').select('id, titulo, detalle, responsable, fecha_compromiso, estado, origen, created_at').eq('proceso_id', id),
     consultaRetos,
     consultaCarreras,
+    consulta5S,
   ]);
 
   const proceso: ProcesoMinimo = {
@@ -61,6 +64,7 @@ export default async function ProcesoPage({ params }: { params: Promise<{ id: st
   const juegos: JuegoVinculable[] = [
     ...((retos ?? []) as any[]).map((r) => ({ juego: 'makigami' as const, id: r.id, titulo: r.titulo, estado: r.estado, procesoId: r.proceso_id })),
     ...((carreras ?? []) as any[]).map((r) => ({ juego: 'kaizen' as const, id: r.id, titulo: r.titulo, estado: r.estado, procesoId: r.proceso_id })),
+    ...((retos5s ?? []) as any[]).map((r) => ({ juego: 'cincos' as const, id: r.id, titulo: r.titulo, estado: r.estado, procesoId: r.proceso_id })),
   ];
   const juegosUnidos = juegos.filter((j) => j.procesoId === id).length;
 

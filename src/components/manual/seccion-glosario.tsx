@@ -48,6 +48,12 @@ export function SeccionGlosario() {
               ['Estándar', 'La forma acordada de hacer algo, que todos siguen hasta que se mejore.'],
               ['Poka-yoke', 'Algo que hace imposible (o muy difícil) cometer un error. Ej.: un campo obligatorio.'],
               ['5S digital', 'Orden de la información: cada archivo en su lugar y fácil de encontrar.'],
+              ['5S', 'Clasificar (Seiri), Ordenar (Seiton), Limpiar (Seiso), Estandarizar (Seiketsu) y Sostener (Shitsuke).'],
+              ['Tarjeta roja', 'Etiqueta para lo dudoso: se aparta en una zona y se decide en una fecha si se queda o sale.'],
+              ['Tablero de sombras', 'Tablero con la silueta de cada herramienta: si falta una, se ve de inmediato.'],
+              ['Control visual', 'Señal que muestra de un vistazo si algo está bien o mal: etiquetas, colores, marcas en el piso, niveles mínimo y máximo.'],
+              ['Auditoría 5S', 'Calificación de 0 a 4 de cada S en un espacio; el resultado es el % 5S.'],
+              ['Kanban (tablero)', 'Tablero con columnas por estado donde las tarjetas se mueven a medida que avanza el trabajo.'],
             ]}
           />
         </Sub>

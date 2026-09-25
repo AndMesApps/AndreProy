@@ -29,6 +29,12 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   💰 Finanzas: modelo de cobro (valor fijo, por horas, mixto), IVA, retenciones, aliado, viáticos,
   requisitos de cobro, presupuesto por categoría (`pr_presupuesto`), movimientos (`pr_pagos` con tipo
   viatico). Cálculos puros en `src/lib/finanzas.ts`. Valores de ley 2026 = referencia a confirmar.
+- `/cincos` — **Reto 5S — Del caos al flujo** (tablas `s5_*`): misiones 1-5 simuladas (escenarios oficina y
+  taller en `src/lib/cincos.ts`: contenido, roles que rotan, `puntuar` en el servidor con el tiempo real) y misión
+  6 real (auditoría 0-4 por S antes/después = % 5S, evidencias por enlace, validación de la facilitadora). Las
+  misiones se conectan: la 5 usa el orden que el equipo dejó en la 2. Informe con `recomendaciones5S`.
+- `/juegos` agrupa los tres juegos (el menú tiene 🎲 Juegos en vez de un enlace por juego).
+- `/ayuda` tiene buscador (`components/manual/buscador.tsx`): marca `data-seccion`/`data-sub` en `piezas.tsx`.
 - Tablero Kanban reutilizable (`src/components/kanban.tsx`): cronograma del proyecto (Gantt | Tabla |
   Tablero), plan de acción de procesos y portafolio de proyectos (`?vista=tablero`).
 - `/procesos` — **Control de procesos**: proceso con indicador (línea base, meta, sentido bajar/subir),
@@ -89,7 +95,7 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   solo se guarda su hash (`mk_jugadores.token_hash`). Ver `src/lib/jugador.ts`.
 - Los puntos no se guardan: se calculan en vivo (`calcularPuntos` en `src/lib/makigami.ts`,
   `calcularMarcador` en `src/lib/kaizen.ts`).
-- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos), `pr_*` (proyectos), `fn_*` (finanzas). Todas con RLS sin políticas.
+- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos), `pr_*` (proyectos), `fn_*` (finanzas), `s5_*` (Reto 5S). Todas con RLS sin políticas.
 
 ## Base de datos
 - Migraciones en `supabase/migrations/`, siempre idempotentes (`if not exists`, `do $$ ... exception`).
@@ -106,7 +112,7 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 - Migraciones 0001–0004 corridas en Supabase (confirmado 2026-09-24). Probado en producción con sesión de
   administradora: Carrera Kaizen completa (3 rondas, 2 equipos), informe, envío al plan y proceso.
   Los datos de prueba se borraron.
-- **Pendiente:** la usuaria debe correr `0006_finanzas.sql` y volver a correr `demo/demo_completo.sql`.
+- **Pendiente:** la usuaria debe correr `0007_cincos.sql` y volver a correr `demo/demo_completo.sql` (trae el Reto 5S LIMP26).
 - Usuarios: cada facilitador escribe su nombre en /panel (`cambiarMiNombre`); en /usuarios se crean,
   editan (nombre, rol, activo) y retiran (`retirarUsuario` borra la cuenta de Auth) cuentas.
 - Probar jugadores sin navegador: POST a la página con cabecera `Next-Action: <id>` (el id sale del HTML

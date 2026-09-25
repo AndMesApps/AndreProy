@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 
 export function Seccion({ id, emoji, titulo, resumen, children }: { id: string; emoji: string; titulo: string; resumen: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="card scroll-mt-20 space-y-4 p-5 sm:p-6 print:break-before-page">
-      <header className="border-b border-marmol-100 pb-3">
+    <section id={id} data-seccion className="card scroll-mt-20 space-y-4 p-5 sm:p-6 print:break-before-page">
+      <header data-cabeza className="border-b border-marmol-100 pb-3">
         <h2 className="font-display text-2xl font-bold text-secundario">
           <span className="mr-2">{emoji}</span>
           {titulo}
@@ -25,7 +25,7 @@ export function Seccion({ id, emoji, titulo, resumen, children }: { id: string; 
 
 export function Sub({ id, titulo, children }: { id?: string; titulo: string; children: React.ReactNode }) {
   return (
-    <div id={id} className="scroll-mt-20 space-y-2">
+    <div id={id} data-sub className="scroll-mt-20 space-y-2">
       <h3 className="font-display text-lg font-semibold text-marmol-900">{titulo}</h3>
       <div className="space-y-2 text-sm leading-relaxed text-marmol-700">{children}</div>
     </div>
@@ -82,7 +82,7 @@ export function Boton({ children, tono = 'marca' }: { children: React.ReactNode;
 
 export function Pregunta({ p, children }: { p: string; children: React.ReactNode }) {
   return (
-    <details className="group rounded-xl border border-marmol-200 p-3 open:bg-marmol-50/60">
+    <details data-sub className="group rounded-xl border border-marmol-200 p-3 open:bg-marmol-50/60">
       <summary className="cursor-pointer text-sm font-semibold text-marmol-800 marker:text-marca-500">{p}</summary>
       <div className="mt-2 space-y-1.5 text-sm leading-relaxed text-marmol-700">{children}</div>
     </details>

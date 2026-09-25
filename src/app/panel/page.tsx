@@ -39,7 +39,9 @@ export default async function PanelPage() {
     consultaCarreras = consultaCarreras.eq('creado_por', facilitador.id);
     consultaProcesos = consultaProcesos.eq('creado_por', facilitador.id);
   }
-  const [{ data: retos }, { data: carreras }, { data: procesos }] = await Promise.all([consultaRetos, consultaCarreras, consultaProcesos]);
+  let consulta5S = sb.from('s5_sesiones').select('id, codigo, titulo, estado, mision_actual, created_at, cerrado_en').order('created_at', { ascending: false }).limit(50);
+  if (!esAdmin) consulta5S = consulta5S.eq('creado_por', facilitador.id);
+  const [{ data: retos }, { data: carreras }, { data: procesos }, { data: retos5s }] = await Promise.all([consultaRetos, consultaCarreras, consultaProcesos, consulta5S]);
 
   const idsProcesos = ((procesos ?? []) as any[]).map((p) => p.id as string);
   const [{ data: mediciones }, { data: acciones }] = idsProcesos.length
@@ -76,6 +78,18 @@ export default async function PanelPage() {
         enlace: `${base}/kaizen/unirse/${s.codigo}`,
         fecha: s.created_at as string,
       })),
+    ...((retos5s ?? []) as any[])
+      .filter((s) => s.estado !== 'cerrado')
+      .map((s) => ({
+        juego: '🧹 Reto 5S',
+        id: s.id as string,
+        titulo: s.titulo as string,
+        codigo: s.codigo as string,
+        estado: s.mision_actual === 0 ? 'Preparación' : s.mision_actual <= 5 ? `Misión ${s.mision_actual} abierta` : 'Misión real',
+        ruta: `/cincos/${s.id}`,
+        enlace: `${base}/cincos/unirse/${s.codigo}`,
+        fecha: s.created_at as string,
+      })),
   ]
     .sort((a, b) => b.fecha.localeCompare(a.fecha))
     .slice(0, 12);
@@ -87,6 +101,7 @@ export default async function PanelPage() {
   const informes = [
     ...((retos ?? []) as any[]).map((r) => ({ juego: '🎯', id: r.id, titulo: r.titulo, ruta: `/makigami/${r.id}/informe`, cerrado: r.estado === 'cerrado', fecha: (r.cerrado_en ?? r.created_at) as string })),
     ...((carreras ?? []) as any[]).map((s) => ({ juego: '🔁', id: s.id, titulo: s.titulo, ruta: `/kaizen/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
+    ...((retos5s ?? []) as any[]).map((s) => ({ juego: '🧹', id: s.id, titulo: s.titulo, ruta: `/cincos/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
   ]
     .sort((a, b) => Number(b.cerrado) - Number(a.cerrado) || b.fecha.localeCompare(a.fecha))
     .slice(0, 8);
@@ -260,7 +275,7 @@ export default async function PanelPage() {
 
       <section className="space-y-3">
         <h2 className="font-display text-lg font-semibold text-secundario">🎲 Juegos</h2>
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-3">
           <TarjetaJuego
             ruta="/makigami"
             emoji="🎯"
@@ -276,6 +291,14 @@ export default async function PanelPage() {
             uso="Entrenar la mejora continua"
             descripcion="Rondas PDCA cronometradas con una simulación en el salón: 5 porqués, una idea, predicción y estándar. Gana quien mejora con datos."
             total={(carreras ?? []).length}
+          />
+          <TarjetaJuego
+            ruta="/cincos"
+            emoji="🧹"
+            nombre="Reto 5S"
+            uso="Crear hábitos de orden"
+            descripcion="Misiones del caos al flujo: clasificar, ordenar, limpiar buscando causas, estandarizar y sostener. Termina con una misión real con auditoría antes y después."
+            total={(retos5s ?? []).length}
           />
         </div>
         <p className="text-xs text-marmol-400">

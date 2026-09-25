@@ -28,7 +28,7 @@ export function SeccionJuegos() {
         <Sub titulo="1. Crear el reto y dibujar el proceso">
           <Pasos>
             <Paso>
-              En el menú toca <strong>🎯 Makigami</strong> y luego <Boton tono="blanco">+ Nuevo reto</Boton>.
+              En el menú toca <strong>🎲 Juegos → 🎯 Cacería Makigami</strong> y luego <Boton tono="blanco">+ Nuevo reto</Boton>.
             </Paso>
             <Paso>
               Escribe el título (ej. <em>¿Por qué una compra de papelería tarda 2 semanas?</em>), la descripción del problema, dónde empieza y dónde termina el proceso, y
@@ -172,7 +172,7 @@ export function SeccionJuegos() {
         <Sub titulo="1. Preparar la carrera">
           <Pasos>
             <Paso>
-              En el menú toca <strong>🔁 Kaizen</strong> y luego <Boton tono="blanco">+ Nueva carrera</Boton>.
+              En el menú toca <strong>🎲 Juegos → 🔁 Carrera Kaizen</strong> y luego <Boton tono="blanco">+ Nueva carrera</Boton>.
             </Paso>
             <Paso>
               Elige una simulación lista (✈️ Aviones de papel, ✉️ Cartas para enviar, 🧱 Ensamble de fichas, 📝 Solicitudes de oficina): se llenan solos el producto, la
@@ -254,7 +254,7 @@ export function SeccionJuegos() {
       <Seccion id="jugadores" emoji="📱" titulo="Para los jugadores" resumen="Lo que hace una persona que participa en un juego. No necesita cuenta ni clave.">
         <Sub titulo="Unirse a un juego">
           <Pasos>
-            <Paso>Escanea el QR con la cámara del celular, o abre el enlace que te enviaron, o entra a la app, abre Makigami o Kaizen y escribe el código de 6 letras.</Paso>
+            <Paso>Escanea el QR con la cámara del celular, o abre el enlace que te enviaron, o entra a la app, abre 🎲 Juegos y escribe el código de 6 letras en el juego que te indicaron.</Paso>
             <Paso>
               <strong>Paso 1 de 2</strong>: elige tu equipo. Si eres el primero de tu equipo, tócale «Mi equipo no está: crear uno nuevo».
             </Paso>
@@ -275,6 +275,7 @@ export function SeccionJuegos() {
             filas={[
               ['🎯 Makigami', 'Toca los pasos del mapa y marca los desperdicios que ve. En Rediseño propone mejoras y vota las de los demás.'],
               ['🔁 Kaizen', 'Con su equipo llena la tarjeta Kaizen, produce mientras corre el cronómetro, registra cuántas unidades salieron bien y decide si su idea se vuelve estándar.'],
+              ['🧹 Reto 5S', 'Juega las misiones con su equipo según el rol que le toca, y en la misión real llena con su equipo la auditoría, las evidencias y los resultados.'],
             ]}
           />
           <p>La pantalla del jugador cambia sola según la fase que abra la facilitadora. No hay que recargar.</p>

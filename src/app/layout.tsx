@@ -40,11 +40,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   💰<span className="hidden lg:inline"> Finanzas</span>
                 </Link>
               )}
-              <Link href="/makigami" className="hover:text-marca-600" title="Cacería Makigami">
-                🎯<span className="hidden lg:inline"> Makigami</span>
-              </Link>
-              <Link href="/kaizen" className="hover:text-marca-600" title="Carrera Kaizen">
-                🔁<span className="hidden lg:inline"> Kaizen</span>
+              <Link href="/juegos" className="hover:text-marca-600" title="Juegos: Makigami, Kaizen y 5S">
+                🎲<span className="hidden lg:inline"> Juegos</span>
               </Link>
               {facilitador && (
                 <Link href="/procesos" className="hover:text-marca-600" title="Control de procesos">
