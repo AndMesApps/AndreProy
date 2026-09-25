@@ -22,7 +22,7 @@ export function SeccionGlosario() {
           </Pregunta>
           <Pregunta p="¿Qué son los datos de «Demostración»?">
             <p>
-              Son ejemplos inventados (Distribuidora Andina, Confecciones Río Claro, Metalmecánica del Sur, Clínica Santa Lucía, el reto CAZA26 y la carrera KAIZ26) para
+              Son ejemplos inventados (Distribuidora Andina, Confecciones Río Claro, Metalmecánica del Sur, Clínica Santa Lucía, el reto CAZA26, la carrera KAIZ26, el Reto 5S LIMP26 y el caso MudaLab MUDA26) para
               ver cómo fluye la información. Todos tienen el grupo «Demostración» y se pueden borrar cuando empieces con tus clientes reales.
             </p>
           </Pregunta>
@@ -53,6 +53,13 @@ export function SeccionGlosario() {
               ['Tablero de sombras', 'Tablero con la silueta de cada herramienta: si falta una, se ve de inmediato.'],
               ['Control visual', 'Señal que muestra de un vistazo si algo está bien o mal: etiquetas, colores, marcas en el piso, niveles mínimo y máximo.'],
               ['Auditoría 5S', 'Calificación de 0 a 4 de cada S en un espacio; el resultado es el % 5S.'],
+              ['Muda', 'Palabra japonesa para desperdicio. Hay 8: transporte, inventario, movimiento, espera, sobreproducción, sobreprocesamiento, defectos y talento no aprovechado.'],
+              ['Gemba', '«El lugar real»: donde pasan las cosas. Ir al Gemba es ver el proceso con los propios ojos, no en el manual.'],
+              ['Cuello de botella', 'El paso donde el trabajo se represa más tiempo. Mejorar otro paso no acelera el proceso si el cuello sigue igual.'],
+              ['Causa raíz', 'La causa de fondo que, si se elimina, hace que el problema no vuelva. Nunca es «una persona»: es algo del proceso.'],
+              ['Ishikawa (espina de pescado)', 'Diagrama que ordena las causas de un problema en categorías: personas, método, tecnología, materiales, medición y entorno.'],
+              ['DMAIC', 'Definir, Medir, Analizar, Mejorar (Improve) y Controlar: las 5 fases para resolver un problema con método.'],
+              ['VSM (mapa de flujo de valor)', 'Dibujo de todo el proceso con los tiempos de trabajo y de espera, para ver dónde se pierde el flujo.'],
               ['Kanban (tablero)', 'Tablero con columnas por estado donde las tarjetas se mueven a medida que avanza el trabajo.'],
             ]}
           />

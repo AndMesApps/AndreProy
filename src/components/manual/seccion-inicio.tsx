@@ -38,13 +38,13 @@ export function SeccionInicio() {
               <strong>Ejecutar proyectos</strong> de consultoría sin perder nada de vista: fechas, entregables, horas, pagos y resultados.
             </li>
             <li>
-              <strong>Hacer talleres con juegos</strong> (Cacería Makigami y Carrera Kaizen) para que el equipo del cliente encuentre y resuelva sus problemas.
+              <strong>Hacer talleres con juegos</strong> (Cacería Makigami, Carrera Kaizen, Reto 5S y MudaLab) para que el equipo del cliente encuentre y resuelva sus problemas.
             </li>
             <li>
               <strong>Controlar los procesos</strong> después del taller, para que las mejoras no se queden en el papel.
             </li>
           </ul>
-          <p>Funciona en el computador y en el celular. No hay que instalar nada: solo se abre la dirección en el navegador.</p>
+          <p>Funciona en el computador, la tablet y el celular. No hay que instalar nada: solo se abre la dirección en el navegador.</p>
         </Sub>
 
         <Sub titulo="Cómo fluye la información">
@@ -103,18 +103,27 @@ export function SeccionInicio() {
         </Sub>
 
         <Sub titulo="El menú de arriba">
+          <p>El menú está organizado en grupos para encontrar todo rápido. La opción donde estás queda resaltada en color turquesa.</p>
           <Tabla
+            cabeza={['Grupo', 'Qué tiene']}
             filas={[
               ['🧭 Mi panel', 'Tu página de inicio: lo urgente de hoy.'],
-              ['🗂️ Proyectos', 'Todos tus proyectos de consultoría (portafolio).'],
-              ['💰 Finanzas', 'Tus parámetros, la proyección mes a mes, la planilla de seguridad social y la rentabilidad de cada proyecto.'],
-              ['🎲 Juegos', 'Los tres juegos: 🎯 Cacería Makigami, 🔁 Carrera Kaizen y 🧹 Reto 5S. También se entra a cada uno escribiendo su código.'],
-              ['📊 Procesos', 'El Control de procesos.'],
-              ['👥 Usuarios', 'Solo administradores: las cuentas.'],
-              ['❓ Ayuda', 'Este manual.'],
+              ['💼 Consultoría', '🗂️ Proyectos (tu portafolio), 📊 Control de procesos (indicadores, metas y plan de acción) y 💰 Mis finanzas (rentabilidad, impuestos y seguridad social).'],
+              ['🎲 Juegos', 'Todos los juegos, 🎯 Cacería Makigami, 🔁 Carrera Kaizen, 🧹 Reto 5S y 🕵️ MudaLab.'],
+              ['❓ Ayuda', 'Este manual, con buscador.'],
+              ['Tu nombre (a la derecha)', 'Tu rol y tu correo, 👥 Usuarios y permisos (solo administradores) y el botón Salir.'],
             ]}
           />
-          <p>En el celular el menú muestra solo los íconos para que quepa. Son los mismos de la tabla.</p>
+          <Pasos>
+            <Paso>
+              <strong>En el computador:</strong> toca el nombre del grupo (por ejemplo <Boton tono="blanco">💼 Consultoría ▾</Boton>) y se despliegan sus opciones con una
+              explicación corta. Toca la que necesites.
+            </Paso>
+            <Paso>
+              <strong>En la tablet o el celular:</strong> toca <Boton tono="blanco">☰ Menú</Boton> arriba a la derecha. Se abre una pantalla con todos los grupos en
+              tarjetas grandes, fáciles de tocar con el dedo. Para cerrarla toca <Boton tono="blanco">✕ Menú</Boton> o elige una opción.
+            </Paso>
+          </Pasos>
         </Sub>
       </Seccion>
 
@@ -155,7 +164,8 @@ export function SeccionInicio() {
         <Sub titulo="Crear una cuenta nueva">
           <Pasos>
             <Paso>
-              En el menú toca <strong>👥 Usuarios</strong> y luego <Boton>+ Nueva cuenta</Boton>.
+              Toca tu nombre arriba a la derecha y elige <strong>👥 Usuarios y permisos</strong> (en el celular: <strong>☰ Menú → Más → Usuarios y permisos</strong>).
+              Luego toca <Boton>+ Nueva cuenta</Boton>.
             </Paso>
             <Paso>
               Llena el <strong>nombre</strong> (así se identificará en toda la app), el <strong>correo</strong> (con él inicia sesión), el <strong>rol</strong> (Líder o

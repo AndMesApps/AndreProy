@@ -28,6 +28,14 @@ const JUEGOS = [
     que: 'Cinco misiones de decisiones (clasificar, ordenar, encontrar anomalías, crear el estándar y sostenerlo ante sorpresas) y una misión real con auditoría antes y después.',
     duracion: '2 horas + la misión real',
   },
+  {
+    ruta: '/mudalab',
+    emoji: '🕵️',
+    nombre: 'MudaLab — Recuperar el flujo',
+    para: 'Resolver problemas con método (DMAIC)',
+    que: 'Agencias de detectives resuelven un expediente: definen el caso, van al Gemba con fichas, cazan las 8 Mudas, llegan a la causa raíz, experimentan soluciones con presupuesto y evitan que la Muda regrese. Cierra con un Banco de oportunidades reales.',
+    duracion: '2 horas + Mi proceso',
+  },
 ];
 
 /** Todos los juegos de la plataforma en un solo lugar. */
@@ -55,7 +63,7 @@ export default function JuegosPage() {
           </div>
         </div>
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {JUEGOS.map((j) => (
           <Link key={j.ruta} href={j.ruta} className="card group flex flex-col p-5 transition hover:-translate-y-0.5 hover:border-marca-300 hover:shadow-md">
             <p className="text-4xl">{j.emoji}</p>

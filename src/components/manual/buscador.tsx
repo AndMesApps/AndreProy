@@ -23,6 +23,11 @@ const TEMAS = [
   'Kaizen',
   '5S',
   'misión real',
+  'MudaLab',
+  'Muda',
+  'causa raíz',
+  'Banco de oportunidades',
+  'menú',
   'usuarios',
   'clave',
 ];

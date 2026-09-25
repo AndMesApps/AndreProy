@@ -23,6 +23,13 @@ const JUEGOS = [
     uso: 'Sostener',
     descripcion: 'Del caos al flujo: misiones de decisiones para clasificar, ordenar, limpiar buscando la causa, estandarizar y sostener. Termina en un espacio real de la empresa.',
   },
+  {
+    ruta: '/mudalab',
+    emoji: '🕵️',
+    nombre: 'MudaLab',
+    uso: 'Resolver',
+    descripcion: 'Una agencia de detectives caza las 8 Mudas de un proceso, encuentra la causa raíz, experimenta soluciones con presupuesto y evita que la Muda regrese.',
+  },
 ];
 
 export default async function Inicio() {
@@ -42,7 +49,7 @@ export default async function Inicio() {
         )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {JUEGOS.map((j) => (
           <Link key={j.ruta} href={j.ruta} className="card group p-5 transition hover:-translate-y-0.5 hover:border-marca-300 hover:shadow-md">
             <p className="text-4xl">{j.emoji}</p>

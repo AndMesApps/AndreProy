@@ -276,6 +276,7 @@ export function SeccionJuegos() {
               ['🎯 Makigami', 'Toca los pasos del mapa y marca los desperdicios que ve. En Rediseño propone mejoras y vota las de los demás.'],
               ['🔁 Kaizen', 'Con su equipo llena la tarjeta Kaizen, produce mientras corre el cronómetro, registra cuántas unidades salieron bien y decide si su idea se vuelve estándar.'],
               ['🧹 Reto 5S', 'Juega las misiones con su equipo según el rol que le toca, y en la misión real llena con su equipo la auditoría, las evidencias y los resultados.'],
+              ['🕵️ MudaLab', 'Resuelve con su agencia las 5 misiones del expediente según su rol y, en el Mundo 2, registra Mudas de su propio trabajo y vota 👍 las de otros equipos.'],
             ]}
           />
           <p>La pantalla del jugador cambia sola según la fase que abra la facilitadora. No hay que recargar.</p>

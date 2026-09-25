@@ -698,7 +698,7 @@ export function recomendaciones5S(equipos: { id: string; nombre: string; emoji: 
       r.push({
         ref: `s5-debil-${debil.s}`,
         prioridad: debil.v < 2.5 ? 'alta' : 'media',
-        titulo: `Reforzar ${debil.s}: es la S más débil (${debil.v.toFixed(1)} de 4)`,
+        titulo: `Reforzar ${debil.s}: es la S más débil (${debil.v.toLocaleString('es-CO', { maximumFractionDigits: 1 })} de 4)`,
         detalle: `En las auditorías finales de los espacios reales, «${debil.s}» obtuvo el puntaje más bajo. Programen una jornada corta enfocada en esa S.`,
         herramienta: HERRAMIENTA_S[debil.s],
       });

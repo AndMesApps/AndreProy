@@ -33,7 +33,18 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   taller en `src/lib/cincos.ts`: contenido, roles que rotan, `puntuar` en el servidor con el tiempo real) y misión
   6 real (auditoría 0-4 por S antes/después = % 5S, evidencias por enlace, validación de la facilitadora). Las
   misiones se conectan: la 5 usa el orden que el equipo dejó en la 2. Informe con `recomendaciones5S`.
-- `/juegos` agrupa los tres juegos (el menú tiene 🎲 Juegos en vez de un enlace por juego).
+- `/mudalab` — **MudaLab — La misión de recuperar el flujo** (tablas `ml_*`): agencias de detectives con el
+  expediente #047 «La compra que tardaba 5 días» (12 pasos reales vs 5 del manual, 8 Mudas escondidas).
+  Misiones DMAIC 1-5 (Definir, Gemba con 8 fichas y lentes 📄📊👀, 5 porqués con trampas de culpa + Ishikawa,
+  laboratorio $500.000/3 personas/1 semana con hasta 3 experimentos, Controlar con deriva de 12 semanas) y
+  6 = Mundo 2 «Mi proceso» (`ml_oportunidades`, votos = uuid[] de jugadores). Todo en `src/lib/mudalab.ts`
+  (`puntuar` en servidor guarda `resumen` jsonb; la misión 5 usa el plan de la 4; `marcadorMl` = madurez 1-8 e
+  insignias; `recomendacionesMl` incluye las oportunidades más votadas con ref `ml-op-<id>`).
+- `/juegos` agrupa los cuatro juegos.
+- Menú (`src/components/menu-principal.tsx`, cliente): 🧭 Mi panel · 💼 Consultoría (Proyectos, Control de
+  procesos, Mis finanzas) · 🎲 Juegos · ❓ Ayuda · menú de la persona (rol, Usuarios, Salir). En computador
+  (lg+) son desplegables; en tablet/celular un botón ☰ abre una pantalla con los grupos. El encabezado NO
+  lleva `backdrop-blur` (rompería el `fixed` del menú del celular).
 - `/ayuda` tiene buscador (`components/manual/buscador.tsx`): marca `data-seccion`/`data-sub` en `piezas.tsx`.
 - Tablero Kanban reutilizable (`src/components/kanban.tsx`): cronograma del proyecto (Gantt | Tabla |
   Tablero), plan de acción de procesos y portafolio de proyectos (`?vista=tablero`).
@@ -95,7 +106,7 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   solo se guarda su hash (`mk_jugadores.token_hash`). Ver `src/lib/jugador.ts`.
 - Los puntos no se guardan: se calculan en vivo (`calcularPuntos` en `src/lib/makigami.ts`,
   `calcularMarcador` en `src/lib/kaizen.ts`).
-- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos), `pr_*` (proyectos), `fn_*` (finanzas), `s5_*` (Reto 5S). Todas con RLS sin políticas.
+- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos), `pr_*` (proyectos), `fn_*` (finanzas), `s5_*` (Reto 5S), `ml_*` (MudaLab). Todas con RLS sin políticas.
 
 ## Base de datos
 - Migraciones en `supabase/migrations/`, siempre idempotentes (`if not exists`, `do $$ ... exception`).
@@ -112,7 +123,7 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 - Migraciones 0001–0004 corridas en Supabase (confirmado 2026-09-24). Probado en producción con sesión de
   administradora: Carrera Kaizen completa (3 rondas, 2 equipos), informe, envío al plan y proceso.
   Los datos de prueba se borraron.
-- **Pendiente:** la usuaria debe correr `0007_cincos.sql` y volver a correr `demo/demo_completo.sql` (trae el Reto 5S LIMP26).
+- **Pendiente:** la usuaria debe correr `0008_mudalab.sql` y volver a correr `demo/demo_completo.sql` (trae el caso MudaLab MUDA26).
 - Usuarios: cada facilitador escribe su nombre en /panel (`cambiarMiNombre`); en /usuarios se crean,
   editan (nombre, rol, activo) y retiran (`retirarUsuario` borra la cuenta de Auth) cuentas.
 - Probar jugadores sin navegador: POST a la página con cabecera `Next-Action: <id>` (el id sale del HTML

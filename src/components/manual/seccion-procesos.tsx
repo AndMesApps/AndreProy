@@ -19,7 +19,7 @@ export function SeccionProcesos() {
         <Sub titulo="Crear un proceso">
           <Pasos>
             <Paso>
-              En el menú toca <strong>📊 Procesos</strong> y luego <Boton tono="blanco">+ Nuevo proceso</Boton>. (O créalo desde la pestaña Procesos de un proyecto, y
+              En el menú toca <strong>💼 Consultoría → 📊 Control de procesos</strong> y luego <Boton tono="blanco">+ Nuevo proceso</Boton>. (O créalo desde la pestaña Procesos de un proyecto, y
               quedará unido a él.)
             </Paso>
             <Paso>Escribe el nombre, el cliente, el área, el dueño del proceso (quien responde por él) y el objetivo de la mejora.</Paso>

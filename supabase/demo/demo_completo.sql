@@ -12,10 +12,13 @@
 --          │    └─ PLAN DE ACCIÓN con las mejoras que salieron de los dos juegos
 --          └─ «Atención de solicitudes internas» (meta cumplida)
 --
+--   + Reto 5S LIMP26 y caso MudaLab MUDA26 (con su Banco de oportunidades),
+--     unidos al proceso de compras.
+--
 --   + 3 proyectos más para llenar el portafolio (uno al día, uno en riesgo y
 --     uno finalizado).
 --
--- Requisitos: migraciones 0001 a 0005 y el reto demo (reto_papeleria.sql).
+-- Requisitos: migraciones 0001 a 0008 y el reto demo (reto_papeleria.sql).
 -- Cómo usarlo: Supabase → SQL Editor → pegar todo → Run.
 -- Se puede correr varias veces: borra lo de demostración (grupo
 -- «Demostración», carrera KAIZ26 y sus procesos) y lo vuelve a crear.
@@ -39,6 +42,8 @@ declare
   -- reto 5S
   s5 uuid; q1 uuid; q2 uuid; q3 uuid;
   j1 uuid; j2 uuid; j3 uuid; j4 uuid; j5 uuid; j6 uuid; j7 uuid; j8 uuid;
+  -- MudaLab
+  ml uuid; op1 uuid;
 begin
   -- --------------------------------------------------------------------------
   -- Limpieza de la demo anterior
@@ -49,6 +54,8 @@ begin
   delete from kz_sesiones where codigo = 'KAIZ26';
   delete from s5_jugadores where sesion_id in (select id from s5_sesiones where codigo = 'LIMP26');
   delete from s5_sesiones where codigo = 'LIMP26';
+  delete from ml_jugadores where sesion_id in (select id from ml_sesiones where codigo = 'MUDA26');
+  delete from ml_sesiones where codigo = 'MUDA26';
 
   -- Dueña de la demo: la cuenta de Andrea (la primera que exista).
   select id into v_dueno from auth.users
@@ -541,6 +548,73 @@ begin
   insert into pc_acciones (proceso_id, titulo, detalle, responsable, fecha_compromiso, estado, origen, origen_id, origen_ref) values
     (pc, 'Replicar la mejora de 🦊 Los Clasificadores en «Archivo de compras, primer piso» (25 % → 85 %)',
      'Estantes por año y proveedor, foto estándar y revisión de 5 minutos cada viernes. Llevarlo al archivo de contabilidad.', 'Paula Gómez', '2026-10-17', 'pendiente', 'cincos', s5, s5 || ':s5-replicar-' || q1);
+
+  -- ==========================================================================
+  -- 8. MUDALAB (caso ya jugado, unido al proceso de compras)
+  --    Puntos calculados con las mismas reglas del juego (src/lib/mudalab.ts).
+  -- ==========================================================================
+  insert into ml_sesiones (codigo, titulo, descripcion, caso, estado, mision_actual, registro_abierto, creado_por, proceso_id, cerrado_en, created_at)
+  values ('MUDA26', 'MudaLab · Equipo administrativo', 'Agencias de detectives a la caza de las 8 Mudas. Al final, cada quien trae una Muda de su propio trabajo.',
+          'compras', 'cerrado', 6, false, v_dueno, pc, '2026-09-23 12:00-05', '2026-09-22 07:45-05')
+  returning id into ml;
+  insert into ml_equipos (sesion_id, nombre, emoji, created_at) values (ml, 'Los Cazamudas', '🦊', '2026-09-22 07:50-05') returning id into q1;
+  insert into ml_equipos (sesion_id, nombre, emoji, created_at) values (ml, 'Flujo Total', '🦉', '2026-09-22 07:51-05') returning id into q2;
+  insert into ml_equipos (sesion_id, nombre, emoji, created_at) values (ml, 'Detectives del Tiempo', '🐺', '2026-09-22 07:52-05') returning id into q3;
+  insert into ml_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (ml, q1, 'Mariana', 'Restrepo Díaz', 'Coordinadora de compras', true, 'femenino', true, md5(random()::text || clock_timestamp())) returning id into j1;
+  insert into ml_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (ml, q1, 'Andrés', 'Quintero Lara', 'Analista de costos', false, 'masculino', true, md5(random()::text || clock_timestamp())) returning id into j2;
+  insert into ml_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (ml, q1, 'Sofía', 'Bermúdez Rey', 'Auxiliar contable', false, 'femenino', true, md5(random()::text || clock_timestamp())) returning id into j3;
+  insert into ml_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (ml, q2, 'Ricardo', 'Montoya Paz', 'Jefe de almacén', true, 'masculino', true, md5(random()::text || clock_timestamp())) returning id into j4;
+  insert into ml_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (ml, q2, 'Valentina', 'Cruz Ospina', 'Asistente de talento humano', false, 'femenino', true, md5(random()::text || clock_timestamp())) returning id into j5;
+  insert into ml_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (ml, q2, 'Samuel', 'Vargas Toro', 'Mensajero', false, 'masculino', true, md5(random()::text || clock_timestamp())) returning id into j6;
+  insert into ml_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (ml, q3, 'Laura', 'Giraldo Mejía', 'Tesorera', true, 'femenino', true, md5(random()::text || clock_timestamp())) returning id into j7;
+  insert into ml_jugadores (sesion_id, equipo_id, nombres, apellidos, cargo, es_lider, sexo, acepta_datos, token_hash) values (ml, q3, 'Tomás', 'Arango Villa', 'Auxiliar de sistemas', false, 'masculino', true, md5(random()::text || clock_timestamp())) returning id into j8;
+
+  insert into ml_intentos (sesion_id, equipo_id, mision, jugador_id, inicio, fin, respuestas, aciertos, errores, puntos, resumen) values
+(ml, q1, 1, j1, '2026-09-22 08:10-05', '2026-09-22 08:19-05', '{"problema":"a","afectados":"a","inicio":"b","fin":"c","indicador":"b","meta":"c"}', 6, 0, 120, '{}'),
+    (ml, q1, 2, j2, '2026-09-22 09:10-05', '2026-09-22 09:23-05', '{"datos":true,"observados":["p2","p3","p4","p5","p6","p7","p8"],"marcas":{"p2":"sobreprocesamiento","p3":"transporte","p4":"espera","p5":"defectos","p6":"sobreproduccion","p7":"inventario","p8":"talento","p12":"movimiento"},"cuello":"p4","eficiencia":"e1"}', 8, 0, 375, '{"mudasDetectadas":8,"mudasClasificadas":8,"tiposEncontrados":["sobreprocesamiento","transporte","espera","defectos","sobreproduccion","inventario","talento","movimiento"],"cuello":true,"eficiencia":true}'),
+    (ml, q1, 3, j3, '2026-09-22 10:10-05', '2026-09-22 10:27-05', '{"elecciones":[["b"],["a"],["c"],["a"],["b"]],"ishikawa":{"c1":"personas","c2":"personas","c3":"metodo","c4":"metodo","c5":"tecnologia","c6":"materiales","c7":"medicion","c8":"entorno"}}', 13, 0, 230, '{"raiz":true,"culpas":0}'),
+    (ml, q1, 4, j1, '2026-09-22 11:10-05', '2026-09-22 11:31-05', '{"experimentos":[["A"],["B","C","E"],["B","C","D"]],"plan":["B","C","D"]}', 3, 0, 771, '{"plan":["B","C","D"],"dias":2.3,"defectos":3,"valido":true,"atacaRaiz":true,"experimentos":3}'),
+    (ml, q1, 5, j2, '2026-09-22 12:10-05', '2026-09-22 12:35-05', '{"mecanismos":["estandar","indicador","alerta"]}', 3, 0, 380, '{"sostenibilidad":95,"mecanismos":["estandar","indicador","alerta"]}'),
+    (ml, q2, 1, j4, '2026-09-22 08:10-05', '2026-09-22 08:22-05', '{"problema":"a","afectados":"a","inicio":"b","fin":"c","indicador":"b","meta":"a"}', 5, 1, 100, '{}'),
+    (ml, q2, 2, j5, '2026-09-22 09:10-05', '2026-09-22 09:26-05', '{"datos":true,"observados":["p4","p5","p7","p8","p9","p12","p2"],"marcas":{"p2":"sobreprocesamiento","p4":"espera","p5":"defectos","p7":"inventario","p8":"sobreprocesamiento","p9":"espera","p12":"transporte","p6":"sobreproduccion"},"cuello":"p4","eficiencia":"e2"}', 7, 4, 250, '{"mudasDetectadas":7,"mudasClasificadas":5,"tiposEncontrados":["sobreprocesamiento","espera","defectos","sobreproduccion","inventario"],"cuello":true,"eficiencia":false}'),
+    (ml, q2, 3, j6, '2026-09-22 10:10-05', '2026-09-22 10:30-05', '{"elecciones":[["c","b"],["a"],["c"],["b","a"],["b"]],"ishikawa":{"c1":"personas","c2":"personas","c3":"metodo","c4":"personas","c5":"tecnologia","c6":"metodo","c7":"medicion","c8":"entorno"}}', 11, 3, 150, '{"raiz":true,"culpas":1}'),
+    (ml, q2, 4, j4, '2026-09-22 11:10-05', '2026-09-22 11:34-05', '{"experimentos":[["B","C","E"]],"plan":["B","C","E"]}', 3, 0, 704, '{"plan":["B","C","E"],"dias":1.8,"defectos":7,"valido":true,"atacaRaiz":true,"experimentos":1}'),
+    (ml, q2, 5, j5, '2026-09-22 12:10-05', '2026-09-22 12:38-05', '{"mecanismos":["estandar","capacitacion","compromiso"]}', 3, 0, 220, '{"sostenibilidad":55,"mecanismos":["estandar","capacitacion","compromiso"]}'),
+    (ml, q3, 1, j7, '2026-09-22 08:10-05', '2026-09-22 08:25-05', '{"problema":"c","afectados":"a","inicio":"a","fin":"c","indicador":"b","meta":"c"}', 4, 2, 80, '{}'),
+    (ml, q3, 2, j8, '2026-09-22 09:10-05', '2026-09-22 09:29-05', '{"datos":false,"observados":["p1","p3","p4","p8","p10","p12","p5","p6"],"marcas":{"p3":"transporte","p4":"espera","p8":"espera","p12":"movimiento","p5":"defectos","p10":"espera"},"cuello":"p8","eficiencia":"e1"}', 5, 3, 200, '{"mudasDetectadas":5,"mudasClasificadas":4,"tiposEncontrados":["transporte","espera","defectos","movimiento"],"cuello":false,"eficiencia":true}'),
+    (ml, q3, 3, j7, '2026-09-22 10:10-05', '2026-09-22 10:33-05', '{"elecciones":[["c","b"],["b","a"],["c"],["a"],["c","b"]],"ishikawa":{"c1":"personas","c2":"entorno","c3":"metodo","c4":"metodo","c5":"materiales","c6":"materiales","c7":"metodo","c8":"entorno"}}', 10, 5, 85, '{"raiz":true,"culpas":2}'),
+    (ml, q3, 4, j8, '2026-09-22 11:10-05', '2026-09-22 11:37-05', '{"experimentos":[["A","B"],["B","G","H"]],"plan":["B","G","H"]}', 3, 0, 376, '{"plan":["B","G","H"],"dias":2.9,"defectos":18,"valido":true,"atacaRaiz":true,"experimentos":2}'),
+    (ml, q3, 5, j7, '2026-09-22 12:10-05', '2026-09-22 12:41-05', '{"mecanismos":["tablero","compromiso","capacitacion"]}', 3, 0, 180, '{"sostenibilidad":45,"mecanismos":["tablero","compromiso","capacitacion"]}');
+
+  -- Mundo 2: Banco de oportunidades (Mudas reales de su trabajo).
+  insert into ml_oportunidades (sesion_id, equipo_id, jugador_id, proceso, problema, muda, evidencia, causa, idea, estado, resultado, minutos_semana, votos, created_at) values
+    (ml, q1, j1, 'Legalización de viáticos', 'Imprimo los soportes, los escaneo y los vuelvo a enviar por correo a Contabilidad, que los vuelve a imprimir.', 'sobreprocesamiento',
+     'Foto de la pila de soportes en el grupo de WhatsApp', 'Nunca se definió que Contabilidad acepta soportes digitales.', 'Formulario en línea con foto del soporte desde el celular.', 'probando', 'En prueba con 5 personas: de 40 a 10 minutos por legalización.', 120,
+     array[j4, j5, j6, j7, j8], '2026-09-23 10:05-05'),
+    (ml, q1, j2, 'Cierre contable mensual', 'Espero 3 días a que cada área envíe sus facturas; siempre llegan el último día.', 'espera',
+     null, 'No hay fecha límite acordada por área.', 'Calendario de cierre con fecha por área y recordatorio automático.', 'idea', null, 180,
+     array[j4, j7], '2026-09-23 10:12-05'),
+    (ml, q1, j3, 'Archivo de facturas', 'Guardamos 2 copias en papel de cada factura electrónica.', 'sobreproduccion',
+     null, 'Costumbre de antes de la factura electrónica.', 'Dejar solo el archivo digital con carpeta por mes.', 'implementada', 'Se dejaron de imprimir unas 300 hojas al mes.', 60,
+     array[j5, j8], '2026-09-23 10:20-05'),
+    (ml, q2, j4, 'Despacho de pedidos internos', 'El auxiliar camina hasta la bodega del fondo por cada pedido, aunque lo más pedido cabe en la bodega de adelante.', 'movimiento',
+     'Diagrama de espagueti en Drive', 'La bodega se organizó por orden de llegada, no por lo que más se pide.', 'Poner lo más pedido (20 % de referencias) en la bodega de adelante.', 'idea', null, 150,
+     array[j1, j2, j3, j7], '2026-09-23 10:08-05'),
+    (ml, q2, j5, 'Contratación de personal', 'Pedimos las mismas certificaciones 2 veces: en la hoja de vida y en el formulario de ingreso.', 'sobreprocesamiento',
+     null, 'Dos formatos que nadie ha unificado.', 'Un solo formulario de ingreso.', 'idea', null, 45,
+     array[j2], '2026-09-23 10:15-05'),
+    (ml, q3, j7, 'Pagos a proveedores', 'Uno de cada 10 pagos se devuelve porque la cuenta bancaria del proveedor está desactualizada.', 'defectos',
+     null, 'Nadie pide actualizar la certificación bancaria.', 'Pedir la certificación una vez al año y validar antes de pagar.', 'idea', null, 90,
+     array[j1, j4], '2026-09-23 10:18-05'),
+    (ml, q3, j8, 'Soporte de sistemas', 'Resuelvo las mismas 5 preguntas cada semana porque nadie sabe dónde está el instructivo.', 'talento',
+     null, 'El instructivo está en una carpeta que nadie conoce.', 'Video corto de 2 minutos por pregunta, en la intranet.', 'idea', null, 100,
+     '{}', '2026-09-23 10:25-05');
+
+  -- La oportunidad más votada ya llegó al plan del proceso.
+  select id into op1 from ml_oportunidades where sesion_id = ml and proceso = 'Legalización de viáticos';
+  insert into pc_acciones (proceso_id, titulo, detalle, responsable, fecha_compromiso, estado, origen, origen_id, origen_ref) values
+    (pc, '🔁 Legalización de viáticos: soportes digitales desde el celular',
+     'Causa: nunca se definió que Contabilidad acepta soportes digitales. Propuesta de 🦊 Los Cazamudas con 5 👍. En prueba: de 40 a 10 minutos.', 'Mariana Restrepo', '2026-10-24', 'en_curso', 'mudalab', ml, ml || ':ml-op-' || op1);
 
   raise notice 'Demo creada. Dueña: %', coalesce((select email from auth.users where id = v_dueno), 'NINGUNA (solo la ven los administradores)');
 end $$;

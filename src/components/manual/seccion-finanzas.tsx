@@ -24,7 +24,7 @@ export function SeccionFinanzas() {
       <Sub id="finanzas-parametros" titulo="Paso 1: tus parámetros (se hace una sola vez)">
         <Pasos>
           <Paso>
-            En el menú toca <strong>💰 Finanzas</strong>. Arriba está <strong>Mis parámetros</strong>.
+            En el menú toca <strong>💼 Consultoría → 💰 Mis finanzas</strong>. Arriba está <strong>Mis parámetros</strong>.
           </Paso>
           <Paso>
             Revisa los <strong>valores de ley</strong>: salario mínimo y UVT del año. La app trae valores de referencia; confírmalos con tu contador.

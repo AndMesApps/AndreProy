@@ -27,7 +27,7 @@ export function OpcionesMejora({
   enviadas,
 }: {
   recomendaciones: Recomendacion[];
-  juego: 'makigami' | 'kaizen' | 'cincos';
+  juego: 'makigami' | 'kaizen' | 'cincos' | 'mudalab';
   juegoId: string;
   procesos: ProcesoOpcion[];
   procesoActualId: string | null;

@@ -17,6 +17,7 @@ export const ORIGENES_ACCION = {
   makigami: '🎯 Cacería Makigami',
   kaizen: '🔁 Carrera Kaizen',
   cincos: '🧹 Reto 5S',
+  mudalab: '🕵️ MudaLab',
   informe: '📄 Informe',
 } as const;
 export type OrigenAccion = keyof typeof ORIGENES_ACCION;

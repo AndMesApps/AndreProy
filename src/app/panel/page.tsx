@@ -41,7 +41,9 @@ export default async function PanelPage() {
   }
   let consulta5S = sb.from('s5_sesiones').select('id, codigo, titulo, estado, mision_actual, created_at, cerrado_en').order('created_at', { ascending: false }).limit(50);
   if (!esAdmin) consulta5S = consulta5S.eq('creado_por', facilitador.id);
-  const [{ data: retos }, { data: carreras }, { data: procesos }, { data: retos5s }] = await Promise.all([consultaRetos, consultaCarreras, consultaProcesos, consulta5S]);
+  let consultaMl = sb.from('ml_sesiones').select('id, codigo, titulo, estado, mision_actual, created_at, cerrado_en').order('created_at', { ascending: false }).limit(50);
+  if (!esAdmin) consultaMl = consultaMl.eq('creado_por', facilitador.id);
+  const [{ data: retos }, { data: carreras }, { data: procesos }, { data: retos5s }, { data: casosMl }] = await Promise.all([consultaRetos, consultaCarreras, consultaProcesos, consulta5S, consultaMl]);
 
   const idsProcesos = ((procesos ?? []) as any[]).map((p) => p.id as string);
   const [{ data: mediciones }, { data: acciones }] = idsProcesos.length
@@ -90,6 +92,18 @@ export default async function PanelPage() {
         enlace: `${base}/cincos/unirse/${s.codigo}`,
         fecha: s.created_at as string,
       })),
+    ...((casosMl ?? []) as any[])
+      .filter((s) => s.estado !== 'cerrado')
+      .map((s) => ({
+        juego: '🕵️ MudaLab',
+        id: s.id as string,
+        titulo: s.titulo as string,
+        codigo: s.codigo as string,
+        estado: s.mision_actual === 0 ? 'Preparación' : s.mision_actual <= 5 ? `Misión ${s.mision_actual} abierta` : 'Mi proceso',
+        ruta: `/mudalab/${s.id}`,
+        enlace: `${base}/mudalab/unirse/${s.codigo}`,
+        fecha: s.created_at as string,
+      })),
   ]
     .sort((a, b) => b.fecha.localeCompare(a.fecha))
     .slice(0, 12);
@@ -102,6 +116,7 @@ export default async function PanelPage() {
     ...((retos ?? []) as any[]).map((r) => ({ juego: '🎯', id: r.id, titulo: r.titulo, ruta: `/makigami/${r.id}/informe`, cerrado: r.estado === 'cerrado', fecha: (r.cerrado_en ?? r.created_at) as string })),
     ...((carreras ?? []) as any[]).map((s) => ({ juego: '🔁', id: s.id, titulo: s.titulo, ruta: `/kaizen/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
     ...((retos5s ?? []) as any[]).map((s) => ({ juego: '🧹', id: s.id, titulo: s.titulo, ruta: `/cincos/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
+    ...((casosMl ?? []) as any[]).map((s) => ({ juego: '🕵️', id: s.id, titulo: s.titulo, ruta: `/mudalab/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
   ]
     .sort((a, b) => Number(b.cerrado) - Number(a.cerrado) || b.fecha.localeCompare(a.fecha))
     .slice(0, 8);
@@ -275,7 +290,7 @@ export default async function PanelPage() {
 
       <section className="space-y-3">
         <h2 className="font-display text-lg font-semibold text-secundario">🎲 Juegos</h2>
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <TarjetaJuego
             ruta="/makigami"
             emoji="🎯"
@@ -299,6 +314,14 @@ export default async function PanelPage() {
             uso="Crear hábitos de orden"
             descripcion="Misiones del caos al flujo: clasificar, ordenar, limpiar buscando causas, estandarizar y sostener. Termina con una misión real con auditoría antes y después."
             total={(retos5s ?? []).length}
+          />
+          <TarjetaJuego
+            ruta="/mudalab"
+            emoji="🕵️"
+            nombre="MudaLab"
+            uso="Resolver un problema con método"
+            descripcion="Agencias de detectives recorren DMAIC: van al Gemba, cazan las 8 Mudas, encuentran la causa raíz, experimentan con presupuesto y sostienen la mejora. Cierra con un Banco de oportunidades reales."
+            total={(casosMl ?? []).length}
           />
         </div>
         <p className="text-xs text-marmol-400">

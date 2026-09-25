@@ -10,7 +10,7 @@ export function SeccionProyectos() {
     >
       <Sub id="proyectos-portafolio" titulo="La página de Proyectos (el portafolio)">
         <p>
-          En el menú toca <strong>🗂️ Proyectos</strong>. Verás todos tus proyectos juntos:
+          En el menú toca <strong>💼 Consultoría → 🗂️ Proyectos</strong>. Verás todos tus proyectos juntos:
         </p>
         <ul className="ml-5 list-disc space-y-1">
           <li>
