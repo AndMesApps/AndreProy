@@ -798,6 +798,8 @@ export interface RecomendacionMl {
   herramienta?: string;
 }
 
+const sinPunto = (t: string) => t.trim().replace(/[.\s]+$/, '');
+
 export function recomendacionesMl(equipos: { id: string; nombre: string; emoji: string }[], intentos: IntentoMl[], oportunidades: OportunidadMinima[]): RecomendacionMl[] {
   const r: RecomendacionMl[] = [];
   const fin = (n: number) => intentos.filter((i) => i.mision === n && i.fin);
@@ -869,7 +871,7 @@ export function recomendacionesMl(equipos: { id: string; nombre: string; emoji: 
       ref: `ml-op-${o.id}`,
       prioridad: (o.votos?.length ?? 0) >= 3 ? 'alta' : 'media',
       titulo: `${MUDAS[o.muda].emoji} ${o.proceso}: ${o.problema}`.slice(0, 190),
-      detalle: [o.causa && `Causa: ${o.causa}.`, o.idea && `Idea: ${o.idea}.`, `Propuesta de ${e ? `${e.emoji} ${e.nombre}` : 'un equipo'} con ${o.votos?.length ?? 0} 👍.`].filter(Boolean).join(' '),
+      detalle: [o.causa && `Causa: ${sinPunto(o.causa)}.`, o.idea && `Idea: ${sinPunto(o.idea)}.`, `Propuesta de ${e ? `${e.emoji} ${e.nombre}` : 'un equipo'} con ${o.votos?.length ?? 0} 👍.`].filter(Boolean).join(' '),
       herramienta: `Muda de ${MUDAS[o.muda].nombre}`,
     });
   }
