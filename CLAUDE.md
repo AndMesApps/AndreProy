@@ -133,6 +133,9 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 - `supabase/demo/demo_completo.sql` (después del anterior): historia completa de «Distribuidora Andina
   S.A.S.» → proyecto con todo → procesos → CAZA26 + Carrera Kaizen `KAIZ26` → plan de acción; más 3
   proyectos para el portafolio. Todo con grupo «Demostración» (se borra y recrea al correrlo).
+- `supabase/demo/reto_kayou.sql`: reto de demostración de MudaGami (código `KAYU26`, «Bodega Central»,
+  2 equipos ya jugaron las 2 corridas y el rediseño; Los Rápidos rediseñaron mejor (-50 % tiempo, -60 %
+  costo) que Vigías de Ruta (-7 %, -17 %), estado cerrado). Se puede correr varias veces.
 
 ## Estado (al 2026-09-24)
 - Hecho: app desplegada; 3 roles con pantalla Usuarios; reto demo; detalle del paso con botón de cerrar.
@@ -145,8 +148,10 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   sin desbordes a 390/768 px). Falta probar una partida real como jugador (retos 1-8 desde el celular).
 - Makigami: matriz de calor impacto/complejidad para propuestas de mejora (migración 0010). Falta correrla en Supabase.
 - MudaGami · Kayou creado (migración 0011, sexto juego, `mg_*`): motor, tablero, matriz de calor, informe, menú,
-  `/panel` y `/procesos/[id]` listos; typecheck y build pasan; migración probada con PGlite. Falta: correr 0010 y
-  0011 en Supabase y probar un reto completo en producción (las dos corridas, rediseño, resultados).
+  `/panel`, `/procesos/[id]`, manual de usuario (`/ayuda#mudagami`, y la matriz de Makigami en `#makigami`) y reto
+  de demostración (`reto_kayou.sql`, código KAYU26) listos; typecheck y build pasan; migraciones y demo probados
+  con PGlite. Falta: correr 0010 y 0011 en Supabase, correr `reto_kayou.sql` y probar un reto completo en
+  producción jugado de verdad (las dos corridas, rediseño, resultados).
 - Usuarios: cada facilitador escribe su nombre en /panel (`cambiarMiNombre`); en /usuarios se crean,
   editan (nombre, rol, activo) y retiran (`retirarUsuario` borra la cuenta de Auth) cuentas.
 - Probar jugadores sin navegador: POST a la página con cabecera `Next-Action: <id>` (el id sale del HTML

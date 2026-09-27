@@ -8,6 +8,7 @@ import { SeccionFinanzas } from '@/components/manual/seccion-finanzas';
 import { SeccionCincos } from '@/components/manual/seccion-cincos';
 import { SeccionMudaLab } from '@/components/manual/seccion-mudalab';
 import { SeccionRiesgo } from '@/components/manual/seccion-riesgo';
+import { SeccionMudaGami } from '@/components/manual/seccion-mudagami';
 import { BuscadorManual } from '@/components/manual/buscador';
 
 export const metadata = { title: 'Manual de usuario' };
@@ -38,6 +39,7 @@ const INDICE: [string, string, string, [string, string][]?][] = [
   ['cincos', '🧹', 'Reto 5S'],
   ['mudalab', '🕵️', 'MudaLab'],
   ['riesgo', '🗺️', 'La Ruta del Riesgo'],
+  ['mudagami', '🚚', 'MudaGami · Kayou'],
   ['jugadores', '📱', 'Para los jugadores'],
   ['usuarios', '👥', 'Usuarios'],
   ['preguntas', '🙋', 'Preguntas frecuentes'],
@@ -101,6 +103,7 @@ export default function ManualPage() {
           <SeccionCincos />
           <SeccionMudaLab />
           <SeccionRiesgo />
+          <SeccionMudaGami />
           <SeccionGlosario />
         </div>
       </div>

@@ -111,8 +111,8 @@ export function SeccionJuegos() {
         <Sub titulo="4. Rediseño y resultados">
           <Pasos>
             <Paso>
-              En Rediseño cada jugador escribe propuestas: qué paso mejora, qué acción (eliminar, simplificar, automatizar, combinar u otra), la idea y cuánto tiempo
-              ahorraría. Toca <Boton>Proponer</Boton>.
+              En Rediseño cada jugador escribe propuestas: qué paso mejora, qué acción (eliminar, simplificar, automatizar, combinar u otra), la idea, cuánto tiempo
+              ahorraría y qué tan fácil es hacerla. Toca <Boton>Proponer</Boton>.
             </Paso>
             <Paso>Todos votan las propuestas de los demás (no se puede votar la propia).</Paso>
             <Paso>Tú apruebas o descartas cada propuesta. Las aprobadas calculan el tiempo del proceso rediseñado.</Paso>
@@ -133,6 +133,23 @@ export function SeccionJuegos() {
             ]}
           />
           <p>Además hay insignias: 🎯 Cazador (10 cazas), 🦅 Ojo de Halcón, 🧠 Arquitecto del Proceso y ⚡ Ahorrador de Tiempo.</p>
+
+          <p>
+            <strong>🧭 Matriz de impacto y complejidad.</strong> Al calificar impacto (bajo, medio, alto) y qué tan fácil es hacer la propuesta (fácil, media, difícil),
+            cada una cae sola en un cuadrante de una matriz que se ve en el tablero y en el informe:
+          </p>
+          <Tabla
+            cabeza={['Cuadrante', 'Qué significa']}
+            filas={[
+              ['🚀 Ganancia rápida', 'Alto impacto y fácil: se arregla con lo que ya se tiene. Apruébenla de primeras.'],
+              ['🏗️ Proyecto', 'Alto impacto pero requiere tiempo o dinero: vale la pena, con plan.'],
+              ['🧹 Relleno', 'Fácil pero de bajo impacto: hazlo si sobra tiempo.'],
+              ['🧊 No priorizar', 'Bajo impacto y difícil: mucho esfuerzo para poco resultado.'],
+            ]}
+          />
+          <Recuadro tipo="consejo">
+            <p>Las propuestas de «ganancia rápida» aparecen primero en la lista y en las opciones de mejora del informe, para que se aprueben antes que las demás.</p>
+          </Recuadro>
         </Sub>
         <Pregunta p="¿Puedo devolverme de etapa?">
           <p>Sí. Usa «Volver a…» junto al botón de avanzar. Las cazas, propuestas y votos no se borran.</p>
