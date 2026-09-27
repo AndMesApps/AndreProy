@@ -47,7 +47,17 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   documento base; `puntuar` en servidor guarda `resumen` (competencias, señales, ignoradas, confidencial, fallos).
   `marcadorRr` = 5 competencias, perfiles y certificación «Guardián del Riesgo»; informe «Cierre y evaluación» y
   `/riesgo/[id]/certificados`. Todo en `src/lib/riesgo.ts`. Demo aparte: `supabase/demo/ruta_riesgo.sql` (RIES26).
-- `/juegos` agrupa los cinco juegos.
+- `/mudagami` — **MudaGami · Kayou** (digitaliza el juego físico de `recursos/InstruccionesMudaGami*.png`,
+  tablas `mg_*`): un equipo produce 15 piezas (triángulos, cuadrados, circunferencias) en una planta de 6
+  estaciones fijas (bodega materia prima, corte recto, corte circular, perforado, pintura, bodega producto
+  terminado); cada traslado entre estaciones no contiguas (montacargas 3 art./10 min/2000 pesos, o carretilla
+  1 art./5 min/gratis) se registra en vivo en la Tabla 1 (`calcularTabla1`). Corrida 1 con el diseño de planta
+  fijo (`LAYOUT_INICIAL`) → Rediseño (4 min, cada equipo reordena su tablero con `EditorLayout`, toca-y-toca
+  para intercambiar estaciones; `minimoTraslados` calcula en vivo el mínimo posible con ese diseño) → Corrida 2
+  → Resultados (antes/después, ranking por % de reducción, insignias). Adyacencia del tablero (qué estaciones
+  quedan "una al lado de la otra") en `ADYACENCIAS`, todo en `src/lib/mudagami.ts`. Iconos propios a color en
+  `components/mudagami/iconos.tsx` (sin imágenes sueltas, todo SVG en línea, como pidió la usuaria).
+- `/juegos` agrupa los seis juegos.
 - Menú (`src/components/menu-principal.tsx`, cliente): 🧭 Mi panel · 💼 Consultoría (Proyectos, Control de
   procesos, Mis finanzas) · 🎲 Juegos · ❓ Ayuda · menú de la persona (rol, Usuarios, Salir). En computador
   (lg+) son desplegables; en tablet/celular un botón ☰ abre una pantalla con los grupos. El encabezado NO
@@ -113,7 +123,7 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
   solo se guarda su hash (`mk_jugadores.token_hash`). Ver `src/lib/jugador.ts`.
 - Los puntos no se guardan: se calculan en vivo (`calcularPuntos` en `src/lib/makigami.ts`,
   `calcularMarcador` en `src/lib/kaizen.ts`).
-- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos), `pr_*` (proyectos), `fn_*` (finanzas), `s5_*` (Reto 5S), `ml_*` (MudaLab), `rr_*` (Ruta del Riesgo). Todas con RLS sin políticas.
+- Tablas: `mk_*` (Makigami y usuarios), `kz_*` (Kaizen), `pc_*` (procesos), `pr_*` (proyectos), `fn_*` (finanzas), `s5_*` (Reto 5S), `ml_*` (MudaLab), `rr_*` (Ruta del Riesgo), `mg_*` (MudaGami). Todas con RLS sin políticas.
 
 ## Base de datos
 - Migraciones en `supabase/migrations/`, siempre idempotentes (`if not exists`, `do $$ ... exception`).
@@ -133,6 +143,11 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 - Migraciones 0001–0008 y demo_completo.sql corridas (confirmado 2026-09-24). MudaLab MUDA26 verificado en producción (informe, puntajes, Banco, envío al plan). Revisión responsive por iframes a 390/768/1366 px: sin desbordes.
 - 0009_riesgo.sql y demo/ruta_riesgo.sql corridas (2026-09-25). RIES26 verificado en producción (informe, 3 certificados,
   sin desbordes a 390/768 px). Falta probar una partida real como jugador (retos 1-8 desde el celular).
+- Makigami: matriz de calor impacto/complejidad para propuestas de mejora (migración 0010). Falta correrla en Supabase.
+- MudaGami · Kayou creado (migración 0011, sexto juego, `mg_*`): motor, tablero, matriz de calor, informe y menú
+  listos; typecheck y build pasan; migración probada con PGlite. Falta: correr 0010 y 0011 en Supabase, probar un
+  reto completo en producción (las dos corridas, rediseño, resultados) y agregarlo a `/panel` (hoy solo aparece en
+  `/juegos`, el menú y `/procesos/[id]`).
 - Usuarios: cada facilitador escribe su nombre en /panel (`cambiarMiNombre`); en /usuarios se crean,
   editan (nombre, rol, activo) y retiran (`retirarUsuario` borra la cuenta de Auth) cuentas.
 - Probar jugadores sin navegador: POST a la página con cabecera `Next-Action: <id>` (el id sale del HTML

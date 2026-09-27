@@ -15,6 +15,7 @@ import {
   type TipoDesperdicio,
 } from '@/lib/makigami';
 import { errorPrediccion, formatearPct, tarjetaCompleta, type MarcadorEquipo, type TarjetaMinima } from '@/lib/kaizen';
+import { compararCorridas, formatearPesos, type Tabla1 } from '@/lib/mudagami';
 
 export type Prioridad = 'alta' | 'media' | 'baja';
 
@@ -327,6 +328,70 @@ export function recomendacionesKaizen(d: DatosInformeKaizen): Recomendacion[] {
     prioridad: 'baja',
     titulo: 'Llevar el método a un proceso real del equipo',
     detalle: 'Elijan un proceso del día a día, midan su línea base y hagan un ciclo PDCA por semana con una mejora a la vez. Regístrenlo en el Control de procesos.',
+    herramienta: 'Control de procesos',
+  });
+
+  return ordenar(r);
+}
+
+// ----------------------------------------------------------------------------
+// MudaGami · Kayou
+// ----------------------------------------------------------------------------
+
+export interface DatosInformeMudaGami {
+  equipos: { id: string; nombre: string; corrida1: Tabla1; corrida2: Tabla1 | null; minimoTeorico2: number | null }[];
+}
+
+export function recomendacionesMudaGami(d: DatosInformeMudaGami): Recomendacion[] {
+  const r: Recomendacion[] = [];
+  const conCorrida2 = d.equipos.filter((e) => e.corrida2);
+
+  // 1. El equipo que más redujo el transporte: replicar su diseño.
+  if (conCorrida2.length) {
+    const mejor = conCorrida2
+      .map((e) => ({ e, cmp: compararCorridas(e.corrida1, e.corrida2!) }))
+      .sort((a, b) => b.cmp.reduccionTiempoPct - a.cmp.reduccionTiempoPct)[0]!;
+    if (mejor.cmp.reduccionTiempoPct > 0) {
+      r.push({
+        ref: `mg-mejor-equipo-${mejor.e.id}`,
+        prioridad: mejor.cmp.reduccionTiempoPct >= 40 ? 'alta' : 'media',
+        titulo: `${mejor.e.nombre} redujo el tiempo de transporte ${Math.round(mejor.cmp.reduccionTiempoPct)} % con su rediseño`,
+        detalle: `Pasó de ${formatearPesos(mejor.e.corrida1.costo)} a ${formatearPesos(mejor.e.corrida2!.costo)} en transportes. Muéstrenle al resto cómo acomodaron su planta (layout en U o lineal, estaciones seguidas una al lado de la otra) para que los demás lo adopten.`,
+        herramienta: 'Distribución de planta (SLP) y benchmarking interno',
+      });
+    }
+  }
+
+  // 2. Equipos que llegaron al mínimo teórico: ya no hay más que rediseñar, toca atacar otra muda.
+  const optimos = conCorrida2.filter((e) => e.minimoTeorico2 != null && e.corrida2!.traslados.montacargas + e.corrida2!.traslados.carretilla <= e.minimoTeorico2!);
+  if (optimos.length) {
+    r.push({
+      ref: 'mg-optimos',
+      prioridad: 'baja',
+      titulo: `${optimos.length === 1 ? `${optimos[0]!.nombre} llegó` : `${optimos.length} equipos llegaron`} al mínimo posible de traslados`,
+      detalle: 'Con este diseño de planta ya no se puede transportar menos. La siguiente mejora está en otra muda: esperas, sobreprocesamiento o defectos en las mismas estaciones.',
+    });
+  }
+
+  // 3. Costo total en transportes: si es alto, es plata que se puede recuperar.
+  const costoTotal1 = d.equipos.reduce((s, e) => s + e.corrida1.costo, 0);
+  if (costoTotal1 > 0) {
+    const costoTotal2 = conCorrida2.reduce((s, e) => s + (e.corrida2?.costo ?? e.corrida1.costo), 0);
+    r.push({
+      ref: 'mg-costo-transporte',
+      prioridad: costoTotal2 < costoTotal1 ? 'media' : 'alta',
+      titulo: `El transporte costó ${formatearPesos(costoTotal1)} en la corrida 1${conCorrida2.length ? ` y ${formatearPesos(costoTotal2)} después del rediseño` : ''}`,
+      detalle: 'En una planta real esto es tiempo de montacargas, combustible y mano de obra que no le agrega nada al producto. Revisen el diseño físico del área: máquinas en el orden del proceso, en línea o en U, y bodegas cerca de donde de verdad se necesitan.',
+      herramienta: 'Distribución de planta (SLP), flujo continuo',
+    });
+  }
+
+  // 4. Llevarlo al trabajo real.
+  r.push({
+    ref: 'mg-proceso-real',
+    prioridad: 'baja',
+    titulo: 'Buscar la muda de transporte en un proceso real',
+    detalle: 'En su área: ¿cuántas veces se mueve un documento, un material o una persona de un puesto a otro que no queda al lado? Dibujen el recorrido real (spaghetti chart) y prueben acercar lo que siempre va junto.',
     herramienta: 'Control de procesos',
   });
 

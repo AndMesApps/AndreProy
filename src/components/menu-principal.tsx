@@ -34,6 +34,7 @@ const JUEGOS: Opcion[] = [
   { href: '/cincos', emoji: '🧹', nombre: 'Reto 5S', ayuda: 'Crear hábitos de orden' },
   { href: '/mudalab', emoji: '🕵️', nombre: 'MudaLab', ayuda: 'Resolver problemas con DMAIC' },
   { href: '/riesgo', emoji: '🗺️', nombre: 'La Ruta del Riesgo', ayuda: 'Prevenir riesgos de LA/FT' },
+  { href: '/mudagami', emoji: '🚚', nombre: 'MudaGami · Kayou', ayuda: 'Sentir la muda de transporte' },
 ];
 
 function gruposDe(usuario: UsuarioMenu | null): Grupo[] {

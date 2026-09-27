@@ -44,6 +44,14 @@ const JUEGOS = [
     que: 'Ocho retos de decisiones sobre una empresa que crece: detectar señales de alerta, conocer a la contraparte, encontrar al beneficiario final, seguir el dinero, clasificar con semáforo, cartas de evento y escalar según el procedimiento. Certifica Guardianes del Riesgo.',
     duracion: '1,5 a 2 horas (o individual a su ritmo)',
   },
+  {
+    ruta: '/mudagami',
+    emoji: '🚚',
+    nombre: 'MudaGami · Kayou — la ruta del transporte',
+    para: 'Sentir en carne propia la muda de transporte',
+    que: 'Cada equipo produce un lote de piezas en una planta con 6 estaciones fijas y mide cuántas veces tiene que transportar con montacargas o carretilla. Rediseñan su propia planta en 4 minutos y vuelven a producir para ver cuánto mejoraron.',
+    duracion: '30 a 45 minutos',
+  },
 ];
 
 /** Todos los juegos de la plataforma en un solo lugar. */
