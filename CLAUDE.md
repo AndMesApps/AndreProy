@@ -144,10 +144,9 @@ Plataforma de mejora continua para la consultora (Andrea, ingeniera industrial).
 - 0009_riesgo.sql y demo/ruta_riesgo.sql corridas (2026-09-25). RIES26 verificado en producción (informe, 3 certificados,
   sin desbordes a 390/768 px). Falta probar una partida real como jugador (retos 1-8 desde el celular).
 - Makigami: matriz de calor impacto/complejidad para propuestas de mejora (migración 0010). Falta correrla en Supabase.
-- MudaGami · Kayou creado (migración 0011, sexto juego, `mg_*`): motor, tablero, matriz de calor, informe y menú
-  listos; typecheck y build pasan; migración probada con PGlite. Falta: correr 0010 y 0011 en Supabase, probar un
-  reto completo en producción (las dos corridas, rediseño, resultados) y agregarlo a `/panel` (hoy solo aparece en
-  `/juegos`, el menú y `/procesos/[id]`).
+- MudaGami · Kayou creado (migración 0011, sexto juego, `mg_*`): motor, tablero, matriz de calor, informe, menú,
+  `/panel` y `/procesos/[id]` listos; typecheck y build pasan; migración probada con PGlite. Falta: correr 0010 y
+  0011 en Supabase y probar un reto completo en producción (las dos corridas, rediseño, resultados).
 - Usuarios: cada facilitador escribe su nombre en /panel (`cambiarMiNombre`); en /usuarios se crean,
   editan (nombre, rol, activo) y retiran (`retirarUsuario` borra la cuenta de Auth) cuentas.
 - Probar jugadores sin navegador: POST a la página con cabecera `Next-Action: <id>` (el id sale del HTML

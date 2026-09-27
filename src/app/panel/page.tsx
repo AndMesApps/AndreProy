@@ -5,6 +5,7 @@ import { getFacilitador, ROLES } from '@/lib/auth';
 import { urlBase } from '@/lib/compartir';
 import { db } from '@/lib/supabase/server';
 import { ETAPAS_RETO, type EstadoReto } from '@/lib/makigami';
+import { ETAPAS_RETO as ETAPAS_RETO_MG, type EstadoReto as EstadoRetoMg } from '@/lib/mudagami';
 import { describirMomento } from '@/lib/kaizen';
 import { SEMAFOROS, accionVencida, formatearValor, semaforo, ultimaMedicion, type AccionMinima, type ProcesoMinimo, type Semaforo } from '@/lib/procesos';
 import { MiNombre } from '@/components/panel/mi-nombre';
@@ -45,7 +46,17 @@ export default async function PanelPage() {
   if (!esAdmin) consultaMl = consultaMl.eq('creado_por', facilitador.id);
   let consultaRr = sb.from('rr_sesiones').select('id, codigo, titulo, estado, reto_actual, created_at, cerrado_en').order('created_at', { ascending: false }).limit(50);
   if (!esAdmin) consultaRr = consultaRr.eq('creado_por', facilitador.id);
-  const [{ data: retos }, { data: carreras }, { data: procesos }, { data: retos5s }, { data: casosMl }, { data: rutasRr }] = await Promise.all([consultaRetos, consultaCarreras, consultaProcesos, consulta5S, consultaMl, consultaRr]);
+  let consultaMg = sb.from('mg_retos').select('id, codigo, titulo, estado, created_at, cerrado_en').order('created_at', { ascending: false }).limit(50);
+  if (!esAdmin) consultaMg = consultaMg.eq('creado_por', facilitador.id);
+  const [{ data: retos }, { data: carreras }, { data: procesos }, { data: retos5s }, { data: casosMl }, { data: rutasRr }, { data: retosMg }] = await Promise.all([
+    consultaRetos,
+    consultaCarreras,
+    consultaProcesos,
+    consulta5S,
+    consultaMl,
+    consultaRr,
+    consultaMg,
+  ]);
 
   const idsProcesos = ((procesos ?? []) as any[]).map((p) => p.id as string);
   const [{ data: mediciones }, { data: acciones }] = idsProcesos.length
@@ -118,6 +129,18 @@ export default async function PanelPage() {
         enlace: `${base}/riesgo/unirse/${s.codigo}`,
         fecha: s.created_at as string,
       })),
+    ...((retosMg ?? []) as any[])
+      .filter((r) => r.estado !== 'cerrado')
+      .map((r) => ({
+        juego: '🚚 MudaGami · Kayou',
+        id: r.id as string,
+        titulo: r.titulo as string,
+        codigo: r.codigo as string,
+        estado: ETAPAS_RETO_MG.find((e) => e.estado === (r.estado as EstadoRetoMg))?.titulo ?? r.estado,
+        ruta: `/mudagami/${r.id}`,
+        enlace: `${base}/mudagami/unirse/${r.codigo}`,
+        fecha: r.created_at as string,
+      })),
   ]
     .sort((a, b) => b.fecha.localeCompare(a.fecha))
     .slice(0, 12);
@@ -132,6 +155,7 @@ export default async function PanelPage() {
     ...((retos5s ?? []) as any[]).map((s) => ({ juego: '🧹', id: s.id, titulo: s.titulo, ruta: `/cincos/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
     ...((casosMl ?? []) as any[]).map((s) => ({ juego: '🕵️', id: s.id, titulo: s.titulo, ruta: `/mudalab/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
     ...((rutasRr ?? []) as any[]).map((s) => ({ juego: '🗺️', id: s.id, titulo: s.titulo, ruta: `/riesgo/${s.id}/informe`, cerrado: s.estado === 'cerrado', fecha: (s.cerrado_en ?? s.created_at) as string })),
+    ...((retosMg ?? []) as any[]).map((r) => ({ juego: '🚚', id: r.id, titulo: r.titulo, ruta: `/mudagami/${r.id}/informe`, cerrado: r.estado === 'cerrado', fecha: (r.cerrado_en ?? r.created_at) as string })),
   ]
     .sort((a, b) => Number(b.cerrado) - Number(a.cerrado) || b.fecha.localeCompare(a.fecha))
     .slice(0, 8);
@@ -345,6 +369,14 @@ export default async function PanelPage() {
             uso="Prevenir riesgos de LA/FT"
             descripcion="8 retos de SAGRILAFT y SARLAFT: detectar señales, conocer la contraparte, encontrar al beneficiario final, seguir el dinero, clasificar y escalar. Certifica Guardianes del Riesgo."
             total={(rutasRr ?? []).length}
+          />
+          <TarjetaJuego
+            ruta="/mudagami"
+            emoji="🚚"
+            nombre="MudaGami · Kayou"
+            uso="Sentir la muda de transporte"
+            descripcion="Producen un lote en una planta de 6 estaciones y miden cuánto transportan con montacargas o carretilla. Rediseñan su planta en 4 minutos y comparan el antes y el después."
+            total={(retosMg ?? []).length}
           />
         </div>
         <p className="text-xs text-marmol-400">
