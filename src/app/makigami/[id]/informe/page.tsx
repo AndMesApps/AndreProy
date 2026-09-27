@@ -19,6 +19,7 @@ import { recomendacionesMakigami } from '@/lib/recomendaciones';
 import { cn } from '@/lib/utils';
 import { EncabezadoInforme, Kpi, SeccionInforme } from '@/components/informes/partes';
 import { OpcionesMejora } from '@/components/informes/opciones-mejora';
+import { MatrizImpacto } from '@/components/makigami/matriz-impacto';
 import { RankingReto } from '@/components/makigami/ranking-reto';
 import type { CazaVista, EquipoVista, JugadorVista, PropuestaVista } from '@/components/makigami/tipos';
 
@@ -42,7 +43,7 @@ export default async function InformeMakigamiPage({ params }: { params: Promise<
     sb.from('mk_carriles').select('id, nombre').eq('reto_id', reto.id),
     sb.from('mk_pasos').select('id, carril_id, orden, descripcion, tiempo_trabajo_min, tiempo_espera_min, clasificacion').eq('reto_id', reto.id).order('orden'),
     sb.from('mk_cazas').select('id, paso_id, jugador_id, tipo_desperdicio, comentario, created_at').eq('reto_id', reto.id),
-    sb.from('mk_propuestas').select('id, paso_id, jugador_id, accion, descripcion, ahorro_estimado_min, estado, votos:mk_votos(jugador_id)').eq('reto_id', reto.id),
+    sb.from('mk_propuestas').select('id, paso_id, jugador_id, accion, descripcion, ahorro_estimado_min, impacto, complejidad, estado, votos:mk_votos(jugador_id)').eq('reto_id', reto.id),
     sb.from('mk_equipos').select('id, nombre, emoji').eq('reto_id', reto.id).order('created_at'),
     sb.from('mk_jugadores').select('id, equipo_id, nombres, apellidos, cargo, es_lider').eq('reto_id', reto.id),
     procesosDe(facilitador!),
@@ -76,6 +77,8 @@ export default async function InformeMakigamiPage({ params }: { params: Promise<
     accion: p.accion,
     descripcion: p.descripcion,
     ahorro_estimado_min: Number(p.ahorro_estimado_min) || 0,
+    impacto: Number(p.impacto) || 2,
+    complejidad: Number(p.complejidad) || 2,
     estado: p.estado,
     votos: (p.votos ?? []).map((v: any) => v.jugador_id),
   }));
@@ -181,6 +184,15 @@ export default async function InformeMakigamiPage({ params }: { params: Promise<
           )}
         </SeccionInforme>
       </div>
+
+      {vistaPropuestas.some((p) => p.estado !== 'descartada') && (
+        <SeccionInforme titulo="🧭 Matriz de impacto y complejidad" descripcion="Dónde cae cada propuesta: las de ganancia rápida (alto impacto, fáciles) son las primeras candidatas para aprobar.">
+          <MatrizImpacto
+            propuestas={vistaPropuestas.filter((p) => p.estado !== 'descartada')}
+            numeroDePaso={new Map(listaPasos.map((p) => [p.id, p.orden]))}
+          />
+        </SeccionInforme>
+      )}
 
       <SeccionInforme titulo="✅ Mejoras aprobadas en el rediseño">
         {aprobadas.length === 0 ? (

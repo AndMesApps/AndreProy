@@ -3,11 +3,24 @@
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { alternarVoto, eliminarPropuesta, proponerMejora, resolverPropuesta } from '@/app/makigami/actions';
-import { ACCIONES_PROPUESTA, calcularTiempoFuturo, formatearDuracion, type AccionPropuesta, type EstadoReto, type MetricasProceso } from '@/lib/makigami';
+import {
+  ACCIONES_PROPUESTA,
+  NIVELES_COMPLEJIDAD,
+  NIVELES_IMPACTO,
+  ZONAS_MATRIZ,
+  calcularTiempoFuturo,
+  formatearDuracion,
+  zonaPropuesta,
+  type AccionPropuesta,
+  type EstadoReto,
+  type MetricasProceso,
+  type NivelMatriz,
+} from '@/lib/makigami';
 import { cn } from '@/lib/utils';
 import { Check, ThumbsUp, Trash2, Undo2, X, Zap } from 'lucide-react';
 import { ContadorAnimado } from './contador-animado';
 import { EntradaDuracion, aMinutos, type Duracion } from './entrada-duracion';
+import { MatrizImpacto } from './matriz-impacto';
 import type { PasoVista, PropuestaVista } from './tipos';
 
 const TONO_ACCION: Record<AccionPropuesta, string> = {
@@ -77,6 +90,11 @@ export function Rediseno({
   const [accion, setAccion] = useState<AccionPropuesta>('simplificar');
   const [descripcion, setDescripcion] = useState('');
   const [ahorroInput, setAhorroInput] = useState<Duracion>({ valor: '', unidad: 'd' });
+  const [impacto, setImpacto] = useState<NivelMatriz>(2);
+  const [complejidad, setComplejidad] = useState<NivelMatriz>(2);
+  const [resaltada, setResaltada] = useState<string | null>(null);
+
+  const vigentes = propuestas.filter((p) => p.estado !== 'descartada');
 
   const ejecutar = (fn: () => Promise<{ ok: boolean; error?: string }>, despues?: () => void) => {
     setError(null);
@@ -90,7 +108,8 @@ export function Rediseno({
 
   const ordenadas = [...propuestas].sort((a, b) => {
     const peso = (p: PropuestaVista) => (p.estado === 'aprobada' ? 2 : p.estado === 'propuesta' ? 1 : 0);
-    return peso(b) - peso(a) || b.votos.length - a.votos.length;
+    const gana = (p: PropuestaVista) => (zonaPropuesta(p.impacto, p.complejidad) === 'ganancia_rapida' ? 1 : 0);
+    return peso(b) - peso(a) || gana(b) - gana(a) || b.votos.length - a.votos.length;
   });
 
   const campo = 'w-full rounded-lg border border-marmol-200 px-2.5 py-1.5 text-sm text-marmol-900';
@@ -155,6 +174,28 @@ export function Rediseno({
             </select>
           </div>
           <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} rows={2} placeholder="¿Qué cambiarías y cómo?" className={campo} />
+          <div className="grid sm:grid-cols-2 gap-2">
+            <label className="text-xs text-marmol-500">
+              Impacto si se hace
+              <select value={impacto} onChange={(e) => setImpacto(Number(e.target.value) as NivelMatriz)} className={cn(campo, 'mt-0.5')}>
+                {([1, 2, 3] as NivelMatriz[]).map((n) => (
+                  <option key={n} value={n}>
+                    {NIVELES_IMPACTO[n]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-xs text-marmol-500">
+              Qué tan fácil es hacerla
+              <select value={complejidad} onChange={(e) => setComplejidad(Number(e.target.value) as NivelMatriz)} className={cn(campo, 'mt-0.5')}>
+                {([1, 2, 3] as NivelMatriz[]).map((n) => (
+                  <option key={n} value={n}>
+                    {NIVELES_COMPLEJIDAD[n]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
           <div className="flex flex-wrap items-end gap-2">
             <div className="w-56">
               <EntradaDuracion etiqueta="¿Cuánto tiempo ahorraría? (estimado)" valor={ahorroInput} onChange={setAhorroInput} />
@@ -164,10 +205,12 @@ export function Rediseno({
               disabled={pending || !descripcion.trim()}
               onClick={() =>
                 ejecutar(
-                  () => proponerMejora({ retoId, pasoId: pasoId || undefined, accion, descripcion, ahorroEstimadoMin: aMinutos(ahorroInput) }),
+                  () => proponerMejora({ retoId, pasoId: pasoId || undefined, accion, descripcion, ahorroEstimadoMin: aMinutos(ahorroInput), impacto, complejidad }),
                   () => {
                     setDescripcion('');
                     setAhorroInput({ valor: '', unidad: 'd' });
+                    setImpacto(2);
+                    setComplejidad(2);
                   }
                 )
               }
@@ -175,6 +218,27 @@ export function Rediseno({
             >
               Proponer
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Matriz de calor impacto / complejidad */}
+      {vigentes.length > 0 && (
+        <div className="card p-4">
+          <h3 className="font-display font-semibold text-secundario">🧭 Matriz de impacto y complejidad</h3>
+          <p className="mt-0.5 text-xs text-marmol-400">
+            Cada propuesta se ubica sola según cómo la calificó quien la hizo. Las de <strong>🚀 ganancia rápida</strong> son las primeras candidatas para aprobar: alto impacto y fáciles de hacer con lo que ya se tiene.
+          </p>
+          <div className="mt-3">
+            <MatrizImpacto
+              propuestas={vigentes}
+              numeroDePaso={numeroDePaso}
+              seleccionadaId={resaltada}
+              onSeleccionar={(id) => {
+                setResaltada(id);
+                document.getElementById(`propuesta-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }}
+            />
           </div>
         </div>
       )}
@@ -191,13 +255,16 @@ export function Rediseno({
           const yoVote = miJugadorId ? p.votos.includes(miJugadorId) : false;
           const esMia = p.jugador_id === miJugadorId;
           const numero = p.paso_id ? numeroDePaso.get(p.paso_id) : null;
+          const zona = ZONAS_MATRIZ[zonaPropuesta(p.impacto, p.complejidad)];
           return (
             <div
               key={p.id}
+              id={`propuesta-${p.id}`}
               className={cn(
-                'card p-3 flex gap-3',
+                'card p-3 flex gap-3 transition',
                 p.estado === 'aprobada' && 'border-marca-300 bg-marca-50/40',
-                p.estado === 'descartada' && 'opacity-50'
+                p.estado === 'descartada' && 'opacity-50',
+                resaltada === p.id && 'ring-2 ring-secundario'
               )}
             >
               <button
@@ -216,6 +283,11 @@ export function Rediseno({
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-1.5 text-xs">
                   <span className={cn('rounded px-1.5 py-0.5 font-semibold', TONO_ACCION[p.accion])}>{ACCIONES_PROPUESTA[p.accion]}</span>
+                  {p.estado !== 'descartada' && (
+                    <span className={cn('inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-semibold ring-1', zona.tono)} title={zona.descripcion}>
+                      {zona.emoji} {zona.corto}
+                    </span>
+                  )}
                   {numero && <span className="text-marmol-500">Paso {numero}</span>}
                   {p.ahorro_estimado_min > 0 && <span className="text-marca-700 font-medium">⚡ ahorra {formatearDuracion(p.ahorro_estimado_min)}</span>}
                   {p.estado === 'aprobada' && <span className="rounded bg-marca-500 px-1.5 py-0.5 font-semibold text-white">Aprobada</span>}

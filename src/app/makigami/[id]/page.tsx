@@ -40,7 +40,7 @@ export default async function RetoMakigamiPage({ params }: { params: Promise<{ i
     sb.from('mk_cazas').select('id, paso_id, jugador_id, tipo_desperdicio, comentario, created_at').eq('reto_id', reto.id).order('created_at'),
     sb
       .from('mk_propuestas')
-      .select('id, paso_id, jugador_id, accion, descripcion, ahorro_estimado_min, estado, votos:mk_votos(jugador_id)')
+      .select('id, paso_id, jugador_id, accion, descripcion, ahorro_estimado_min, impacto, complejidad, estado, votos:mk_votos(jugador_id)')
       .eq('reto_id', reto.id)
       .order('created_at'),
     sb.from('mk_equipos').select('id, nombre, emoji').eq('reto_id', reto.id).order('created_at'),
@@ -84,6 +84,8 @@ export default async function RetoMakigamiPage({ params }: { params: Promise<{ i
     accion: p.accion,
     descripcion: p.descripcion,
     ahorro_estimado_min: Number(p.ahorro_estimado_min) || 0,
+    impacto: Number(p.impacto) || 2,
+    complejidad: Number(p.complejidad) || 2,
     estado: p.estado,
     votos: (p.votos ?? []).map((v: any) => v.jugador_id),
   }));

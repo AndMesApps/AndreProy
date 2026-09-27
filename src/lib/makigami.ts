@@ -81,6 +81,66 @@ export const CLASIFICACIONES = {
 } as const;
 export type Clasificacion = keyof typeof CLASIFICACIONES;
 
+// ----------------------------------------------------------------------------
+// Matriz de calor impacto / complejidad de las propuestas de mejora.
+// Cada propuesta se califica de 1 a 3 en dos ejes (como en la hoja "Cuadro
+// de Priorización" del formato Makigami de la consultora) y con eso cae sola
+// en uno de 4 cuadrantes: lo que se puede arreglar ya con lo que se tiene
+// (alto impacto, fácil) es la ganancia rápida que debería ir de primeras al
+// plan de acción.
+// ----------------------------------------------------------------------------
+
+export type NivelMatriz = 1 | 2 | 3;
+
+export const NIVELES_IMPACTO: Record<NivelMatriz, string> = { 1: 'Bajo', 2: 'Medio', 3: 'Alto' };
+export const NIVELES_COMPLEJIDAD: Record<NivelMatriz, string> = { 1: 'Fácil (con lo que hay)', 2: 'Media', 3: 'Alta (tiempo o dinero)' };
+
+export const ZONAS_MATRIZ = {
+  ganancia_rapida: {
+    nombre: 'Ganancia rápida',
+    emoji: '🚀',
+    corto: 'Hazlo ya',
+    descripcion: 'Alto impacto y fácil de hacer: se arregla con lo que ya se tiene.',
+    tono: 'bg-marca-100 text-marca-700 ring-marca-300',
+    punto: '#16a34a',
+  },
+  proyecto: {
+    nombre: 'Proyecto',
+    emoji: '🏗️',
+    corto: 'Planear',
+    descripcion: 'Alto impacto pero requiere tiempo o dinero: vale la pena, con plan.',
+    tono: 'bg-amber-100 text-medio ring-amber-300',
+    punto: '#d97706',
+  },
+  relleno: {
+    nombre: 'Relleno',
+    emoji: '🧹',
+    corto: 'Si sobra tiempo',
+    descripcion: 'Fácil pero de bajo impacto: hazlo si sobra tiempo, no lo prioricen.',
+    tono: 'bg-blue-100 text-deber ring-blue-300',
+    punto: '#2563eb',
+  },
+  no_priorizar: {
+    nombre: 'No priorizar',
+    emoji: '🧊',
+    corto: 'Evitar',
+    descripcion: 'Bajo impacto y difícil: mucho esfuerzo para poco resultado.',
+    tono: 'bg-marmol-200 text-marmol-600 ring-marmol-300',
+    punto: '#78716c',
+  },
+} as const;
+export type ZonaMatriz = keyof typeof ZONAS_MATRIZ;
+
+/** Ubica una propuesta en el cuadrante según su impacto y complejidad (escala 1-3 cada uno). */
+export function zonaPropuesta(impacto: number, complejidad: number): ZonaMatriz {
+  const altoImpacto = impacto >= 2;
+  const facil = complejidad <= 1;
+  if (altoImpacto && facil) return 'ganancia_rapida';
+  if (altoImpacto && !facil) return 'proyecto';
+  if (!altoImpacto && facil) return 'relleno';
+  return 'no_priorizar';
+}
+
 /**
  * Puntos del juego. Se calculan en vivo (ver calcularPuntos): marcar y
  * desmarcar no suma de más porque solo cuenta lo que está marcado.

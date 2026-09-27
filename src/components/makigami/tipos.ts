@@ -45,6 +45,8 @@ export interface PropuestaVista {
   accion: AccionPropuesta;
   descripcion: string;
   ahorro_estimado_min: number;
+  impacto: number;
+  complejidad: number;
   estado: 'propuesta' | 'aprobada' | 'descartada';
   votos: string[];
 }

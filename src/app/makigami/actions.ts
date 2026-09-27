@@ -486,6 +486,8 @@ const PropuestaSchema = z.object({
   accion: z.enum(Object.keys(ACCIONES_PROPUESTA) as [string, ...string[]]),
   descripcion: z.string().trim().min(1, 'Describe tu propuesta').max(1000),
   ahorroEstimadoMin: z.number().min(0),
+  impacto: z.number().int().min(1).max(3).default(2),
+  complejidad: z.number().int().min(1).max(3).default(2),
 });
 
 export async function proponerMejora(input: z.infer<typeof PropuestaSchema>): Promise<Resultado> {
@@ -504,6 +506,8 @@ export async function proponerMejora(input: z.infer<typeof PropuestaSchema>): Pr
     accion: d.accion,
     descripcion: d.descripcion,
     ahorro_estimado_min: d.ahorroEstimadoMin,
+    impacto: d.impacto,
+    complejidad: d.complejidad,
   });
   if (error) return { ok: false, error: error.message };
   revalidatePath(rutaReto(d.retoId));

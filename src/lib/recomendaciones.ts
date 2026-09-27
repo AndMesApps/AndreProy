@@ -8,7 +8,9 @@
 import {
   CLASIFICACIONES,
   DESPERDICIOS,
+  ZONAS_MATRIZ,
   formatearDuracion,
+  zonaPropuesta,
   type MetricasProceso,
   type TipoDesperdicio,
 } from '@/lib/makigami';
@@ -82,7 +84,7 @@ export interface DatosInformeMakigami {
   pasos: { id: string; orden: number; descripcion: string; tiempo_espera_min: number; tiempo_trabajo_min: number; clasificacion: keyof typeof CLASIFICACIONES | null; carril: string }[];
   /** Cazas por tipo de desperdicio (cuántas veces lo marcaron). */
   cazasPorTipo: Map<TipoDesperdicio, number>;
-  propuestas: { id: string; descripcion: string; ahorro_estimado_min: number; estado: 'propuesta' | 'aprobada' | 'descartada'; votos: number; paso: string | null }[];
+  propuestas: { id: string; descripcion: string; ahorro_estimado_min: number; impacto: number; complejidad: number; estado: 'propuesta' | 'aprobada' | 'descartada'; votos: number; paso: string | null }[];
 }
 
 export function recomendacionesMakigami(d: DatosInformeMakigami): Recomendacion[] {
@@ -90,13 +92,27 @@ export function recomendacionesMakigami(d: DatosInformeMakigami): Recomendacion[
   const { metricas: m } = d;
   const total = m.tiempoTotal || 1;
 
+  // 0. Ganancias rápidas (matriz impacto/complejidad) que el grupo aún no aprobó:
+  // alto impacto y fáciles de hacer con lo que ya se tiene, así que son las
+  // primeras candidatas para pasar al plan de acción.
+  const ganancias = d.propuestas.filter((p) => p.estado === 'propuesta' && zonaPropuesta(p.impacto, p.complejidad) === 'ganancia_rapida');
+  if (ganancias.length) {
+    r.push({
+      ref: 'mk-ganancias-rapidas',
+      prioridad: 'alta',
+      titulo: `${ZONAS_MATRIZ.ganancia_rapida.emoji} ${ganancias.length === 1 ? 'Hay una ganancia rápida sin aprobar' : `Hay ${ganancias.length} ganancias rápidas sin aprobar`}`,
+      detalle: `${ZONAS_MATRIZ.ganancia_rapida.descripcion} ${ganancias.map((p) => `«${p.descripcion}»`).join('; ')}. Apruébenlas primero: no necesitan mucho para ejecutarse.`,
+    });
+  }
+
   // 1. Mejoras aprobadas por el grupo: son el plan de acción natural.
   for (const p of d.propuestas.filter((p) => p.estado === 'aprobada').sort((a, b) => b.ahorro_estimado_min - a.ahorro_estimado_min)) {
+    const zona = ZONAS_MATRIZ[zonaPropuesta(p.impacto, p.complejidad)];
     r.push({
       ref: `mk-propuesta-${p.id}`,
       prioridad: p.ahorro_estimado_min >= total * 0.1 ? 'alta' : 'media',
       titulo: `Implementar: ${p.descripcion.length > 90 ? `${p.descripcion.slice(0, 90)}…` : p.descripcion}`,
-      detalle: `Mejora aprobada en el rediseño${p.paso ? ` (paso: ${p.paso})` : ''}. Ahorro estimado: ${formatearDuracion(p.ahorro_estimado_min)}. Asignen responsable y fecha, y midan el tiempo total antes y después.`,
+      detalle: `Mejora aprobada en el rediseño${p.paso ? ` (paso: ${p.paso})` : ''} · ${zona.emoji} ${zona.nombre}. Ahorro estimado: ${formatearDuracion(p.ahorro_estimado_min)}. Asignen responsable y fecha, y midan el tiempo total antes y después.`,
     });
   }
 
