@@ -1,5 +1,14 @@
 import Link from 'next/link';
+import { getFacilitador } from '@/lib/auth';
+import { db } from '@/lib/supabase/server';
 import { UnirseCodigo } from '@/components/juego/unirse-codigo';
+import { FormularioReto as FormularioMakigami } from '@/components/makigami/formulario-reto';
+import { FormularioSesion as FormularioKaizen } from '@/components/kaizen/formulario-sesion';
+import { FormularioReto5S } from '@/components/cincos/formulario-reto-5s';
+import { FormularioCaso } from '@/components/mudalab/formulario-caso';
+import { FormularioSesion as FormularioRiesgo } from '@/components/riesgo/formulario-sesion';
+import { FormularioReto as FormularioMudaGami } from '@/components/mudagami/formulario-reto';
+import { formatearFecha } from '@/lib/utils';
 
 export const metadata = { title: 'Juegos' };
 
@@ -54,8 +63,39 @@ const JUEGOS = [
   },
 ];
 
-/** Todos los juegos de la plataforma en un solo lugar. */
-export default function JuegosPage() {
+/** Tabla donde vive cada juego (todas tienen id, codigo, titulo, estado, created_at). */
+const TABLAS: Record<string, string> = {
+  '/makigami': 'mk_retos',
+  '/kaizen': 'kz_sesiones',
+  '/cincos': 's5_sesiones',
+  '/mudalab': 'ml_sesiones',
+  '/riesgo': 'rr_sesiones',
+  '/mudagami': 'mg_retos',
+};
+
+/** Todos los juegos de la plataforma en un solo lugar. Pública: no pide contraseña. */
+export default async function JuegosPage() {
+  const facilitador = await getFacilitador();
+  const sb = db();
+
+  // Retos abiertos de los seis juegos, para entrar con un clic.
+  const listas = await Promise.all(
+    JUEGOS.map(async (j) => {
+      const { data } = await sb.from(TABLAS[j.ruta]!).select('id, codigo, titulo, estado, created_at').neq('estado', 'cerrado').order('created_at', { ascending: false }).limit(20);
+      return ((data ?? []) as any[]).map((r) => ({ juego: j, codigo: r.codigo as string, titulo: r.titulo as string, fecha: r.created_at as string }));
+    }),
+  );
+  const abiertos = listas.flat().sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+  const FORMULARIOS: Record<string, React.ReactNode> = {
+    '/makigami': <FormularioMakigami />,
+    '/kaizen': <FormularioKaizen />,
+    '/cincos': <FormularioReto5S />,
+    '/mudalab': <FormularioCaso />,
+    '/riesgo': <FormularioRiesgo />,
+    '/mudagami': <FormularioMudaGami />,
+  };
+
   return (
     <div className="space-y-6">
       <div className="rounded-2xl bg-degradado px-6 py-7 text-white shadow-lg">
@@ -79,6 +119,56 @@ export default function JuegosPage() {
           </div>
         </div>
       </div>
+      <section className="card p-5">
+        <h2 className="font-display text-xl font-semibold text-secundario">🎟️ Retos abiertos: entra con un clic</h2>
+        {abiertos.length === 0 ? (
+          <p className="mt-2 text-sm text-marmol-500">Ahora no hay retos abiertos. Si te dieron un código, escríbelo arriba.</p>
+        ) : (
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {abiertos.map((a) => (
+              <li key={a.juego.ruta + a.codigo}>
+                <Link
+                  href={`${a.juego.ruta}/unirse/${a.codigo}`}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-marmol-200 px-4 py-3 transition hover:border-marca-300 hover:bg-marca-50"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold text-secundario">{a.titulo}</span>
+                    <span className="block text-xs text-marmol-500">
+                      {a.juego.emoji} {a.juego.nombre.split(' —')[0]} · {formatearFecha(a.fecha)}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-sm font-semibold text-marca-600">Participar →</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+      <section className="card p-5">
+        <h2 className="font-display text-xl font-semibold text-secundario">➕ Crear un reto nuevo</h2>
+        {facilitador ? (
+          <>
+            <p className="mt-1 text-sm text-marmol-500">Elige el juego, ponle nombre y comparte el código o el QR desde tu panel.</p>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {JUEGOS.map((j) => (
+                <div key={j.ruta} className="rounded-xl bg-degradado p-4 text-white">
+                  <p className="mb-2 text-sm font-semibold">
+                    {j.emoji} {j.nombre.split(' —')[0]}
+                  </p>
+                  {FORMULARIOS[j.ruta]}
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="mt-1 text-sm text-marmol-500">
+            Para crear un reto necesitas ingresar con tu cuenta de facilitador.{' '}
+            <Link href="/ingresar" className="font-semibold text-marca-600 hover:underline">
+              Ingresar
+            </Link>
+          </p>
+        )}
+      </section>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {JUEGOS.map((j) => (
           <Link key={j.ruta} href={j.ruta} className="card group flex flex-col p-5 transition hover:-translate-y-0.5 hover:border-marca-300 hover:shadow-md">
